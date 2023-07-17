@@ -137,7 +137,7 @@ public class SpringRestartApplication implements ApplicationRunner{
 강제로 읽게 하는 방법은 AnnotationConfigApplicationContext 에 우리가 정의한 Configuration 파일을 읽게 시키면된다 
 
 ```
-SpringRestartApplication  [0;39m [2m:[0;39m Started SpringRestartApplication in 2.523 seconds (JVM running for 3.717)
+
 나의 시스템은 정상입니다
 MySystemInfo2
 
