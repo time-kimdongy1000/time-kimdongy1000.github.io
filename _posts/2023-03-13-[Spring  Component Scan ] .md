@@ -137,10 +137,7 @@ public class SpringRestartApplication implements ApplicationRunner{
 강제로 읽게 하는 방법은 AnnotationConfigApplicationContext 에 우리가 정의한 Configuration 파일을 읽게 시키면된다 
 
 ```
-[2m2023-03-13 13:34:33.424[0;39m [32m INFO[0;39m [35m7140[0;39m [2m---[0;39m [2m[           main][0;39m [36mw.s.c.ServletWebServerApplicationContext[0;39m [2m:[0;39m Root WebApplicationContext: initialization completed in 1375 ms
-나의 시스템은 정상입니다
-[2m2023-03-13 13:34:33.913[0;39m [32m INFO[0;39m [35m7140[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat started on port(s): 8080 (http) with context path ''
-[2m2023-03-13 13:34:33.925[0;39m [32m INFO[0;39m [35m7140[0;39m [2m---[0;39m [2m[           main][0;39m [36mcom.cybb.main.SpringRestartApplication  [0;39m [2m:[0;39m Started SpringRestartApplication in 2.523 seconds (JVM running for 3.717)
+SpringRestartApplication  [0;39m [2m:[0;39m Started SpringRestartApplication in 2.523 seconds (JVM running for 3.717)
 나의 시스템은 정상입니다
 MySystemInfo2
 
@@ -154,12 +151,6 @@ MySystemInfo2
 그것을 알 수 있는게 생성자가 각 2번씩 호출되는것을 알 수 있다 
 
 ```
-
-[2m2023-03-13 13:38:50.794[0;39m [32m INFO[0;39m [35m28152[0;39m [2m---[0;39m [2m[           main][0;39m [36mw.s.c.ServletWebServerApplicationContext[0;39m [2m:[0;39m Root WebApplicationContext: initialization completed in 1185 ms
-나의 시스템은 정상입니다
-MySystemInfo2
-[2m2023-03-13 13:38:51.271[0;39m [32m INFO[0;39m [35m28152[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat started on port(s): 8080 (http) with context path ''
-[2m2023-03-13 13:38:51.283[0;39m [32m INFO[0;39m [35m28152[0;39m [2m---[0;39m [2m[           main][0;39m [36mcom.cybb.main.SpringRestartApplication  [0;39m [2m:[0;39m Started SpringRestartApplication in 2.205 seconds (JVM running for 3.073)
 나의 시스템은 정상입니다
 MySystemInfo2
 
