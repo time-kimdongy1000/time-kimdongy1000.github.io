@@ -105,13 +105,7 @@ AnnotationConfigApplicationContext 사용하게 될것이다 그런데이를 실
 
 
 ```
-
 나의 시스템은 정상입니다
-[2m2023-03-13 09:51:17.808[0;39m [32m INFO[0;39m [35m24664[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat started on port(s): 8080 (http) with context path ''
-[2m2023-03-13 09:51:17.816[0;39m [32m INFO[0;39m [35m24664[0;39m [2m---[0;39m [2m[           main][0;39m [36mcom.cybb.main.SpringRestartApplication  [0;39m [2m:[0;39m Started SpringRestartApplication in 1.501 seconds (JVM running for 2.18)
-나의 시스템은 정상입니다
-
-
 ```
 
 이렇게 두번 호출되는것을 볼 수 있는데 이는 Spring 특유의 Bean 스캔 시스템이 달려 있다 Bean 스캔은 런타임시 스프링은 정의되어 있는 모든 Bean 을 감지해서 이미 IoC 에 넣어두고 기동을 시키고 사전에 검사까지 진행을 하게 된다 
