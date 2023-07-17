@@ -127,8 +127,7 @@ public class SpringRestartApplication implements ApplicationRunner{
 
 ```
 MySystemInfo Bean 생성
-[2m2023-03-13 14:32:37.225[0;39m [32m INFO[0;39m [35m14004[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat started on port(s): 8080 (http) with context path ''
-[2m2023-03-13 14:32:37.239[0;39m [32m INFO[0;39m [35m14004[0;39m [2m---[0;39m [2m[           main][0;39m [36mcom.cybb.main.SpringRestartApplication  [0;39m [2m:[0;39m Started SpringRestartApplication in 2.843 seconds (JVM running for 4.274)
+
 시스템2번정상입니다.
 
 ```
