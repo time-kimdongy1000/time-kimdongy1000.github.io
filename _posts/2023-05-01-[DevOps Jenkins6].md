@@ -1,6 +1,6 @@
 ---
 
-title: DevOps Jenkins Jenkins 디렉터리구조
+title: DevOps Jenkins 디렉터리구조
 author: kimdongy1000
 date: 2023-05-02 15:43
 categories: [DevOps, Jenkins]
