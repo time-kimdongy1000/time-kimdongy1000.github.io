@@ -231,24 +231,3 @@ WORKSPACE : /var/lib/jenkins/workspace/Hello_Spring_boot_Deploy_Project 현재 �
 이러한 변수 활용만 잘 알아도 우리는 jenkins 의 배포된 내용을 다른 곳으로 바로 던질 수 있는 환경을 만들 수 있다 
 
 이에 대한것은 다음 포스트에서 알아보자 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
