@@ -184,7 +184,7 @@ case ${1} in
 
                         echo "${SERVICE_NAME} is STARTED"
 
-                        kill -9 ${SERVICE_PID} &&
+                        kill -9 ${SERVICE_PID} 
 
                         ${NOHUPPATH} ${JAVAPATH} -jar ${JARPATH} 1> output.log 2> error.log &
                 else
