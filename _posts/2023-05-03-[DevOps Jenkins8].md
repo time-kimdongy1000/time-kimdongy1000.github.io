@@ -240,7 +240,7 @@ sshpass -p ${REMOTEPASSWORD} ssh -o StrictHostKeyChecking=no ${REMOTEUSER}@${REM
 ```
 
 firewall-cmd --permanent --zone=public --add-port=8081/tcp
-firewall --reload
+firewall-cmd --reload
 
 
 ```
