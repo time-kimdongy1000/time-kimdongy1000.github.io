@@ -1,6 +1,6 @@
 ---
 
-title: Spring Secuirty 5 인증 UsernamePasswordAuthenticationFilter
+title: Spring Secuirty 5 인증 전체과정
 author: kimdongy1000
 date: 2023-05-23 13:20
 categories: [Spring, Security]
@@ -64,7 +64,7 @@ String username = obtainUsername(request);
 sernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,password);
 
 ```
-어찌보면 제일 중요한 부분이다 sernamePasswordAuthenticationToken 이 앞으로 이 인증의 유무레 갈리게 되는것인데 
+어찌보면 제일 중요한 부분이다 sernamePasswordAuthenticationToken 이 앞으로 이 인증의 유무가 갈리게 되는것인데 
 
 ```
 
@@ -217,7 +217,9 @@ try {
 
 ```
 이 부분이 보일것입니다 그런데 좀 이상하게 보입니다 다시 한번 자신의 부모의 authenticate 함수를 호출하게 됩니다 그러면 자기자신이 구현체이기 때문에 
-위의 함숙 한번더 호출이 됩니다 그런데 이번에는 
+위의 함수가 한번더 호출이 됩니다 그런데 이번에는 
+
+`result = provider.authenticate(authentication);` 호출이 들어가게 되고 이때 이 호출되는 부분은 
 
 
 
@@ -326,7 +328,7 @@ private void prepareTimingAttackProtection() {
 
 ```
 
-`prepareTimingAttackProtection` 함수 호출시 패스워드에 인코딩이 안걸려 있으면 에러 던지고 끝이 납니다 그리고 비밀번호가 인코딩되어서 들어왔다면 이제 진짜 이 유저가 존재하는지 안하는지 찾게 됩니다 그것이 아래에 있는 loadUserByUsername 이 됩니다 즉 username 을 먼저 가지고 유저가 진짜 존재하는지 안하는지 검색을 먼저 하게 됩닌다 
+`prepareTimingAttackProtection` 함수 호출시 패스워드에 인코딩이 안걸려 있으면 에러 던지고 끝이 납니다 그리고 비밀번호가 인코딩되어서 들어왔다면 이제 진짜 이 유저가 존재하는지 안하는지 찾게 됩니다 그것이 아래에 있는 loadUserByUsername 이 됩니다 즉 username 을 먼저 가지고 유저가 진짜 존재하는지 안하는지 검색을 먼저 합니다 
 
 `UserDetails loadedUser = this.getUserDetailsService().loadUserByUsername(username);` 
 
