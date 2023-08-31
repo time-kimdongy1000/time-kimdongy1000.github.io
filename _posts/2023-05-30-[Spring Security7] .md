@@ -1,6 +1,6 @@
 ---
 
-title: Spring Secuirty 6 PasswordEncoder
+title: Spring Secuirty 7 PasswordEncoder
 author: kimdongy1000
 date: 2023-05-30 10:00
 categories: [Spring, Security]
