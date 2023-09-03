@@ -23,11 +23,6 @@ mermaid: true
 랜더링 화면은 타임리프로 구성할 것이고 db 는 jpa 로 구성을 할것이다 jpa 는 나도 잘 안해보았지만 간단한 db를 구축할때는 자주자주 사용하는 편이다 
 그럼 maven 을 구성을 해보자 
 
-Branch 명 main_0903
-
-브랜치 주소 https://gitlab.com/kimdongy1000/spring_security_web/-/tree/main_0903
-
-소스 공유 https://gitlab.com/kimdongy1000/spring_security_web/-/commit/2af7030b2285bd703a5f3ba2762ea9feac67940a
 
 
 ## maven 구성 

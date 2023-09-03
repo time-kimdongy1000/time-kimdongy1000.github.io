@@ -35,7 +35,14 @@ jap 저장하는 로직까지 만들도록 하겠습니다
 
 ```
 
-회원가입 제일 마지막 칸에 다음과 같이 csrfFilter 를 방지하는 태그를 하나 달아둘것이다 ` <input  th:name="${_csrf.parameterName}" th:value="${_csrf.token}">`
+회원가입 제일 마지막 칸에 다음과 같이 csrfFilter 를 방지하는 태그를 하나 달아둘것이다 
+
+```
+<input  th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+```
+
+
 잠깐 이 csrf 토큰에 대해서 이야기를 해보자 
 
 CSRF(Cross-Site Request Forgery) 토큰은 웹 애플리케이션의 보안을 강화하는 데 사용되는 토큰종류이다 그럼 csrf 공격은 웹사이트 취약점을 이용한 공격의 한가지 방법입니다 
