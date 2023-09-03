@@ -10,6 +10,13 @@ mermaid: true
 
 ---
 
+
+브랜치 주소 https://gitlab.com/kimdongy1000/spring_security_web/-/tree/main_0903
+
+소스 공유 https://gitlab.com/kimdongy1000/spring_security_web/-/commit/bbf6e35fbbb430194e04dda88c241b5be907fd50
+
+
+
 이제까지 우리는 시큐리티가 기본적으로 제공하는 로그인 페이지 로그인 화면 이런것들을 사용했다 이제는 직접 한번 간단하게 만들어보는 시간을 가질것이다 
 직접 회원가입부터 로그인했을때 db 를 불러와서 인증을 시키는거 까지 해볼예정이다 
 
@@ -17,6 +24,7 @@ mermaid: true
 그럼 maven 을 구성을 해보자 
 
 Branch 명 main_0903
+
 브랜치 주소 https://gitlab.com/kimdongy1000/spring_security_web/-/tree/main_0903
 
 소스 공유 https://gitlab.com/kimdongy1000/spring_security_web/-/commit/2af7030b2285bd703a5f3ba2762ea9feac67940a
@@ -58,51 +66,26 @@ Branch 명 main_0903
     <artifactId>spring-boot-starter-thymeleaf</artifactId>
 </dependency>
 
-```
-
-이렇게 사용할것이고 이때 중요한것은 jpa 안에는 자동으로  db 구성을 찾게 되는데 이때 이 설정을 끄지 않으면 계속해서 에러가 발생한다 
-
-## DB 자동구성 끄기 
-
-```
-
-package com.cybb.main;
-
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-
-
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
-public class SpringBootWebSecurityApplication implements ApplicationRunner {
-
-	public static void main(String[] args) {
-		SpringApplication.run(SpringBootWebSecurityApplication.class, args);
-	}
-
-	@Override
-	public void run(ApplicationArguments args) throws Exception {
-
-	}
-}
-
+<dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <scope>runtime</scope>
+</dependency>
 
 ```
 
-`@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })` 이 부분이 DB 자동설정을 끄는 부분이다 우리는 물리적인 DB 연결 없이 
-메모리로만 구성을 할것이다 
 
+
+## css 플랫폼은 bootstrap 5 사용
 그리고 우리는 bootstrap 를 사용할것이다 이때 필요한 파일은 
 https://github.com/twbs/bootstrap/releases/download/v5.3.1/bootstrap-5.3.1-dist.zip 다운로드 받으면 알집안에 css 와 , js 파일이 있는데 그중에서
 
 css 는 bootstrap.min.css 를 사용할것이고 js는 bootstrap.bundle.min.js 를 사용할것입니다 그럼 파일 위치는 아래 사진처럼 두시면됩니다 
 
 
+
 ## 디렉토리 구성 
 ![파일 위치](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/ecab4d7f-80e0-425e-8758-d0f5dd7f3c8c)
-
 
 
 
@@ -147,8 +130,9 @@ public SecurityFilterChain  securityFilterChain(HttpSecurity httpSecurity) throw
 
 
 ```
-`httpSecurity.authorizeRequests().antMatchers("/" , "/signUp/*").permitAll().anyRequest().authenticated();` 이 전체가 한문장입니다 이때 
-/  , /signUp/* 이런 패턴으로 들어오는 요청에 대해서는 미인증 유저가 들어올 수 있는 permitAll 을 사용한것입니다 그리고 그 외 요청은 일단은 인증유저만 들어 올 수 있게 해놓겠습니다 
+`httpSecurity.authorizeRequests().antMatchers("/" , "/signUp/*").permitAll().anyRequest().authenticated();` 
+
+이 전체가 한문장입니다 이때 /  , /signUp/* 이런 패턴으로 들어오는 요청에 대해서는 미인증 유저가 들어올 수 있는 permitAll 을 사용한것입니다 그리고 그 외 요청은 일단은 인증유저만 들어 올 수 있게 해놓겠습니다 
 
 ## signUp.html 작성 
 
@@ -201,7 +185,7 @@ public SecurityFilterChain  securityFilterChain(HttpSecurity httpSecurity) throw
 
 ```
 
-이렇게 작성을 하고 저장을 하고 이 페이지로 렌더링을 시도하겠습니다 하지만 화면이 전혀 렌더링 되지 않습니다 태그만 잔뜩 붙어 있는 이상환 화면이 생기게 되는데 
+이렇게 작성을 하고 저장을 하고 이 페이지로 렌더링을 시도하겠습니다 하지만 화면이 전혀 렌더링 되지 않습니다 태그만 잔뜩 붙어 있는 이상한 화면이 생기게 되는데 
 ![자원들도 302 걸립니다](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/f37551a4-c029-4bc3-a03e-48e2e3639f09)
 
 지금보면 우리가 사용할려고 하는 스크립트 , css 도 전부 filter 에 걸리게 됩니다 이런 filter 들도 전부 접근 가능하게 해주어야 합니다 
