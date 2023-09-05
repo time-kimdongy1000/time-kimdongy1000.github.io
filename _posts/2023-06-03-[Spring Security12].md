@@ -101,7 +101,7 @@ request.setAttribute(csrfToken.getParameterName(), csrfToken);
 ```
 
 그런다음 요청정보에 csrf 토큰을 심어두고 요청은 끝이나게 됩니다 이때 앞에도 말했다 싶히 서버의 상태를 변경하지 않는 메소드 
-GET , POST , DELETE , PATCH 메서드 호출할때만 동작이 되고 그 외에는 넘기게 됩니다 그 소스는 
+POST , DELETE , PATCH , PUT 메서드 호출할때만 동작이 되고 그 외에는 넘기게 됩니다 그 소스는 
 
 ```
 
