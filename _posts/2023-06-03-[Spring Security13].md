@@ -10,6 +10,11 @@ mermaid: true
 
 ---
 
+소스 주소 : https://gitlab.com/kimdongy1000/spring_security_web/-/tree/main_0903?ref_type=heads
+
+작업 주소 : https://gitlab.com/kimdongy1000/spring_security_web/-/commit/29c0fdd6b94a0c246b7228e38a478af96d38e4c0
+
+
 지난시간에 우리는 csrf 에 대해서 알아보았고 우리는 다시 돌아왔가 이제는 회원가입 로직을 만들었니 이제 이 내용을 바탕으로 로그인 하는 방식에 대해서 알아볼려고 합니다 
 
 먼저 화면과 html 을 먼저 만들어보면 
