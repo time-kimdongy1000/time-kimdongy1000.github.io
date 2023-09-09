@@ -446,8 +446,105 @@ providers = {ArrayList@12612}  size = 1
 
 ```
 
+package com.cybb.main.User;
+
+import com.cybb.main.entity.UserEntity;
+import com.cybb.main.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+
+@Component
+public class CustomAuthenticationManger implements AuthenticationProvider {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+
+        String username = authentication.getName();
+
+        if(!StringUtils.hasText(username)){
+            throw new UsernameNotFoundException("username 이 존재하지 않습니다");
+        }
+
+        String password = authentication.getCredentials().toString();
+
+        if(!StringUtils.hasText(password)){
+            throw new UsernameNotFoundException("password 가 존재하지 않습니다");
+        }
+
+        Optional<UserEntity> opsUserEntity  = userRepository.findByUsername(username);
+
+
+
+        if(!opsUserEntity.isPresent()){
+            throw new RuntimeException("존재하지 않는 회원입니다");
+        }
+
+        UserEntity userEntity = opsUserEntity.get();
+
+        if(!passwordEncoder.matches(password , userEntity.getPassword())){
+            throw new RuntimeException("비밀번호가 서로 다릅니다.");
+        }
+
+        List<GrantedAuthority> ADMIN_AUTHORITIES = Arrays.asList(new SimpleGrantedAuthority("ADMIN"));
+
+        UserDetails User = new User(userEntity.getUsername() , userEntity.getPassword() ,  ADMIN_AUTHORITIES);
+
+        UsernamePasswordAuthenticationToken authenticationToken = UsernamePasswordAuthenticationToken.authenticated(User , authentication.getCredentials() , ADMIN_AUTHORITIES);
+
+
+        return authenticationToken;
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+    }
+}
 
 
 ```
+
+우리는 DaoAuthenticationProvider 가 아닌 우리가 직접 만든 CustomAuthenticationManger 를 사용하여 인증을 마무리 짓도록 하겠습니다 
+AuthenticationProvider 구현체로 받아서 구현을 하게 되면 public Authentication authenticate(Authentication authentication) throws AuthenticationException 
+반드시 구현을 해야겠금 내려오기 때문에 여기에서 우리는 인증을 마무리 해주면됩니다 
+
+우리가 가져올 DB 는 JPA 의 UserEntity 에서 가져오는 것임으로 `Optional<UserEntity> opsUserEntity  = userRepository.findByUsername(username);` 데이터를 조회후 
+간단한 로직만 맞추고 마지막에는 
+
+```
+UsernamePasswordAuthenticationToken authenticationToken = UsernamePasswordAuthenticationToken.authenticated(User , authentication.getCredentials() , ADMIN_AUTHORITIES);
+
+```
+사용해서 토큰객체를 만들어서 return 하면됩니다 그럼 이 토큰객체는 자연스럽게 시큐리티 컨텍스트에 들어가게 됨으로 그 이후 로직은 시큐리티가 알아서 만들어주게 됩니다 
+그러면 우리는 인증된 객체를 가지고 로그인해서 demo 를 요청하면 우리가 넣은 데이터 그대로 잘 나오는것을 확인할 수 있습니다 
+
+여기 까지 우리는 우리가 사용하고 싶은 회원가입 페이지 로그인 페이지를 만들고 인증을 커스텀하게 만들어보았습니다 
+
 
 
