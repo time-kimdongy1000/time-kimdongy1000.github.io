@@ -3,7 +3,7 @@
 title: Spring Secuirty 3 기본 로그인 페이지 
 author: kimdongy1000
 date: 2023-05-15 10:49
-categories: [Spring, Security]
+categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true
