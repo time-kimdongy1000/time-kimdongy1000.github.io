@@ -3,7 +3,7 @@
 title: Spring Secuirty 10 나만의 로그인 및 회원가입 만들기 
 author: kimdongy1000
 date: 2023-06-04 14:00
-categories: [Spring, Security]
+categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true

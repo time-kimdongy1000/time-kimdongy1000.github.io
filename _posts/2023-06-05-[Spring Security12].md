@@ -3,7 +3,7 @@
 title: Spring Secuirty 12 CsrfFilter
 author: kimdongy1000
 date: 2023-06-05 16:00
-categories: [Spring, Security]
+categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true

@@ -3,7 +3,7 @@
 title: Spring Secuirty 9 @AuthenticationPrincipal 
 author: kimdongy1000
 date: 2023-06-03 15:00
-categories: [Spring, Security]
+categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true

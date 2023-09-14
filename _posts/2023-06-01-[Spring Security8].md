@@ -3,7 +3,7 @@
 title: Spring Secuirty 8 Authorities , Role 
 author: kimdongy1000
 date: 2023-06-01 10:00
-categories: [Spring, Security]
+categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true

@@ -3,7 +3,7 @@
 title: Spring Secuirty 7 PasswordEncoder
 author: kimdongy1000
 date: 2023-05-30 10:00
-categories: [Spring, Security]
+categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true

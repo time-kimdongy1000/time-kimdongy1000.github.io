@@ -3,7 +3,7 @@
 title: Spring Secuirty 15 JWT 2 JWT 유효성 검증
 author: kimdongy1000
 date: 2023-06-11 10:00
-categories: [Spring, Security]
+categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true

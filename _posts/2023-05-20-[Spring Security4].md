@@ -3,7 +3,7 @@
 title: Spring Secuirty 4 로그아웃 , 로그아웃 페이지 
 author: kimdongy1000
 date: 2023-05-20 10:49
-categories: [Spring, Security]
+categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true
