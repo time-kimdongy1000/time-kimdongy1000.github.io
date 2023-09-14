@@ -3,7 +3,7 @@
 title: Spring Secuirty
 author: kimdongy1000
 date: 2023-05-09 10:49
-categories: [Spring, Security]
+categories: [Back-end, Spring - Security ]
 tags: [ Spring-Security ]
 math: true
 mermaid: true
