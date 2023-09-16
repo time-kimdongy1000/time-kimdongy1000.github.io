@@ -3,7 +3,7 @@
 title: Spring Secuirty 5 인증 전체과정
 author: kimdongy1000
 date: 2023-05-23 13:20
-categories: [Spring, Security]
+categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true

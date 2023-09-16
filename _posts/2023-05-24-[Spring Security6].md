@@ -3,7 +3,7 @@
 title: Spring Secuirty 6 InMemoryUser
 author: kimdongy1000
 date: 2023-05-24 10:00
-categories: [Spring, Security]
+categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true
