@@ -3,7 +3,7 @@
 title: Spring Secuirty 16 인가서버와 , 리소스 서버 구축하기 1
 author: kimdongy1000
 date: 2023-06-15 10:00
-categories: [Spring, Security]
+categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true
