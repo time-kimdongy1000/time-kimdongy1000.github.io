@@ -1,6 +1,6 @@
 ---
 
-title: Spring Secuirty 16 인가서버와 , 리소스 서버 구축하기 1
+title: Spring Secuirty 16 인가서버 구축
 author: kimdongy1000
 date: 2023-06-15 10:00
 categories: [Back-end, Spring - Security]
@@ -132,7 +132,7 @@ https://gitlab.com/kimdongy1000/spring_security_web/-/tree/main_Authentication_S
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		
+
 
 	</dependencies>
 
@@ -149,32 +149,87 @@ https://gitlab.com/kimdongy1000/spring_security_web/-/tree/main_Authentication_S
 
 
 ```
+인가서버는 거의 그대로입니다 그리고 회원가입이나 , 로그인 로직같은 경우는 우리가 이제까지 해왔던 로직이기 떄문에 생략하겠습니다 GIT 소스를 참고해주세요 
 
-인가서버는 사용자 정보를 저장하는 jpa와 jwt 를 발급하는 시스템을 만들고 jwt 를 발급 해서 클라이언트에 심는 로직을 만들겠습니다 
-화면이나 자바 스크립트는 지난시간에 만들었던 커스텀 회원가입을 최대한 따라갈 예정입니다 그래서 전체소스는 gitlab 주소를 명시해서 보여줄 예정이지만 
-이전에 했던 방식이니 html 생성이나 이런것들은 pass 하도록 하겠습니다 
 
-## 로그인 성공시 바로 JWT 발급페이지로 이동 
+## SecurityConfig 
 
 ```
 
-httpSecurity.formLogin()
-		.loginPage("/login")
-		.loginProcessingUrl("/login")
-		.usernameParameter("userEmail")
-		.passwordParameter("userPassword")
-		.defaultSuccessUrl("/jwt/getJwt")
-		.permitAll();
+package com.cybb.main.config;
+
+import com.cybb.main.user.CustomAuthenticationProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+public class SecurityConfig {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private CustomAuthenticationProvider customAuthenticationProvider;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+
+
+        httpSecurity.authorizeRequests().antMatchers("/"
+                                                                ,"/signUp"
+                                                                ,"/signUp/*"
+                                                                ,"/bootStrap/css/**"
+                                                                ,"/bootStrap/js/**"
+                                                                ,"/resources/css/**"
+                                                                ,"/resources/js/**"
+                                                                ,"/jwtParse"
+
+
+                ).permitAll()
+
+
+                .anyRequest().authenticated();
+
+
+        httpSecurity.formLogin()
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .usernameParameter("userEmail")
+                .passwordParameter("userPassword")
+                .defaultSuccessUrl("/jwt")
+                .permitAll();
+
+        httpSecurity.logout()
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/login")
+                    .invalidateHttpSession(true)
+                    .clearAuthentication(true)
+                    .deleteCookies("JSESSIONID");
+
+        httpSecurity.csrf().disable();
+
+
+
+
+        httpSecurity.authenticationProvider(customAuthenticationProvider);
+
+        return httpSecurity.build();
+    }
+}
+
 
 ```
 
-나는 앞에서 defaultSuccessUrl 이 메서드를 사용햇는데 이 메서드는 로그인이 성공하면 기본적으로 옮겨지는 핸들러를 호출하게 됩니다 이때 핸들러를 정의하게 되면 
-로그인 성공시 바로 핸들러를 호출하게 됩니다 이떄는 success 핸들러 뿐만 아니라 실패 핸들러 두개가 존재합니다
-`defaultSuccessUrl , .defaultSuccessUrl` 이렇게 호출할 수 있으며 우리는 이 defaultSuccessUrl 를 이용해서 로그인 성공하면 바로 
-jwt 발급해서 나의 헤더에 넣는 작업을 진행하도록 하겠습니다 
+전체적인 SecurityConfig 는 올리겠습니다 여기서 크게 다른점은 `httpSecurity.csrf().disable();` 입니다 이는 서버간의 통신에서 서버끼리는 CSRF 토큰을 주고 받기가 어렵기 때문에 주로 서버끼리 통신에는 이 CRSF 토큰을 사용하지 않는 편입니다 
+
+그리고 로그아웃을 설정했습니다 이 로그아웃을 할때 필요한것은 로그아웃 url , 로그아웃 성공시 오는 페이지 그리고 인증 및 인가 제거 쿠키 제거가 포함되어 있습니다 
+
 
 ## JwtController
-
 ```
 
 package com.cybb.main.controller;
@@ -195,10 +250,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.Duration;
 import java.util.Date;
 
+
 @Controller
 @RequestMapping("jwt")
 public class JwtController {
-
     @Value("${jwt.secret.key}")
     private String secretKey;
 
@@ -214,7 +269,7 @@ public class JwtController {
         try {
 
             Date now = new Date();
-            Long jwtTokenTime = Duration.ofMinutes(30).toMillis();
+            Long jwtTokenTime = Duration.ofMinutes(1).toMillis();
 
             String jwtToken = Jwts.builder()
                     .setSubject(userDetails.getUsername())
@@ -228,33 +283,173 @@ public class JwtController {
 
             return new ResponseEntity<>(jwtDto , HttpStatus.OK);
 
-        }catch (Exception e){
+        }catch (Exception e) {
 
             throw new RuntimeException(e);
         }
+    }
+
+
+}
+
+
+```
+
+이 JwtController 은 로그인을 성공하게 되면 성공 페이지 및 Jwt 토큰을 발행하는 핸들러로 이루어졌습니다 토큰 만료시간은 1분으로 진행하겠습니다 
+
+
+## JWTParseController
+```
+
+package com.cybb.main.controller;
+
+import com.cybb.main.dto.JwtResponseDto;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Map;
+
+@Controller
+public class JWTParseController {
+
+    @Value("${jwt.secret.key}")
+    private String secretKey;
+
+    @PostMapping("/jwtParse")
+    public ResponseEntity<JwtResponseDto> jwtParse(@RequestBody Map<String , Object> param)
+    {
+
+        JwtResponseDto jwtResponseDto = new JwtResponseDto();
+        try{
+
+            String jwtToken = (String)param.get("jwtToken");
+
+
+
+            if(!StringUtils.hasText(jwtToken)){
+
+                jwtResponseDto.setJwtFlag(false);
+                jwtResponseDto.setMessage("JWT 토큰이 없습니다");
+                jwtResponseDto.setStatusCode(401);
+
+                return new ResponseEntity<>(jwtResponseDto , HttpStatus.OK);
+            }
+
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(jwtToken)
+                    .getBody();
+
+            jwtResponseDto.setJwtFlag(true);
+            jwtResponseDto.setMessage("인증성공");
+            jwtResponseDto.setStatusCode(200);
+
+            return new ResponseEntity<>(jwtResponseDto , HttpStatus.OK);
+
+        }catch(ExpiredJwtException e1){
+
+            jwtResponseDto.setJwtFlag(false);
+            jwtResponseDto.setMessage("JWT 인증시간 만료");
+            jwtResponseDto.setStatusCode(401);
+
+            return new ResponseEntity<>(jwtResponseDto , HttpStatus.OK);
+
+        }catch (SignatureException e2){
+
+            jwtResponseDto.setJwtFlag(false);
+            jwtResponseDto.setMessage("개인키 오류");
+            jwtResponseDto.setStatusCode(401);
+
+            return new ResponseEntity<>(jwtResponseDto , HttpStatus.OK);
+
+        }catch (UnsupportedJwtException e3){
+
+            jwtResponseDto.setJwtFlag(false);
+            jwtResponseDto.setMessage("개인키 오류");
+            jwtResponseDto.setStatusCode(401);
+
+            return new ResponseEntity<>(jwtResponseDto , HttpStatus.OK);
+
+        }catch (MalformedJwtException e3){
+
+            jwtResponseDto.setJwtFlag(false);
+            jwtResponseDto.setMessage("JWT 형식 오류");
+            jwtResponseDto.setStatusCode(401);
+
+            return new ResponseEntity<>(jwtResponseDto , HttpStatus.OK);
+
+        }catch (Exception e){
+
+            jwtResponseDto.setJwtFlag(false);
+            jwtResponseDto.setMessage(e.getMessage());
+            jwtResponseDto.setStatusCode(401);
+
+            return new ResponseEntity<>(jwtResponseDto , HttpStatus.OK);
+
+        }
+
+    }
+}
+
+```
+JWTParseController 은 전체접근이 가능한 페이지로 리소스 서버가 JWT 유효성 검증을 위해서 통신하기 위한 핸들러이빈다 리소스 서버 작성할때 이곳과 통신하는 소스를 작성할 예정입니다 
+
+```
+
+package com.cybb.main.dto;
+
+public class JwtResponseDto {
+
+    private boolean jwtFlag;
+
+    private String message;
+
+    private int statusCode;
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public boolean isJwtFlag() {
+        return jwtFlag;
+    }
+
+    public void setJwtFlag(boolean jwtFlag) {
+        this.jwtFlag = jwtFlag;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
 
 
 ```
 
-우리는 여기서 jwt 발급 화면을 만드는 것이다 이전하고 완전 똑같긴 하지만 그래도 실제로 시크릿 key 같은 경우는 소스에 직접적인 노출을 막기 위해서 다양한 방법을 사용한다 
-일단 일차적으로는 바로 보이는 곳에는 두지 않는다는 점이다 그렇다고 이 방법도 안전한것은 아니다 일단 우리는 applition.properties 에 이 key 를 넣고 불러와서 진행을 하겠습니다 
+JwtResponseDto 는 리소스 서버와 인가서버 동시에 쓰는 Jwt 와 관련한 정보입니다 여기에는 jwt 상태와 , 에러메세지 등을 담을 예정입니다 
 
-## applicaiton.properties
 
+## jwt.html 
 ```
 
-jwt.secret.key=cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3p
-
-
-```
-
-이렇게 세팅을 해주게 됩니다 
-
-## jwt.html  , jwt.js
-
-```
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -268,8 +463,15 @@ jwt.secret.key=cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce4
 <body>
 
 <button id = "btn_generate_jwt" type="button" class="btn btn-primary">jwt 발급받기</button>
+<button id = "btn_getResource" type="button" class="btn btn-primary">리소스 가져오기</button>
 
-<input  th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+<form action="/logout" method="post">
+
+    <!--<input  th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
+    <button id = "btn_logout" class="btn btn-primary" type="submit" >로그아웃</button>
+</form>
+
+
 <input  id = "jwt_input">
 
 
@@ -283,15 +485,19 @@ jwt.secret.key=cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce4
 </html>
 
 
-
 ```
 
+로그인 성공하면 제일 먼저 들어오는 페이지입니다 이 페이지에서 jwt 를 발급받고 , 리소스 서버의 데이터를 주고 받는 페이지입니다
 
+
+## jwt.js
 ```
 
 const jwt_button = document.querySelector("#btn_generate_jwt");
 const csrf_input = document.querySelector('input[name="_csrf"]');
 const jwt_input = document.querySelector("#jwt_input");
+const btn_getResource = document.querySelector("#btn_getResource");
+const btn_logout = document.querySelector("#btn_logout")
 
 
 jwt_button.addEventListener('click' , (e) => {
@@ -301,7 +507,7 @@ jwt_button.addEventListener('click' , (e) => {
     const domain = "http://localhost:8080";
     const api_url = "/jwt/generate";
     const method = "post";
-    const csrf_token = csrf_input.value;
+    //const csrf_token = csrf_input.value;
 
     try{
 
@@ -309,7 +515,7 @@ jwt_button.addEventListener('click' , (e) => {
             method : method ,
             headers : {
                   "Content-Type": "application/json" ,
-                   "X-CSRF-Token" : csrf_token
+                   /*"X-CSRF-Token" : csrf_token*/
            },
 
 
@@ -322,25 +528,41 @@ jwt_button.addEventListener('click' , (e) => {
         console.log(error)
     }
 
+})
+
+btn_getResource.addEventListener('click' , (e) => {
+
+    const domain = "http://localhost:8090";
+    const api_url = "/demo";
+    const method = "GET";
+
+    try{
+
+        fetch(domain + api_url , {
+            method : method ,
+            headers : {
+                "Authorization_token" : jwt_input.value
+           },
 
 
+        }).then( (res) => {
+
+            if(res.status == 401){
+               btn_logout.click();
+            }else{
+                 return res.json();
+            }
+        }).then( (data) => {
+            console.log(data);
+        })
+
+    }catch(error){
+        console.log(error)
+    }
 
 })
 
-
 ```
 
-화면은 간단하게 post 을 통해서 jwt 를 발급받으면 이제 이 jwt 를 헤더에 심어서 다음에 작성할 리소스 서버에 전달할 예정입니다 물론 지금은 진짜 jwt 발급되어서 
-
-보내지는것을 input 에 담아놓고 다음 요청때 이 input 값을 헤더에 심어서 보낼거지만 실제로는 이 jwt 또한 노출되어도 크게상관은 없지만 어찌되었든 
-
-해당 사용자를 식별하는데 사용되는 토큰임으로 이렇게 input 에 대놓고 쓰지는 않습니다 이렇게 까지 하면 우리는 회원가입부터 JWT 발급까지 진행을 했고 
-
-다음 포스터는 이제 리소스 서버를 작성을 해서 통신을 하는 과정을 그려보겠습니다 
-
-
-
-
-
-
-
+이 jwt 는 jwt.html 연결된 페이지로 인가서버에서 받은 jwt 토큰과 리소스 서버 연결을 위한 페이지입니다 리소스 가져오기 버튼을 누르면 리소스 서버와 통신해서 
+정보를 가져오거나 , 아니면 jwt 토큰이 없거나 , 미인증 토큰이면 로그아웃이 되게끔 설계 했습니다 
