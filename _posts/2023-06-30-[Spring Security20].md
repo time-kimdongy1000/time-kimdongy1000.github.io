@@ -2,7 +2,7 @@
 
 title: Spring Secuirty 20 OAuth2
 author: kimdongy1000
-date: 2023-06-17 10:00
+date: 2023-06-30 10:00
 categories: [Back-end, Spring - Security]
 tags: [ Spring-Security , OAuth2 ]
 math: true
