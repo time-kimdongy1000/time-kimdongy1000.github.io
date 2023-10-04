@@ -1,6 +1,6 @@
 ---
 
-title: Spring Secuirty 15 JWT 4 JWT 발급과 검증과정 2
+title: Spring Secuirty 17 JWT 4 JWT 발급과 검증과정 2
 author: kimdongy1000
 date: 2023-06-14 10:00
 categories: [Back-end, Spring - Security]

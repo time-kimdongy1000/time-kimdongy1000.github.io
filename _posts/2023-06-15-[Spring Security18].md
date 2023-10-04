@@ -1,6 +1,6 @@
 ---
 
-title: Spring Secuirty 16 인가서버 구축
+title: Spring Secuirty 18 인가서버 구축
 author: kimdongy1000
 date: 2023-06-15 10:00
 categories: [Back-end, Spring - Security]
