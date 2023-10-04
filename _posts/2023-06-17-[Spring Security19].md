@@ -1,6 +1,6 @@
 ---
 
-title: Spring Secuirty 17 리소스 서버 구축 1
+title: Spring Secuirty 19 리소스 서버 구축 1
 author: kimdongy1000
 date: 2023-06-17 10:00
 categories: [Back-end, Spring - Security]
