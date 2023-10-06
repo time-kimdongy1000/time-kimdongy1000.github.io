@@ -72,7 +72,7 @@ cmd 터미널 열어서 C:\keycloak-19.0.1\keycloak-19.0.1\bin 여기 까지 들
 
 5. Realm 만들기 
 
-![3](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/7d76d964-4383-49bb-aecd-6ab722a5857a)
+![4](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/c543ee56-3a8a-4984-bb07-0c26b47ab3c7)
 
 이곳을 클릭하면 파란색 버튼으로 Realm(왕국) 만들 수 있습니다 저희만의 왕국을 만들어보겠습니다 
 
@@ -249,9 +249,13 @@ spring.security.oauth2.client.provider.keycloak.userNameAttribute=preferred_user
 OpenID Endpoint Configuration 클릭 그럼 key - value object 가 존재하는데 하나씩 key 를 매핑시켜드리겠습니다 
 
 issuerUri -> issuer
+
 authorizationUri -> authorization_endpoint
+
 tokenUri -> token_endpoint
+
 userInfoUri -> userinfo_endpoint
+
 jwkSetUri -> jwks_uri
 
 이렇게 매핑을 시켜주시면됩니다 단 이것은 저랑 realms 달리했을 경우입니다 같이했으면 저랑 같은거 쓰셔도 됩니다 그럼 준비는 끝 기동하겠습니다 
