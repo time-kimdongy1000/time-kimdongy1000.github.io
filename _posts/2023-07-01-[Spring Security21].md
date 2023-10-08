@@ -1,6 +1,6 @@
 ---
 
-title: Spring Secuirty 20 OAuth2 기본개념 
+title: Spring Secuirty 21 OAuth2 기본개념 
 author: kimdongy1000
 date: 2023-07-01 10:00
 categories: [Back-end, Spring - Security]
