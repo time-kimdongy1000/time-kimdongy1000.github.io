@@ -10,7 +10,7 @@ mermaid: true
 
 ---
 
-우리는 지난시간에 keyClock 와 Spring - Security 를 연동할때 사용한 ClientRegistration 에 대해서 알아보았습니다 이번시간에는 실제 로그인이 일어나는 과정에 대해서 알아보도록 하겠습니다 
+우리는 지난시간에 keyClock 와 Spring - Security 를 연동할때 사용한 ClientRegistration 에 대해서 알아보았습니다 이번시간에는 실제 로그인이 일어나기전 2개의 객체에 대해서 정의를 해두고 만들어서 메모리에 올리는 작업을 하게 되는데 이 부분에서 진행이 됩니다 
 
 
 ## OAuth2LoginConfigurer
@@ -36,7 +36,7 @@ public interface SecurityConfigurer<O, B extends SecurityBuilder<O>> {
 ```
 
 이렇게 2개의 메서드가 시그니처만 정의가 되어 있다 즉 최상단 인터페이스로 SecurityConfigurer 상속받고 있으면 하단 클래스단에서는 init , configure 구현을 해주어야 한다 
-그렇기에 `OAuth2LoginConfigurer.java` 도 최상단 인터페이스로 상속을 받기에 init , configure 재정의 하고 있으며 이 중에서는 init 위주로 보면됩니다 
+그렇기에 `OAuth2LoginConfigurer.java` 도 최상단 인터페이스로 상속을 받기에 init , configure 재정의 하고 있으며 이 중에서는 init , configure 위주로 보면됩니다 
 
 
 
@@ -111,6 +111,11 @@ public void init(B http) throws Exception {
 
 
 ## OAuth2LoginAuthenticationFilter
+
+OAuth2LoginAuthenticationFilter 에 대해서 간략하게 설명을 하자면 로그인을 통해서 얻은 승인코드를 바탕으로 access_token 을 이용해서 User 정보에 접근을 할때 사용하는 
+필터를 init 에서 정의를 하게 됩니다 
+
+
 ```
 
 OAuth2LoginAuthenticationFilter authenticationFilter = new OAuth2LoginAuthenticationFilter(
@@ -118,9 +123,6 @@ OAuth2LoginAuthenticationFilter authenticationFilter = new OAuth2LoginAuthentica
 				OAuth2ClientConfigurerUtils.getAuthorizedClientRepository(this.getBuilder()), this.loginProcessingUrl);
 
 ```
-
-OAuth2LoginAuthenticationFilter 는 Oauth2Login 의 시작에 달려 있는 Filter 입니다 시큐리티는 Filter 로 이어져 있는 프레임워크로 OAuth2LoginAuthenticationFilter
-가 사용자의 계정정보를 받아서 인증이 완료되면 다시 되돌아오면서 승인코드를 같이 가지고 와주는 객체입니다 그래서 OAuth2 에서는 제일 먼저 이 Filter 에 대한 기본적인 정보를 세팅을 해줍니다 
 
 OAuth2LoginAuthenticationFilter 의 객체를 만드는데 두가지 파라미터를 받고 있습니다 
 
@@ -132,8 +134,9 @@ OAuth2LoginAuthenticationFilter 의 객체를 만드는데 두가지 파라미�
 
 두번째 파라미터는 메서드 명에서 알 수 있다 싶히 getAuthorizedClientRepository 이미 인증된 ClientRegirationRepository 를 가져오는 곳인데 최초 런타임시에는 이곳에 값이 없기 때문에 OAuth2ClientConfigurerUtils.getAuthorizedClientRepository(this.getBuilder()) 아무 값도 들어오지 않습니다 
 
-최종적으로 이 루트가 끝이 나게 되면 시큐리티는 
-ClientRegistrationRepository ->  AuthorizedClientRepository 로 이동을 시키게 됩니다 
+최종적으로 인증이 끝이 나게 되면 시큐리티는 
+ClientRegistrationRepository ->  AuthorizedClientRepository 로 이동을 시키게 됩니다
+
 
 만들어진 authenticationFilter 객체의 값을 보게 되면 
 
@@ -191,7 +194,7 @@ super.loginProcessingUrl(this.loginProcessingUrl);
 ```
 
 그리고 두줄만 따로보면 위에서 만들어진 authenticationFilter 객체를 세팅을 하고 로그인 processingUrl 을 설정하게 되는데 시큐리티 기본값인 /login/oauth2/code/*
-이 값을 기본값으로 두고 있습니다 즉 /login/oauth2/code/* authenticationFilter 를 동작을 시키겠다는 뜻입니다 
+이 값을 기본값으로 두고 있습니다 즉 /login/oauth2/code/* 으로 요청이 들어오게 되면 authenticationFilter 를 동작을 시키겠다는 뜻입니다 
 
 
 ```
@@ -225,6 +228,7 @@ if (loginUrlToClientName.size() == 1) {
 `String providerLoginPage = loginUrlToClientName.keySet().iterator().next();` 의 값은 /oauth2/authorization/keycloak 이 로그인 페이지가 되게 됩니다 
 
 `this.registerAuthenticationEntryPoint(http, this.getLoginEntryPoint(http, providerLoginPage));`
+
 그리고 마지막 줄은 인가가 되지 않았을때 클라이언트를 다시 로그인 페이지로 리디렉션을 시키는 소스입니다 
 
 
@@ -284,7 +288,7 @@ loginEntryPoint = {DelegatingAuthenticationEntryPoint@6801}
 ```
 OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient = this.tokenEndpointConfig.accessTokenResponseClient;
 if (accessTokenResponseClient == null) {
-			accessTokenResponseClient = new DefaultAuthorizationCodeTokenResponseClient();
+	accessTokenResponseClient = new DefaultAuthorizationCodeTokenResponseClient();
 }
 
 ```
@@ -299,8 +303,7 @@ public final class DefaultAuthorizationCodeTokenResponseClient{
 
 
     public DefaultAuthorizationCodeTokenResponseClient() {
-		RestTemplate restTemplate = new RestTemplate(
-				Arrays.asList(new FormHttpMessageConverter(), new OAuth2AccessTokenResponseHttpMessageConverter()));
+		RestTemplate restTemplate = new RestTemplate(Arrays.asList(new FormHttpMessageConverter(), new OAuth2AccessTokenResponseHttpMessageConverter()));
 		restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
 		this.restOperations = restTemplate;
 	}
@@ -368,7 +371,7 @@ private OAuth2UserService<OAuth2UserRequest, OAuth2User> getOAuth2UserService() 
 
 ```
 
-이렇게 기본적인 return new DefaultOAuth2UserService(); 로 객체를 만드는것을 확인할 수 있습니다 이 객체또한 잠깐 살펴보면 
+이렇게 기본적인 `return new DefaultOAuth2UserService();` 로 객체를 만드는것을 확인할 수 있습니다 이 객체 또한 잠깐 살펴보면 
 
 
 ## DefaultOAuth2UserService
@@ -426,12 +429,15 @@ public class DefaultOAuth2UserService implements OAuth2UserService<OAuth2UserReq
 ```
 
 객체를 만들때는 마찬가지로 RestTemplate 를 사용해서 만들고 하단에 보면 OAuth2User loadUser 가 정의되어 있는데 이 부분은 뒤에 자세하게 기술할 예정입니다 
-access_token 을 통해서 user 정보를 가져온 시큐리티가 어떻게 유저정보를 파싱해서 시큐리티 안으로 ㅈ비어넣는지에 대한 코드가 적혀 있습니다 이 부분은 앞에서 시큐리티 form 로그인에서 본loadByUsername 하고 비슷한 로직을 가지게 됩니다 뒤에서 한번더 자세하게 다룰 예정입니다 
+access_token 을 통해서 user 정보를 가져온 시큐리티가 어떻게 유저정보를 파싱해서 시큐리티 안으로 어떻게 넣을지에  대한 코드가 적혀 있습니다 이 부분은 앞에서 시큐리티 form 로그인에서 본 loadByUsername 하고 비슷한 로직을 가지게 됩니다 뒤에서 한번더 자세하게 다룰 예정입니다 
 
 
 다시 돌아와서 
 
-`OAuth2LoginAuthenticationProvider oauth2LoginAuthenticationProvider = new OAuth2LoginAuthenticationProvider(accessTokenResponseClient, oauth2UserService);`
+```
+OAuth2LoginAuthenticationProvider oauth2LoginAuthenticationProvider = new OAuth2LoginAuthenticationProvider(accessTokenResponseClient, oauth2UserService);
+
+```
 
 그렇게 만들어진 accessTokenResponseClient oauth2UserService OAuth2LoginAuthenticationProvider 객체에 파라미터로 쓰이게 됩니다 OAuth2LoginAuthenticationProvider
 는 다음시간에 나올 예정이니 자세하게 다룰 예정입니다 지금은 넘어가겠습니다 
@@ -445,6 +451,7 @@ if (userAuthoritiesMapper != null) {
 
 ```
 그리고 form 로그인에서 보았던 권한 부여 mapper 은 여기도 쓰입니다 그런데 여기서는 일단 값이 null 인채로 넘어가게 됩니다 
+
 
 `http.authenticationProvider(this.postProcess(oauth2LoginAuthenticationProvider));` 이 부분까지 와서는 이제 기본적인 로그인 절차 및 데이터 들어올 시 어떻게 파싱해서 인가서버와 주고받을지에 대한 모든 정보를 oauth2LoginAuthenticationProvider 담았음으로 이 부분 또한 authenticationProvider 에 담아주게 됩니다 
 
@@ -466,17 +473,94 @@ if (oidcAuthenticationProviderEnabled) {
 }
 
 ``` 
+
 이 부분은 인가서버는 로그인 방식이 2가지가 있는데 하나는 지금 할려고 하는 Oauth2 방식이 있고 다른 방식은 oidc 방식이 있습니다 그런데 oidc 방식은 
 ClassUtils 에 org.springframework.security.oauth2.jwt.JwtDecoder 가 런타임으로 잡혀 있는지만 확인해서 없으면 이 방식으로는 진행을 하지 않습니다 
-뒤에 이 방식을 활성화 시켜서 하는 것도 해볼예정입니다 
+뒤에 이 방식을 활성화 시켜서 하는 것도 해볼 예정입니다 
 
 
-`this.initDefaultLoginFilter(http);` 그렇게 해서 이 모든 정보를 세팅을 하고 init 은 끝이나게 됩니다 
+`this.initDefaultLoginFilter(http);` 그렇게 해서 이 모든 정보를 세팅을 하고 init 은 끝이나게 됩니다 이때 이 init 에서 제일 중요한것은 
+OAuth2LoginAuthenticationFilter 입니다 이 부분은 뒤에서도 아래 configure 정의한 OAuth2AuthorizationRequestRedirectFilter 에서 승인코드를 가져오면 
+이 승인코드를 바탕으로 access_token 을 발급받는 부분을 정의하는 부분입니다 그 아래 configure 에 대해서 살펴보겠습니다 
 
-자 정말 길고 길었습니다 정리를 하자면 OAuth2LoginConfigurer 클래스는 정말 Oauth2 로그인 하기 전에 ClientRegistration 에 등록된 내용을 바탕으로 
-로그인 페이지 , 로그인 방식 , 각 절차에 맞는 객체 생성 을 기본적으로 이곳에서 다 객체를 생성해서 올려놓고 진행을 하게 됩니다 
+## configure 
 
-다음시간에는 정말로 로그인을 했을때 어떤일이 벌어지는지에 대해서 알아보도록 하겠습니다 
+위에서 init 은 access_token 을 발급받은 그 이후에 필요한 정보 및 객체를 주로 다루었다면 configure 에서는 이 access_token 을 발급받을때 필요한 
+OAuth2AuthorizationRequestRedirectFilter 객체를 생성하게 됩니다 이 객체는 OAuth2LoginAuthenticationFilter 에서 사용할 승인코드를 발급받을때 사용하는 객체를 정의하게 됩니다 
+
+```
+
+@Override
+public void configure(B http) throws Exception {
+    OAuth2AuthorizationRequestRedirectFilter authorizationRequestFilter;
+    if (this.authorizationEndpointConfig.authorizationRequestResolver != null) {
+        authorizationRequestFilter = new OAuth2AuthorizationRequestRedirectFilter(
+                this.authorizationEndpointConfig.authorizationRequestResolver);
+    }
+    else {
+        String authorizationRequestBaseUri = this.authorizationEndpointConfig.authorizationRequestBaseUri;
+        if (authorizationRequestBaseUri == null) {
+            authorizationRequestBaseUri = OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
+        }
+        authorizationRequestFilter = new OAuth2AuthorizationRequestRedirectFilter(
+                OAuth2ClientConfigurerUtils.getClientRegistrationRepository(this.getBuilder()),
+                authorizationRequestBaseUri);
+    }
+    if (this.authorizationEndpointConfig.authorizationRequestRepository != null) {
+        authorizationRequestFilter
+                .setAuthorizationRequestRepository(this.authorizationEndpointConfig.authorizationRequestRepository);
+    }
+    RequestCache requestCache = http.getSharedObject(RequestCache.class);
+    if (requestCache != null) {
+        authorizationRequestFilter.setRequestCache(requestCache);
+    }
+    http.addFilter(this.postProcess(authorizationRequestFilter));
+    OAuth2LoginAuthenticationFilter authenticationFilter = this.getAuthenticationFilter();
+    if (this.redirectionEndpointConfig.authorizationResponseBaseUri != null) {
+        authenticationFilter.setFilterProcessesUrl(this.redirectionEndpointConfig.authorizationResponseBaseUri);
+    }
+    if (this.authorizationEndpointConfig.authorizationRequestRepository != null) {
+        authenticationFilter
+                .setAuthorizationRequestRepository(this.authorizationEndpointConfig.authorizationRequestRepository);
+    }
+    super.configure(http);
+}
+
+```
+
+핵심은 OAuth2AuthorizationRequestRedirectFilter 입니다 바로 다음장에서 공부하게될 OAuth2AuthorizationRequestRedirectFilter 인데 마찬가지로 기본적인 정보를 세팅하는 것입니다 
+
+```
+
+OAuth2AuthorizationRequestRedirectFilter authorizationRequestFilter;
+if (this.authorizationEndpointConfig.authorizationRequestResolver != null) {
+    authorizationRequestFilter = new OAuth2AuthorizationRequestRedirectFilter(
+            this.authorizationEndpointConfig.authorizationRequestResolver);
+}
+else {
+    String authorizationRequestBaseUri = this.authorizationEndpointConfig.authorizationRequestBaseUri;
+    if (authorizationRequestBaseUri == null) {
+        authorizationRequestBaseUri = OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
+    }
+    authorizationRequestFilter = new OAuth2AuthorizationRequestRedirectFilter(
+            OAuth2ClientConfigurerUtils.getClientRegistrationRepository(this.getBuilder()),
+            authorizationRequestBaseUri);
+}
+
+```
+
+이 부분에서 `this.authorizationEndpointConfig.authorizationRequestResolver` null 값을 가지므로 하단에서 authorizationRequestBaseUri 을 가져오게 되는데 
+/oauth2/authorization 이라는 기본적인 주소를 가져오게 됩니다 
+
+`authorizationRequestFilter = new OAuth2AuthorizationRequestRedirectFilter(OAuth2ClientConfigurerUtils.getClientRegistrationRepository(this.getBuilder()),authorizationRequestBaseUri);`
+
+그리고 이 필터는 getClientRegistrationRepository 정보와 위에서 뽑아온 authorizationRequestBaseUri 기본으로 객체를 만들게 됩니다 
+
+`http.addFilter(this.postProcess(authorizationRequestFilter));` authorizationRequestFilter 필터를 추가한뒤 
+
+`super.configure(http);` 비교적 간단하게 세팅을 짓게 됩니다 
+
+결국은 바로 다음장에서 OAuth2AuthorizationRequestRedirectFilter 를 바로 보게 될 예정입니다 로그인 및 인증의 시작이라고 할 수 있는 OAuth2AuthorizationRequestRedirectFilter 와 OAuth2AuthorizationRequestRedirectFilter 가져다준 승인코드로 OAuth2LoginAuthenticationFilter 는 access_token 을 발급받아서 유저 정보를 발급받는 전체적인 핵심을 담당하는 두가지 객체를 설정하는 클래스에 대해서 살펴보았습니다 
 
 
 
