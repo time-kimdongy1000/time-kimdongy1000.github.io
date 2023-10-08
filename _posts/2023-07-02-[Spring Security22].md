@@ -1,6 +1,6 @@
 ---
 
-title: Spring Secuirty 21 OAuth2 ClientRegistration 
+title: Spring Secuirty 22 OAuth2 ClientRegistration 
 author: kimdongy1000
 date: 2023-07-02 10:00
 categories: [Back-end, Spring - Security]
