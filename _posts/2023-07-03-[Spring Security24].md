@@ -2,7 +2,7 @@
 
 title: Spring Secuirty 24 OAuth2 OAuth2 -  OAuth2AuthorizationRequestRedirectFilter
 author: kimdongy1000
-date: 2023-07-02 12:00
+date: 2023-07-03 12:00
 categories: [Back-end, Spring - Security]
 tags: [ Spring-Security , OAuth2 ]
 math: true
