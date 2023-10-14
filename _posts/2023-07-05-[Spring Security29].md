@@ -1,6 +1,6 @@
 ---
 
-title: Spring Secuirty 28 OIDC
+title: Spring Secuirty 29 OIDC 인증순서
 author: kimdongy1000
 date: 2023-07-05 16:00
 categories: [Back-end, Spring - Security]
