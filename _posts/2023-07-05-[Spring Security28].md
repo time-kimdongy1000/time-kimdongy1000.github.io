@@ -1,6 +1,6 @@
 ---
 
-title: Spring Secuirty 28 OIDC
+title: Spring Secuirty 28 OIDC 란 무엇인가?
 author: kimdongy1000
 date: 2023-07-05 14:00
 categories: [Back-end, Spring - Security]
