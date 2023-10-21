@@ -87,7 +87,7 @@ Finished: SUCCESS
 
 5) steps 실제 stage 가 정의한 내용을 코드로 옮겨적는 부분입니다 
 
-제가 stage 에 println Hello World 적어 놓았으니 이 stage 에서는 Hello World 프린트 하는것이 목적임으로 echo Hello World~ 이렇게 코드로 옮겨 적어 놓은것입니다 
+제가 stage 에 println Hello World 적어 놓았으니 이 stage 에서는 Hello World 프린트 하는것이 목적임으로 println Hello World~ 이렇게 코드로 옮겨 적어 놓은것입니다 
 즉 모든 그루비 스크립트는 여기에서 행해질 예정입니다 
 
 ## 예제 그루비 스크립트 
