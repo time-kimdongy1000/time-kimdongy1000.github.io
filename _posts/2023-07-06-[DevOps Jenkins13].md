@@ -2,7 +2,7 @@
 
 title: DevOps Jenkins PipeLine 2 파이프라인 과 Groovy 스크립트 사용
 author: kimdongy1000
-date: 2023-07-6 14:00
+date: 2023-07-06 14:00
 categories: [DevOps, Jenkins]
 tags: [ Jenkins ]
 math: true
