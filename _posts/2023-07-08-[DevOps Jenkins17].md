@@ -13,6 +13,18 @@ mermaid: true
 우리는 지난시간에 프로젝트를 하나 만들어서 직접 손으로 배포하는 과정을 만들어 보았습니다 손으로 하니 이걸 일일이 할 수도 있지 않은가 할 수 있습니다 
 지금 우리가 보는것은 프로젝트 단 하나 배포 하는것이며 실전에는 약 200개의 프로젝트를 톰캣 안에 집어놓고 기동을 하게 됩니다 그때마다 수동으로 war , jar 를 말고 보낼 수는 없기에 우리는 jenkins 를 통해서 좀더 쉽게 지속적 배포를 할 수 있게 만들어보겠습니다 
 
+## tomcat 필요 없는 파일 삭제 
+톰캣 설치하면 기본으로 제공하는 파일이 존재하는데 이 파일들을 삭제하겠습니다 
+
+```
+cd /home/was1/was/webapps
+
+rm -rf ./ROOT examples docs host-manager manager
+
+```
+
+이 webapps 로 들어와서 저 파일들을 삭제하겠습니다 이들이 있으니 제가 배포할려는것들을 가끔 방해하는 그런것들이 생기는것을 확인해서 지웠습니다 
+
 
 
 ## 파이프라인 스크립트 
@@ -41,7 +53,7 @@ was1 의 port
 
 로직은 앞에서 했던것과 동일하다 소스 내려받고 sshpass 쏘고 이상 없으면 기동하고 이런 형식이 일단 간단한 기동 절차가 되는것이다 물론 이내용은 pipleLine 의 환경변수로 남겨두어도 좋습니다 
 
-## 서버 내리기 올리기 
+##  전체 스크립트 
 
 ```
 
@@ -51,6 +63,8 @@ pipeline {
      environment {
         remote_tomcat_bin="/home/was1/was/bin"
         remote_tomcat_webapps="/home/was1/was/webapps"
+        maven_home="/usr/share/maven/apache-maven-3.6.3"
+        project_name = "SpringBoot-Web-Jenkins-Project-0.0.1-SNAPSHOT"
     }
     
     
@@ -61,25 +75,64 @@ pipeline {
             }
         }
         
-        stage('STOP REMOTE TOMECAT'){
+         stage('STOP REMOTE TOMECAT'){
             steps {
                 sh 'sshpass -p ${was1_password} ssh -o StrictHostKeyChecking=no ${was1_username}@${was1_host}  -p ${was1_port} ${remote_tomcat_bin}/shutdown.sh'
             }
             
         }
-         
-        stage('START REMOTE TOMECAT'){
+    
+        stage('REMOTE REMOTE WEBAPP'){
             steps{
-              sh 'sshpass -p ${was1_password} ssh -o StrictHostKeyChecking=no ${was1_username}@${was1_host}  -p ${was1_port} ${remote_tomcat_bin}/startup.sh'  
+                sh 'sshpass -p ${was1_password} ssh -o StrictHostKeyChecking=no ${was1_username}@${was1_host}  -p ${was1_port} rm -rf ${remote_tomcat_webapps}/${project_name}'
+                sh 'sshpass -p ${was1_password} ssh -o StrictHostKeyChecking=no ${was1_username}@${was1_host}  -p ${was1_port} rm -rf ${remote_tomcat_webapps}/${project_name}.war'
             }
-        }        
+        }
+        
+        stage('GIT PULL ORIGIN MAIN'){
+            steps{
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'XXXXXXXXXXXXXX', url: 'git@gitlab.com:kimdongy1000/project_jenkins.git']])
+            }
+        }
+        
+        stage('BUild AND WAR Packing'){
+            steps{ 
+                sh '${maven_home}/bin/mvn -f  ${WORKSPACE} clean package' 
+            }
+        }
+        
+        stage('SOURCE TRANSFER REMOTE'){
+            steps{
+                sh 'sshpass -p ${was1_password} scp -o StrictHostKeyChecking=no -P ${was1_port} ${WORKSPACE}/target/*.war ${was1_username}@${was1_host}:${remote_tomcat_webapps}'
+                
+            }
+        }
+
+         stage('START REMOTE TOMECAT'){
+             steps{
+              sh 'sshpass -p ${was1_password} ssh -o StrictHostKeyChecking=no ${was1_username}@${was1_host}  -p ${was1_port} ${remote_tomcat_bin}/startup.sh'  
+             }
+        }     
     }
 }
-
 ```
 
-일단 원격으로 서버를 내렸다가 올리는거 먼저 해보자 이렇게 구성을 하고 진행을 하면 원격으로 서버가 내려고 원격으로 올라가는 모습을 볼 수 있다 우리는 이 사이에 
-소스를 내려 받고 그것을 wepapp path 에 옮겨놓아보자 그리고 소스 수정여부를 확인하기 위해 간단한 핸들러 하나를 더 추가해서 올릴것이다 참고로 앞에서 우리 환경변수 참조할때 env 썻는데 그냥 $ 표기해도 쓸 수 있다 
+이 스크립트는 
+
+1) 원격으로 서버를 내리고
+
+2) 원격서버에 이미 기 배포되어 있는 아카이브 삭제 
+
+3) git 서버에서 신규 소스를 내려받고 
+
+4) 그 소스를 WAR 패키징 진행 
+
+5) WAR 패키징을 리모트 서버로 전송 
+
+6) 서버 재전송
+
+이때 2번의 로직을 좀 의야해 할 수 있는데 여러번 테스트 했을때 기 배포되어 있는 war 가 현재 배포할려는 war 에 영향을 주는거 같아서 이를 삭제했습니다 그것을 알 수 있는게 
+저 스탭을 없애고 진행을 하면 신규 반영건들이 바로 적용이 되지 않고 서버를 2번 재기동해야 반영되는것을 확인 
 
 ## 간단한 핸들러추가
 
@@ -111,81 +164,15 @@ public class DemoController {
 
 ```
 
-간단하게 2 라는 핸들러 하나 추가해서 올리고 이게 올바르게 반영되었으면 화면에 demoController2 나오는것을 알 수 있을것이다 이 내용을 반영을 하고 올리겠다 
+이렇게 간단하긴 하지만 그래도 생각을 어느정도 해야 하는 파이프라인을 만들었습니다 그러면 된거냐 이제 부터 심화버전으로 들어갈것입니다 
 
-## 나머지 스크립트 내용 추가 
 
-```
 
-pipeline {
-    agent any
-    
-     environment {
-        remote_tomcat_bin="/home/was1/was/bin"
-        remote_tomcat_webapps="/home/was1/was/webapps"
-        maven_home="/usr/share/maven/apache-maven-3.6.3"
-    }
-    
-    
-    stages {
-        stage('START_JENKINS_PIPLLINE'){
-            steps{
-                println  'START DEPLOY WEBAPP'
-            }
-        }
-        
-        stage('STOP REMOTE TOMECAT'){
-            steps {
-                sh 'sshpass -p ${was1_password} ssh -o StrictHostKeyChecking=no ${was1_username}@${was1_host}  -p ${was1_port} ${remote_tomcat_bin}/shutdown.sh'
-            }
-            
-        }
-        
-        stage('GIT PULL ORIGIN MAIN'){
-            steps{
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'f0a15a3e-e71d-49c4-89f4-43856f10380e', url: 'git@gitlab.com:kimdongy1000/project_jenkins.git']])
-            }
-        }
-        
-        stage('BUild AND WAR Packing'){
-            steps{ 
-                sh '${maven_home}/bin/mvn -f  ${WORKSPACE} clean package' 
-            }
-        }
-        
-        stage('SOURCE TRANSFER REMOTE'){
-            steps{
-                sh 'sshpass -p ${was1_password} scp -o StrictHostKeyChecking=no -P ${was1_port} ${WORKSPACE}/target/*.war ${was1_username}@${was1_host}:${remote_tomcat_webapps}'
-            }
-        }
-        
-        
-        
-        stage('START REMOTE TOMECAT'){
-            steps{
-              sh 'sshpass -p ${was1_password} ssh -o StrictHostKeyChecking=no ${was1_username}@${was1_host}  -p ${was1_port} ${remote_tomcat_bin}/startup.sh'  
-            }
-        }        
-    }
-}
 
-```
-이제 나머지 핵심적인 내용은 소스를 내려 받고 그 소스를 WAR 패키징을 한 뒤에 그것을 원격서버로 전송을 한뒤에 서버를 올리는거 지극히 앞의 1편하고 다를게 없어보인다 그럼 왜 하는지에 대해서는 마지막에 기술하기로 하고 올바르게 전소이 되어서 올라갔는지 확인을 해보자
 
-![1](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/955458c5-cef9-4986-ba59-d47f2acd819b)
 
-그럼 이렇게 바깥에 표기될것이다 일단 이는 파이프라인으로 구축한것이기 때문이지만 결국 하는 행동은 단일 스크립트이다 하나의 경우가 실패하면 뒤 내용이 실행되지 않는다 그럼에서 파이프라인으로 구축할려는 이유는 결국은 파이프라인을 병렬적으로 구축해서 다양한 방식으로 구축과 에러 컨트롤을 통해서 여러가지 방식으로 구축할 계획이다 일단은 그런 어려운 방향으로 나아가기 위해서는 단일 스크립트로 배포를 했을 시 올바르게 잘 나가는지 먼저 파악하는게 우선이다 
 
-잠깐 다른소리로 들아와서 계속해서 신규로 적는 핸들러가 바로 적용이 안되는 현상을 발견했다 이상하게 서버를 2번 껏다 켜야 적용이 되는것을 보았는데 이는 server.xml 을 수정하면 자동으로 반영이 된다
 
-## server.xml 수정
-
-```
-<Context docBase="SpringBoot-Web-Jenkins-Project-0.0.1-SNAPSHOT" path="/" reloadable="true"/>
-
-```
-
-저기에서 reloadable 앞에서는 false 로 되어 있을텐데 이를 true 로 옮기면 된다 그러면 잠시뒤 톰캣이 변경점을 감지해서 이를 적용하게 됩니다 오늘은 여기 까지 정리하겠습니다 
 
 
 
