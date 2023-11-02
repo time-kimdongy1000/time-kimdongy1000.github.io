@@ -17,7 +17,7 @@ org.springframework.core.io. 하위에 있는 Resource 는 하위 수준 리소�
 
 
 
-interface Resource
+## Resource
 ```
 
 package org.springframework.core.io;
@@ -110,22 +110,20 @@ public class SpringRestartApplication implements ApplicationRunner {
 
 우리는 앞에서 특별한 prefix 를 넣을 수 있다고 했다 준비물은 바탕화면에 간단한 메모장 준비하고 돌리자 결과는 이렇게 나올것이다 
 이게 기본적으로 파일시스템에 접근해서 로컬 파일을 읽을때 (사실 prefix 를 줘도 되고 안주어도 알아서 읽어냅니다)
+이때 말하는 prefix 는 file 이라는 prefix 입니다 
+
 
 ```
-
 파일이 존재합니다.
 filename : test.txt
 테스트입니다
-
 ```
 
-다만 이 절대경로에 있는것은 문제가 생긴다 지금 프로젝트가 jar 로 변환되어서 다른곳에 옮겨저서 배포 되면 현재 이 path 는 쓸 수 없는 로직이기 때문에 절대경로는 잘 사용하지 않습니다
-당장 이 jar , war 패키징되어 리눅스 시스템에 던져지면 동작하지 않을것이기 때문이다 
+다만 이 절대경로에 있는것은 문제가 생긴다 지금 프로젝트가 jar 로 변환되어서 다른곳에 옮겨저서 배포 되면 현재 이 path 는 쓸 수 없는 로직이기 때문에 절대경로는 잘 사용하지 않습니다당장 이 jar , war 패키징되어 리눅스 시스템에 던져지면 동작하지 않을것이기 때문이다 
 
 
 
 ## UrlResource https
-
 ```
 @Override
 public void run(ApplicationArguments args) throws Exception {
@@ -149,9 +147,6 @@ public void run(ApplicationArguments args) throws Exception {
 	}else{
 		System.out.println("리소스 존재하지 않습니다.");
 	}
-
-
-
 }
 
 ```
@@ -164,7 +159,6 @@ public void run(ApplicationArguments args) throws Exception {
 
 
 ## UrlResource classPath
-
 ```
 @Override
 public void run(ApplicationArguments args) throws Exception {
@@ -181,22 +175,15 @@ public void run(ApplicationArguments args) throws Exception {
 		while ((ch = reader.read()) != -1) {
 			System.out.print((char) ch);
 		}
-
-
-
-
 	}else{
 		System.out.println("리소스 존재하지 않습니다.");
 	}
-
-
-
 }
-
 
 ```
 
-classpth:/schema/User.sql
+
+## classpth:/schema/User.sql
 ```
 Create Table User(
     name varchar(100) ,
@@ -224,7 +211,6 @@ Create Table User(
 
 
 ## ResourceLoader
-
 ```
 
 public interface ResourceLoader {
@@ -237,11 +223,10 @@ public interface ResourceLoader {
 ```
 
 모든 어플리케이션 컨텍스트는 ResourceLoader 를 활용해서 Resource 의 인스턴스를 얻을 수 있는데 아까 했던 모든 작업을 ResourceLoader 에 집어넣고 진행을 해보자
-그리고 코드 하나를 더 추가해보자 `System.out.println(resource.getClass());`
-이것을 추가하면 이제 resource 객체가 어떤 객체로 만들어지는지 나올것이다 
+그리고 코드 하나를 더 추가해보자 `System.out.println(resource.getClass());`이것을 추가하면 이제 resource 객체가 어떤 객체로 만들어지는지 나올것이다 
+
 
 ```
-
 @Override
 public void run(ApplicationArguments args) throws Exception {
 
@@ -258,10 +243,6 @@ public void run(ApplicationArguments args) throws Exception {
 		while ((ch = reader.read()) != -1) {
 			System.out.print((char) ch);
 		}
-
-
-
-
 	}else{
 		System.out.println("리소스 존재하지 않습니다.");
 	}
@@ -284,7 +265,6 @@ Create Table User(
 
 
 ## resourceLoader http 파일 요청
-
 ```
 Resource resource = resourceLoader.getResource("https://ichef.bbci.co.uk/news/800/cpsprodpb/E172/production/_126241775_getty_cats.png");
 
@@ -293,7 +273,6 @@ Resource resource = resourceLoader.getResource("https://ichef.bbci.co.uk/news/80
 ```
 class org.springframework.core.io.UrlResource
 리소스 존재합니다.
-
 ```
 http 요청일때는 UrlResource 변경되었다 
 
@@ -321,16 +300,3 @@ class org.springframework.core.io.UrlResource
 ```
 
 이제 spring 에서 외부 자원을 읽어올때는 ResourceLoader 를 사용해서 관리하는것이 좋습니다.
-
-
-
-
-
-
-
-
-
-
-
-
-

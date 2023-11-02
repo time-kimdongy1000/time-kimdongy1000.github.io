@@ -14,7 +14,7 @@ java code 방식으로 bean 을 구성한다 이번시간부터는 이런 방식
 
 
 ## @Bean 
-처음에 공부할것은 @Bean 에 대해서 알아보겠습ㅂ니다 
+처음에 공부할것은 @Bean 에 대해서 알아보겠습니다
 이 애노테이션은 spring Ioc 컨테이너 에서 관리할 새 개체를 인스턴스화 , 구성 및 , 초기화함을 나타내는데 사용합니다 우리가 앞에서 사용한 xml `<bean>` 과 동일한 역활을 하는것입니다 
 
 
@@ -22,26 +22,17 @@ java code 방식으로 bean 을 구성한다 이번시간부터는 이런 방식
 이 애노테이션은 메서드 단위에서 정의되는 @Bean 하고는 달리 @Configuration 는 클래스 단위에서 정의해서 이 class 가 빈 정의 소스 코드라는 것을 나타냅니다 그래서 우리는 가장 간단한 
 @Bean 과 @Configuration 을 나타내면 
 
-
-
-MySystemInfo.java
 ```
-
 package com.cybb.main;
 
 public class MySystemInfo {
 	
-	
 	public MySystemInfo() {
 		System.out.println("나의 시스템은 정상입니다");
 	}
-
 }
-
-
 ```
 
-AppConfig.java
 ```
 
 package com.cybb.main;
@@ -57,16 +48,10 @@ public class AppConfig {
 		
 		return new MySystemInfo();
 	}
-
 }
-
-
 ```
 
-
-SpringRestartApplication.java
 ```
-
 package com.cybb.main;
 
 
@@ -91,12 +76,7 @@ public class SpringRestartApplication implements ApplicationRunner{
 		MySystemInfo info =  ctx.getBean(MySystemInfo.class);
 
 	}
-	
-	
-
 }
-
-
 ```
 
 이렇게 쓰일것인데 이제 우리는 AppConfig 에 MySystemInfo 타입을 정의해둔뒤 이를 호출해서 불러오는 것이 된다 그럼 실제로 Runner 에서 한번더 부를때에는 앞에서는 

@@ -15,7 +15,6 @@ mermaid: true
 
 ## 추가 maven
 ```
-
 <dependency>
     <groupId>mysql</groupId>
     <artifactId>mysql-connector-java</artifactId>
@@ -28,12 +27,8 @@ mermaid: true
     <version>2.2.2</version>
 </dependency>
 
-
-
 ```
 maven 은 다음처럼 더 추가를 해주겠습니다 
-
-
 
 ## mysqlBean.xml 
 ```
@@ -74,7 +69,6 @@ maven 은 다음처럼 더 추가를 해주겠습니다
 
 ```
 
-
 ## SpringCoreApplication.java
 ```
 
@@ -107,7 +101,6 @@ import java.sql.Connection;
 
 		MysqlRepository mysqlRepository = ctx.getBean("mysqlRepository" , MysqlRepository.class);
 		System.out.println(mysqlRepository.result());
-
 	}
 }
 
@@ -133,7 +126,6 @@ public class MysqlRepository {
 
         return sqlSessionTemplate.selectOne(this.getClass().getName() + ".test");
     }
-
 }
 
 ```
@@ -153,10 +145,7 @@ public class MysqlRepository {
     </select>
 
 </mapper>
-
-
 ```
-
 이렇게 총 4개의 파일을 만들어주고 bean 선언 파일만 보겠습니다 
 
 ```
@@ -200,9 +189,8 @@ public void run(ApplicationArguments args) throws Exception {
     System.out.println(mysqlRepository.result());
 }
 
-
-
 ```
+
 우리가 mysqlBean 을 만들때 하단에 mysqlRepository bean 을 생성해서 그 bean 주입해주고 그 결과를 반환받을 쿼리 까지 사용한 것입니다 그래서 결과는 
 
 ```
@@ -211,7 +199,3 @@ public void run(ApplicationArguments args) throws Exception {
 ```
 
 이렇게 HikariPool-1 - Start completed. 연결하고 15라는 값이 세팅이 되는것을 확인할 수 있습니다 
-
-
-
-

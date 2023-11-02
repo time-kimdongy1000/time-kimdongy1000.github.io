@@ -23,13 +23,10 @@ mermaid: true
 
 ## DefaultLogoutPageGeneratingFilter
 
-```
-public class DefaultLogoutPageGeneratingFilter extends OncePerRequestFilter 
-
-```
 기본적으로 로그아웃페이지는 DefaultLogoutPageGeneratingFilter 이와같은 Filter 에서 생겨나게 된다 
 
 ```
+public class DefaultLogoutPageGeneratingFilter extends OncePerRequestFilter 
 
 protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
@@ -104,7 +101,6 @@ matcher = {AntPathRequestMatcher@6164} "Ant [pattern='/logout', GET]"
 ```
 public class LogoutFilter extends GenericFilterBean
 
-
 @Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
@@ -128,12 +124,11 @@ public class LogoutFilter extends GenericFilterBean
 ```
 으로 호출이 들어오게 되는데 
 
-```
 
+```
 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-
 ```
+
 이때 시큐리티에서 중요한 객체가 한가지 나오게 됩니다 Authentication 이는 시큐리티에서 인증/인가 와 관련된 객체이며 인증된 객체는 여기에 저장이 되게 됩니다 
 이에 대해서도 역시 자세하게 다룰 날이 올것이며 오늘은 이런 객체가 있다만 알고 계시면됩니다 
 
@@ -143,10 +138,9 @@ this.handler.logout(request, response, auth);
 이때 이 부분이 로그아웃을 담당하게 되는데 로그아웃도 단순 로그아웃 뿐만 아니라 여러가지 과정을 진행을 하게 되는데 
 세션제거 , 쿠키제거, CSRF 제거 등다양한 과정을 거치는데 그중에서 저는 세션제거만 보도록 하겠습니다 
 
+
 ```
-
 public class SecurityContextLogoutHandler implements LogoutHandler 
-
 
 @Override
 public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -166,24 +160,22 @@ public void logout(HttpServletRequest request, HttpServletResponse response, Aut
 		context.setAuthentication(null);
 	}
 }
-
-
 ```
 이는 현제 또 중요한 객체 SecurityContext 에서 인증된 사용자를 제거하는 것을 담당하는 클래스입니다 
+
 
 this.invalidateHttpSession 세션이 초기화 되어 있지 않으면 session.invalidate(); 세션을 무효화 시키고 
 
 ```
 SecurityContext context = SecurityContextHolder.getContext();
 SecurityContextHolder.clearContext();
-
 ```
+
 이 부분이 시큐리티에서 인증을 담당하는 객체부분을 말끔지 지우는 역활을 합니다 
 context.setAuthentication(null); 이부분도 컨텍스트 안에 있는 인증부분을 말끔히 지우는 역활을 하는것이죠
 
 
 ```
-
 public class DelegatingLogoutSuccessHandler implements LogoutSuccessHandler
 
 @Override
@@ -207,9 +199,7 @@ public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse resp
 이떄 `if (this.defaultLogoutSuccessHandler != null)` 부분을 타게 되면서 this.defaultLogoutSuccessHandler.onLogoutSuccess(request, response, authentication);
 
 이 부분을 호출하게 되는데 이 부분을 따라가면
-
 ```
-
 public abstract class AbstractAuthenticationTargetUrlRequestHandler 
 
 
@@ -223,7 +213,6 @@ protected void handle(HttpServletRequest request, HttpServletResponse response, 
 	this.redirectStrategy.sendRedirect(request, response, targetUrl);
 }
 
-	
 ```
 
 이 부분에 String targetUrl = determineTargetUrl(request, response, authentication); /login?logout 값이 나오게 됩니다 즉 다시 /login 페이지로 핸들러를 동작을 시키고 
@@ -232,10 +221,3 @@ protected void handle(HttpServletRequest request, HttpServletResponse response, 
 결국 로그아웃 후 로그인은 위와같은 페이지로 이동을 하게 됩니다 
 
 그럼 우리는 앞전것을 포함해서 간단한 로그인 / 로그아웃을 경험하게 되었습니다 
-
-
-
-
-
-
-

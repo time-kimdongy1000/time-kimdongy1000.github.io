@@ -54,8 +54,6 @@ scanBasePackages 라고 basePackages 가 있다 이 basePackages 는 우리가 �
 그럼 만약에 BasePackage 를 벗어나는 Bean 을 선언했을때에는 어떤 현상이 일어나는지 살펴보자 
 
 ## 사용자 정의 Bean 스캔 
-
-MySystemInfo2.java
 ```
 
 package com.cybb.main2;
@@ -66,13 +64,9 @@ public class MySystemInfo2 {
 		
 		System.out.println("MySystemInfo2");
 	}
-
 }
-
-
 ```
 
-AppConfig2.java
 ```
 
 package com.cybb.main2;
@@ -90,7 +84,6 @@ public class AppConfig2 {
 	}
 
 }
-
 
 ```
 BasePackages 는 com.cybb.main 이지만 우리는  com.cybb.main2 코드를 넣고 기동을 해보자 만약 Bean 스캔이 되면 생성자가 호출이 될것이다 
@@ -125,11 +118,7 @@ public class SpringRestartApplication implements ApplicationRunner{
 		ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class , AppConfig2.class);
 		MySystemInfo info =  ctx.getBean(MySystemInfo.class);
 		MySystemInfo2 info2 =  ctx.getBean(MySystemInfo2.class);
-
 	}
-	
-	
-
 }
 
 
@@ -153,20 +142,6 @@ MySystemInfo2
 ```
 나의 시스템은 정상입니다
 MySystemInfo2
-
-
 ```
 
 그러면 우리는 우리가 원하는 대로 component scan 과 사용자 설정 Bean 스캔 범위 설정에 대해서 공부해보았다 
-
-
-
-
-
-
-
-
-
-
-
-

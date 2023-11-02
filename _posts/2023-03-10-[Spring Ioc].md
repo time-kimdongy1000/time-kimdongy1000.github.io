@@ -11,9 +11,9 @@ mermaid: true
 ## IoC 컨테이너
 IoC inversion of control 제어의 반전 이때 제어는 객체의 생성 주도권을 의미하는데 이전에 우리가 어떤 객체를 만들었는지 생각을 해보자 
 
+
 ```
 Student student = new Student();
-
 ```
 우리가 직접 main 메서드 안에 new 라는 객체 생성 연산자를 이용해서 생성자를 호출하여 객체를 만드들었다 하지만 이제 이런 작업들은 모조리 프레임워크단에서 진행을 하겠다 
 그것이 바로 제어의 반전 이라는 뜻이다 이런 
@@ -25,7 +25,6 @@ Spring 에서 Ioc 컨테이너에의해 관리되는 객체를 빈이라고 합�
 
 ```
 Student student = new Student();
-
 ```
 
 우리가 직접 생성한 이런 new 연산자를 통한 생성자 호출은 이제 Ioc 컨테이너가 관리하는 객체가 아니기 때문에 Bean 이 될 수 없습니다 
@@ -36,9 +35,7 @@ ApplicationContext 인터페이스 자체는 IoC 컨테이너 자체를 나타�
 ApplicationContext 도 인터페이스 임으로 다른 구현체로 사용을 해야하는데 보통 ClassPathXmlApplicationContext 를 사용하게 됩니다 그래서 보통 xml 파일로 된 bean 을 읽을려고 할때 
 
 ```
-
 ApplicationContext ctx = new ClassPathXmlApplicationContext("bean.xml");
-
 ```
 
 이런식으로 Ioc 컨테이너를 생성해서 Bean 을 주입하게 됩니다 
@@ -57,14 +54,12 @@ spring boot 2.7.1
 maven 
 
 <dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
 </dependency>
-
 ```
 
-maven 은 web 만 가져와도 왠만한 spring 관련해서는 다 사용할 수 있다 그럼 다음의 코드를 보자 원래는 spring 레거시에서 마찬가지로 진행을 해야 하지만 사실상 spring 레거시 프로젝트를 구하는게 사실상
-어렵고 차세대로 boot 를 많이 씀으로 우리는 boot 를 활용해서 진행을 해볼려고 한다 
+maven 은 web 만 가져와도 왠만한 spring 관련해서는 다 사용할 수 있다 그럼 다음의 코드를 보자 원래는 spring 레거시에서 마찬가지로 진행을 해야 하지만 사실상 spring 레거시 프로젝트를 구하는게 사실상 어렵고 차세대로 boot 를 많이 씀으로 우리는 boot 를 활용해서 진행을 해볼려고 한다 
 
 ## bean.xml
 
@@ -79,7 +74,6 @@ maven 은 web 만 가져와도 왠만한 spring 관련해서는 다 사용할 �
 		
 	  	<bean id = "MySystemInfo" class = "com.cybb.main.MySystemInfo"></bean>
   </beans>
-
 ```
 
 그리고 이 파일이 핵심이다 물론 요즘은 이런식으로 Bean 설정파일을 만들지는 않지만 간혹 레거시한 프로젝트에서는 이렇게 bean 을 만들고 관리하고 있다 
@@ -91,6 +85,7 @@ maven 은 web 만 가져와도 왠만한 spring 관련해서는 다 사용할 �
 그럼 현재 MySystemInfo 식별자를 가지고 있는 bean 이 생겨나게 되는데 해당 bean 의 취니느 com.cybb.main.MySystemInfo 게 되는것이다 
 
 ## 컨테이너 인스턴스화 
+
 위와 같이 우리가 직접 정의한 bean 정의 파일들을 실제 Ioc 컨테이너에 넣기 위해서는 ApplicationContext 인터페이스를 이용해야 합니다 
 이는 다양한 외부 리소스에서 구성된 메타 데이터를 로드할 수 있도록 하는 리소스 문자열이고 기본 위치는 classpath 위치를 기본으로 합니다 
 
@@ -104,18 +99,14 @@ public class MySystemInfo {
 	public MySystemInfo() {
 		System.out.println("MySystemInfo Bean 생성");
 	}
-	
 }
-
 
 ```
 
 우리는 간단하게 class 와 생성자를 만들고 생성자 안에 객체 생성이 되었으면 자도응로 호출되는 생성자 안에 SYSOUT 을 찍어보겠습니다.
 그럼 이제 컨테이너에 외부에서 생성한 메타데이터 (bean.xml) 을 넣는 과정을 보여드리겠습니다 앞에서 말씀드렸다 싶히 저는 SpringBoot 를 활용중입니다 
 
-
 ```
-
 package com.cybb.main;
 
 import org.springframework.boot.ApplicationArguments;
@@ -138,9 +129,7 @@ public class SpringRestartApplication implements ApplicationRunner{
 
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("bean.xml");
 		MySystemInfo info =  ctx.getBean("MySystemInfo" , MySystemInfo.class);
-		
 	}
-		
 }
 
 ```
@@ -157,37 +146,15 @@ public void run(ApplicationArguments args) throws Exception {
 }
 
 ```
-첫줄 `ApplicationContext ctx = new ClassPathXmlApplicationContext("bean.xml");` 로 인해서 외부 메타데이터 bean.xml 을 읽을려고 하는것입니다 이를 통해서 Ioc 컨테이너 생성하고 
-Bean 을 Ioc 컨테이너가 관리하게 만들것입니다 
+
+첫줄 `ApplicationContext ctx = new ClassPathXmlApplicationContext("bean.xml");` 로 인해서 외부 메타데이터 bean.xml 을 읽을려고 하는것입니다 이를 통해서 Ioc 컨테이너 생성하고 Bean 을 Ioc 컨테이너가 관리하게 만들것입니다 
 
 그리고 두번째 줄 `MySystemInfo info =  ctx.getBean("MySystemInfo" , MySystemInfo.class);` 을 통해서 ctx 의 getBean 이라는 메서드를 통해서 Bean 을 가져와서 MySystemInfo 탑의 객체를 주입합니다 그럼 이 코드의 결과는 MySystemInfo 생성자의 즉시 호출이 될것인데 결과를 보면 
 
 ```
-
 MySystemInfo Bean 생성
-
 ```
+
 역시 console 결과대로 생성자가 바로 호출되는것을 볼 수 있다 우리는 이제까지 java 에서 new 를 사용하지 않고는 생성자 호출을 할 수 없었지만 (정확히는 객체생성)
 지금은 new 연산자 없이 `ctx.getBean("MySystemInfo" , MySystemInfo.class);` 코드 한줄로 객체를 만들고 생성자를 만들어서 안에 있는 내용을 호출하는것을 보여주었다 
 이것이 제어의 역전이 일어난것이다 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

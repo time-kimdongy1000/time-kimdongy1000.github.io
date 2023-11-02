@@ -37,14 +37,11 @@ public class SecurityConfig {
         UserDetails user = User.builder().username("time").password("1234567890").authorities("admin").build();
 
         return new InMemoryUserDetailsManager(user);
-
     }
-
-
 }
 
-
 ```
+
 새로운 config 파일을 하나 만들어줄텐데 이름은 SecurityConfig 하고 여기에 시큐리티 설정에 관한 것들을 정리해서 나열하도록 하겠습니다 
 그리고 새로운 유저를 만들어볼텐데 우리는 아이디는 time , 비밀번호는 1234567890 에 권한은 admin 을 가지는 user 를 생성해서 인메모리 유저에 넣어두도록 하겠습니다 
 그럼 실행을 하게 되면 우리는 이제 기본적으로 시큐티에서 제공하는 유저는 사용할 수 없습니다 그럼 이 계정으로 이제 로그인을 하면 로그인이 안될것입니다
@@ -85,11 +82,7 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user);
 
     }
-
-
 }
-
-
 
 ```
 

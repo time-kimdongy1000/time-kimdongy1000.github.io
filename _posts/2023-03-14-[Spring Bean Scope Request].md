@@ -15,9 +15,6 @@ Request 스코프는 HTTP 로직과 같이 움직이는것으로 request , respo
 클라이언트는 post - man 을 활용할것이다 
 
 ## 소스코드
-
-
-InterRestController.java
 ```
 
 package com.example.demo.contorller;
@@ -53,24 +50,19 @@ public class InterRestController {
 
             systemService.systemOutInfo();
 
-
-
-
             return null;
 
         }catch(Exception e){
             throw new RuntimeException(e);
         }
-
-
     }
 }
 
 
 ```
-
 SystemModel.java
 ```
+
 
 package com.example.demo.model;
 
@@ -99,7 +91,6 @@ public class SystemModel {
 
 
 ```
-
 SystemService.service
 ```
 
@@ -121,15 +112,13 @@ public class SystemService {
         System.out.println(requestBeanSystem);
         System.out.println(requestBeanSystem.getSystemName());
         System.out.println(requestBeanSystem.getSystemValue());
-
     }
 }
 
-
 ```
-
 RequestBeanSystem.java
 ```
+
 package com.example.demo.config;
 
 public class RequestBeanSystem {
@@ -153,11 +142,9 @@ public class RequestBeanSystem {
         this.systemValue = systemValue;
     }
 }
-
-
 ```
 
-WebConfig.java
+
 ```
 package com.example.demo.config;
 
@@ -175,7 +162,6 @@ public class WebConfig {
         return new RequestBeanSystem();
     }
 }
-
 
 ```
 
@@ -201,8 +187,6 @@ LG전자
 일단 요청이 2번 들어 갔는데 Bean 이 두개 생긴것을 확인했다 그리고 그 각각의 Bean 이 우리는 Service 로 값을 넘겨주지도 않았지만 계속 가지고 있다가 자신의 요청에서 가지고 있었던 값들을 넘겨주었다 이것이 requestScope 의 특징이다 
 
 그렇다면 이런 Bean 생성 정책을 다시 Singleton 으로 변경을 해보다 아래처럼 결과가 나올것이다 
-
-
 ## 다시 Singleton
 ```
 com.example.demo.config.RequestBeanSystem@6ace8861
@@ -236,18 +220,9 @@ null
 프로토 타입은 이렇게 나온다 왜냐하면 처음 주입할때 즉 RestController 에서 주입받을때 새로운 Bean 을 주입받는데 이때 하나의 메모리를 가지는 Bean 생겨나게 되고 
 다음은 service 에서 주입받을때 새로운 주소값을 가지고 있는 Bean 이 생겨나기 때문에 이는 값전달이 제대로 되고 있지 않은 모습을 보여주고 있는것이다 
 
-그렇기 때문에 예를 들어서 이런 코드가 있다고 하자 
-
-
 
 ## 그럼 웹개발할때는 RequestScope 를 써야 하는가?
 아니다 내가 웹개발 5년차인데 이 스코프를 쓰는 사람을 한번도 못보았다 기본적으로 RequestScope 는 http 전달에서 사용하는것이 맞고 실제로 
 RequestScopee 는 thread safe 하기 때문에 웹개발할때는 이것을 써도 된다 다만 요청을 할때마다 새로운 인스턴스가 생기는 문제점때문에 
 만약 요청이 많이 몰리는 시스템이고 굳이 굳이 값을 전달할때는 Bean 으로 전달하기 보다는 Map 으로 전달하는것이 보는 사람의 입장에서도 좋기 때문에 
 그렇게 개발하지는 않아보인다 하지만 아까도 보았듯이 멀티 쓰레드 환경에서는 싱글톤 또한 독이 될 수 있음으로 이럴때에는 RequestScope 가 낫다는 뜻이다 
-
-
-
-
-
-
