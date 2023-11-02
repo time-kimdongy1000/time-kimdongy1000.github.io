@@ -8,11 +8,10 @@ math: true
 mermaid: true
 ---
 
-## @Value 의 사용법 
+## @Value 
 일반적으로 외부화된 속성을 주입할때 사욯합니다 
 
 
-SpringRestartApplication.java
 ```
 
 package com.cybb.main;
@@ -37,24 +36,21 @@ public class SpringRestartApplication implements ApplicationRunner {
 	public void run(ApplicationArguments args) throws Exception {
 
 		System.out.println("catalog_name : " + catalog_name);
-
 	}
 }
-
-
-
-
 ```
+
 
 일반적으로 이렇게 사용한다 그러면 어디선가 catalog.name key 로 된 값을 주입해주는데 보통은 properties 에서 이런 작업을 많이한다 예를 들어서 보자 
 
-application.properties
+
+## application.properties
 ```
 
 catalog.name=Spring_boot_catalog_name
 
-
 ```
+
 우리는 boot 프로젝트를 만들면 기본적으로 제공되는 properties 파일을 제공받는데 여기서 이렇게 값을 넣어주게 된다 만약 여기에 값이 없으면 default 값을 세팅할 수 있는데 
 
 ## value default 값
@@ -82,16 +78,14 @@ spring 은 다양한 properties 파일을 제공하고 읽어낼 수 있다 지�
 그럼 이번엔 다른곳에 properties 파일을 세팅하고 읽어내는 방식을 생각하자 
 
 
-app.properties
+## app.properties
 ```
-
 APP_NAME=Spring_Boot_App
-
 ```
-
 이번엔 app.properties 에 값을 세팅하고 이 값을 읽어보자 
 
-SpringRestartApplication.java
+
+## SpringRestartApplication
 ```
 package com.cybb.main;
 
@@ -119,13 +113,12 @@ public class SpringRestartApplication implements ApplicationRunner {
 
 		System.out.println("catalog_name : " + catalog_name);
 		System.out.println("app_name : " + app_name);
-		
-
 	}
 }
 
 ```
 우리는 app_name @value 로 선언했지만 이번에는 app.properties 에 값을 세팅을 해보자 
+
 
 ```
 catalog_name : Spring_boot_catalog_name
@@ -135,7 +128,7 @@ app_name :
 
 결과는 나오지 않았다 기본적으로 설정을 해주지 않으면 프러퍼티는 application.properties 만 읽게 된다 그렇기에 다른 properties 를 읽게끔 설정을 해주어야 하는데 
 
-`@PropertySource("classpath:/app.properties")` 클래스 상단에 선언해주자 
+`@PropertySource("classpath:/app.properties")` 클래스 상단에 선언해주자  이러면 이 classpath 아래에 있는 app.properties 도 읽는다는 뜻이 됩니다 
 
 ```
 
@@ -145,23 +138,4 @@ public class SpringRestartApplication implements ApplicationRunner {}
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+이와 같이 선언을 하게 되면 applition.properties 는 기본적으로 읽게 되고 다른 properties 또한 읽을 수 있게 됩니다

@@ -12,7 +12,6 @@ mermaid: true
 기본적으로 동일한 이름의 Bean 은 단 한개만 만들 수 있습니다 예를 들어서 다음과 같은 소스코드가 있을때는 에러가 발생합니다 
 
 ```
-
 package com.cybb.main;
 
 public class MySystemInfo {
@@ -21,12 +20,9 @@ public class MySystemInfo {
 		
 		System.out.println("MySystemInfo 객체 생성");
 	}
-
 }
 
-
 ```
-
 
 ```
 
@@ -49,13 +45,9 @@ public class AppConfig {
 		
 		return new MySystemInfo();
 	}
-
 }
-
-
 ```
 
-SpringRestartApplication.java
 ```
 
 package com.cybb.main;
@@ -72,28 +64,16 @@ public class SpringRestartApplication implements ApplicationRunner{
 	
 	@Autowired
 	private MySystemInfo info;
-	
-	
-	
-	
-	
+
 	public static void main(String[] args) {
 		SpringApplication.run(SpringRestartApplication.class, args);
 	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-
 		
-		
-
 	}
-	
-	
-
 }
-
-
 ```
 
 지금 AppConfig.java 에서 동일한 객체 타입을 서로 다른 메서드로 호출해서 Bean 으로 만들려고 합니다 이때 기동을 하게 되면 다음과 같은 에러를 발견하게 됩니다 
@@ -121,8 +101,7 @@ Consider marking one of the beans as @Primary, updating the consumer to accept m
 그래서 해결방식으로 bean 을 만들때 @Primary 을 붙여주거나 아니면  @Qualifier 를 활용하라는 뜻입니다 
 
 ## @Primary
-Pri 의 접두사는 유일하다는 뜻입니다 이 영어 단어의 어근을 살펴보면 prim 이 있는데 이는 첫 번째의 라는 뜻으로 변화형으로 pri 가 되었다는데 
-이 어근의 뜻 대로 유일하다는 뜻입니다 @Primary 는 Bean 을 정의할때 붙여주는것으로 
+Pri 의 접두사는 유일하다는 뜻입니다 이 영어 단어의 어근을 살펴보면 prim 이 있는데 이는 첫 번째의 라는 뜻으로 변화형으로 pri 가 되었다는데 이 어근의 뜻 대로 유일하다는 뜻입니다 @Primary 는 Bean 을 정의할때 붙여주는것으로 
 
 ```
 
@@ -140,8 +119,8 @@ public MySystemInfo info2() {
 	return new MySystemInfo();
 }
 
-
 ```
+
 @Bean 을 정의할때 아래에 적어주기만 하면된다 그리고 기동을 하게 되면 아까 오류는 사라지게 된다 하지만 실제로 이게 올바르게 작동되고 있는지 조금의문이다 그래서 이와같이 코드를 작성해보자
 
 
@@ -215,12 +194,7 @@ public class SpringRestartApplication implements ApplicationRunner{
 		System.out.println(info.getMsg());
 
 	}
-	
-	
-
 }
-
-
 ```
 
 결과는 1번 시스템 호출 단 한번만 호출되었다 Bean 을 생성할때는 2개를 생성하지만 결국 사욯할려고 할때는 기본적으로 @Primary 이 있는 Bean 타입을 우선하고 
@@ -229,11 +203,6 @@ public class SpringRestartApplication implements ApplicationRunner{
 @Primary 는 @Bean 타입에만 한정되지 않습니다 그래서 이와 같이도 사용할 수도 있습니다 
 
 ## @Component @Primary 의 조합 
-
-그럼 위에 처럼 이렇게 사용할 수 있다 
-
-
-MySystemInfo.java
 ```
 
 package com.cybb.main;
@@ -241,15 +210,9 @@ package com.cybb.main;
 public interface MySystemInfo {
 	
 	public String mySystemInfo (String msg);
-	
-
 }
-
-
 ```
 
-
-Info1.java
 ```
 
 package com.cybb.main;
@@ -265,14 +228,9 @@ public class Info1 implements MySystemInfo{
 	public String mySystemInfo(String msg) {
 		return msg + "Info1 번이 호출되었습니다.";
 	}
-		
-
 }
-
-
 ```
 
-Info2.java
 ```
 
 package com.cybb.main;
@@ -286,9 +244,6 @@ public class Info2 implements MySystemInfo {
 	public String mySystemInfo(String msg) {
 		return msg + "2번이 호출되었습니다";
 	}
-	
-	
-
 }
 
 ```
@@ -320,16 +275,9 @@ public class SpringRestartApplication implements ApplicationRunner{
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		
 		System.out.println(info.mySystemInfo("@Component 를 테스트 중입니다"));
-
 	}
-	
-	
-
 }
-
-
 ```
 
 @Autowired 를 보면 MySystemInfo 타입을 지정했다 이때 인터페이스는 실제 Bean 으로 생성되지 않기에 구현체 중에서 이 타입이 있는지 살펴보게 된다 그러면 
@@ -345,26 +293,3 @@ public class SpringRestartApplication implements ApplicationRunner{
 
 우리는 동일레벨 중에서 어떤 Bean 을 우선해서 주입할 수 있는지에 대해서 배웠습니다 이게 Bean 생성 레벨에서 정의되는것으로 다음에는 Bean 주입할때 사용하는 
 @Qualifier 에 대해서 알아보겠습니다.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

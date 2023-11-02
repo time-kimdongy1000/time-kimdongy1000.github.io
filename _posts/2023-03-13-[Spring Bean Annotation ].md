@@ -32,22 +32,17 @@ MySystemInfo2 info2 =  ctx.getBean(MySystemInfo2.class);
 우리는 앞에서 Bean 을 새롭게 만들때 @Bean 이라는 애노테이션을 활용했지만 이는 메서드 선언 안에서만 활용되는 반면 @Component 클래스 레벨에서 Bean 을 만들떄 사용하는 애노테이션입니다 
 
 ```
-
 package com.cybb.main;
 
 import org.springframework.stereotype.Component;
 
 @Component
 public class MySystemInfo {
-	
-	
+
 	public MySystemInfo() {
 		System.out.println("시스템은 정상입니다");
 	}
-
 }
-
-
 ```
 
 이런식으로 class 레벨에서 사용하며 이렇게 되면 MySystemInfo는 Bean 스캔시 자동으로 Ioc 컨테이너에 들어가게 됩니다 그럼 이를 다른 곳에서 주입받을려면 어떻게 사용해야 하느냐?
@@ -55,7 +50,6 @@ public class MySystemInfo {
 ## @Autowired 
 
 ```
-
 package com.cybb.main;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,10 +73,7 @@ public class MySystem {
 
 ```
 
-이런식으로 @Autowired 활용해서 필드의 MySystemInfo 를 주입해주는것입니다 이때 @Autowired 주석의 일부분이지만 실제로 Ioc 컨테이너에 다녀와서 찾은 객체 타입 또는 이름을 가져와서 
-주입해주는 식입니다 
-
-자 그럼 실제로 Ioc 컨테이너 소스가 없어졌는지도 한번 보겠습니다.
+이런식으로 @Autowired 활용해서 필드의 MySystemInfo 를 주입해주는것입니다 이때 @Autowired 주석의 일부분이지만 실제로 Ioc 컨테이너에 다녀와서 찾은 객체 타입 또는 이름을 가져와서 주입해주는 식입니다 자 그럼 실제로 Ioc 컨테이너 소스가 없어졌는지도 한번 보겠습니다.
 
 ```
 
@@ -113,8 +104,6 @@ public class SpringRestartApplication implements ApplicationRunner{
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-
-		
 		mySystem.MysystemReturnMsg();
 
 	}
@@ -122,8 +111,7 @@ public class SpringRestartApplication implements ApplicationRunner{
 
 
 ```
-이제 더 이상 ApplicationContext 라는 Ioc 컨테이너는 불러오지 않고 오롯이 @Autowired 하나만 가지고 Ioc 컨테이너에 갔다와서 MySystem 타입의 Bean 을 불러와서 값을 집어넣습니다 
-그럼 실행을 해보면 
+이제 더 이상 ApplicationContext 라는 Ioc 컨테이너는 불러오지 않고 오롯이 @Autowired 하나만 가지고 Ioc 컨테이너에 갔다와서 MySystem 타입의 Bean 을 불러와서 값을 집어넣습니다 그럼 실행을 해보면 
 
 ```
 MySystemInfo Bean 생성
@@ -141,17 +129,3 @@ private MySystem mySystem;
 
 ```
 이렇게 필드에 바로 입력을 해도 Spring Ioc 는 바로 해당 타입의 Bean 을 찾아서 주입을 해주게 됩니다.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
