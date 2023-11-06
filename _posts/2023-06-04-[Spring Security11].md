@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 11 나만의 로그인 및 회원가입 만들기 2 
 author: kimdongy1000
 date: 2023-06-04 16:00
@@ -7,16 +6,10 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true
-
 ---
 
-계속해서 우리가 회원가입 페이지를 만들고 회원가입 저장소를 만드는것을 진행했습니다 총 3장에서 4장까지 나올예정이며 오늘은 지난시간에 만들어진 화면에 데이터를 보내서 
-jap 저장하는 로직까지 만들도록 하겠습니다 
-
 ## csrf form 추가 
-
 ```
- 
 <h1 class="h3 mb-3 fw-normal"> 회원가입 </h1>
 
         <div class="form-floating">
@@ -32,7 +25,6 @@ jap 저장하는 로직까지 만들도록 하겠습니다
             <label for="floatingPassword_confirm">Password_confirm</label>
         </div>
         <input  th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-
 ```
 
 회원가입 제일 마지막 칸에 다음과 같이 csrfFilter 를 방지하는 태그를 하나 달아둘것이다 
@@ -42,8 +34,7 @@ jap 저장하는 로직까지 만들도록 하겠습니다
 
 ```
 
-
-잠깐 이 csrf 토큰에 대해서 이야기를 해보자 
+## CSRF 란 
 
 CSRF(Cross-Site Request Forgery) 토큰은 웹 애플리케이션의 보안을 강화하는 데 사용되는 토큰종류이다 그럼 csrf 공격은 웹사이트 취약점을 이용한 공격의 한가지 방법입니다 
 
@@ -57,20 +48,16 @@ CSRF(Cross-Site Request Forgery) 토큰은 웹 애플리케이션의 보안을 �
 
 5) 선량한 사용자는 자신도 모르게 공격을 가담하게 된 가담자가 됩니다 
 
-이런 공격을 막기 위한 방법중 하나가 csrf 토큰입니다 이 토큰이 없는 곳에서 요청을 보낼시 시큐리티는 악의적 공격이라고 판단한 뒤 이를 거부해립니다 
+이런 공격을 막기 위한 방법중 하나가 csrf 토큰입니다 이 토큰이 없는 곳에서 요청을 보낼시 시큐리티는 악의적 공격이라고 판단한 뒤 이를 거부해버립니다 
 이는 antMatchers , permit 의 여부와 상관 없이 서버의 상태를 변경하는 (post , put , delete , patch ) 메서드를 사용하는 곳에서 이 csrf 가 발급한 토큰을 넣지 않고 요청을 보낼때 거절당하게 됩니다 그럼 이 토큰 발급과 어떻게 인증이 되는지는 끝에서 알아보도록 하겠습니다 
 
 
 ## 서버 - 클라이언트 통신준비 
-
 ```
 <script src="/resources/js/register.js"></script>
 ```
 
-signUp 페이지 하단에 아래와 같이 register.js 를 심어두겠습니다 
-
 ## register.js 작성 
-
 ```
 
 const floatingInput = document.querySelector("#floatingInput");                 //아이디
@@ -79,10 +66,7 @@ const floatingPassword_confirm = document.querySelector("#floatingPassword_confi
 const btn_register = document.querySelector("#btn_register");
 const csrf_input = document.querySelector('input[name="_csrf"]');           //csrf  토큰
 
-
 btn_register.addEventListener('click' , (e) => {
-
-
     
     const username = floatingInput.value;
     const password = floatingPassword.value;
@@ -125,11 +109,10 @@ btn_register.addEventListener('click' , (e) => {
         fetch(domain + url , {
             method : method ,
             headers: {
-                        "Content-Type": "application/json" ,
-                        "X-CSRF-Token" : csrf_token
-
-
+                "Content-Type": "application/json" ,
+                "X-CSRF-Token" : csrf_token
             },
+
             body : JSON.stringify(data)
         })
         .then( (response) => response.json())
@@ -140,30 +123,11 @@ btn_register.addEventListener('click' , (e) => {
     }catch(error){
         console.error("실패 : " , error)
     }
-
-
 })
-
-
 ```
 
 ## SignUpController 작성 
-
 ```
-
-package com.cybb.main.controller;
-
-import com.cybb.main.dto.UserDto;
-import com.cybb.main.service.SignUpService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 @Controller
 @RequestMapping("signUp")
 public class SignUpController {
@@ -196,25 +160,10 @@ public class SignUpController {
 
     }
 }
-
-
 ```
 
+## SignUpService 작성
 ```
-
-package com.cybb.main.service;
-
-import com.cybb.main.dto.UserDto;
-import com.cybb.main.entity.UserEntity;
-import com.cybb.main.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.util.Optional;
-
 @Service
 public class SignUpService {
 
@@ -223,8 +172,6 @@ public class SignUpService {
 
     @Autowired
     private UserRepository userRepository;
-
-
 
     public Long registerUser(UserDto userDto) {
 
@@ -249,10 +196,6 @@ public class SignUpService {
         userEntity.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         return userRepository.save(userEntity).getId();
-
-
-
-
     }
 
     public UserDto findByUserId(Long id) {
@@ -269,17 +212,11 @@ public class SignUpService {
         }else{
             throw new RuntimeException("username 이 존재하지 않습니다.");
         }
-
-
-
     }
 }
-
-
 ```
 
 ## UserDto
-
 ```
 
 package com.cybb.main.dto;
@@ -315,23 +252,13 @@ public class UserDto {
         this.confirm_password = confirm_password;
     }
 }
-
-
 ```
 
 ## UserEntity
-
 ```
-
-package com.cybb.main.entity;
-
-import javax.persistence.*;
-
 @Entity
 @Table(uniqueConstraints =  {@UniqueConstraint(columnNames = "username" )})
 public class UserEntity {
-
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -375,28 +302,15 @@ public class UserEntity {
     public void setPassword(String password) {
         this.password = password;
     }
-
-
 }
-
-
 ```
 
 
 ## UserRepository
 ```
-
-package com.cybb.main.repository;
-
-import com.cybb.main.entity.UserEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity , Long> {
 }
-
-
 ```
 ## 설명 
 
@@ -405,8 +319,7 @@ public interface UserRepository extends JpaRepository<UserEntity , Long> {
 
 DB 에 저장을 할떄 password 는 encode 해서 저장하고 있습니다 
 
-
-특이한점은 잠시 엔티티 보면 
+특이한점은 잠시 UserEntity 보게 되면 JAP 를 다루진 않지만 @Entity 애노테이션이 붙게 되면 이 테이블이 생기게 되고 JPA 객체가 생겨나게 됩니다 
 ```
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -414,28 +327,21 @@ private Long id;
 
 @Table(uniqueConstraints =  {@UniqueConstraint(columnNames = "username" )})
 ```
-UserEntity 테이블의 key 값이 되는 것입니다 그와 별개로 상단에 username 이 UniqueConstraint 결려 있는데 이를 RDBMS 로 따지만 유니크 true 를 걸어둔것입니다 
-즉 동일한 username 으로는 가입할 수 없다는 뜻입니다 만약 동일한 username 으로 가입을 하게 되면
 
+이때 자동생성 Key는 Long 타입으로 잡고 이떄 `@GeneratedValue(strategy = GenerationType.IDENTITY)` 자동으로 생성하는 value 인데 이때 생성방식 타입을 설정할 수 있습니다 그리고 `@Table(uniqueConstraints =  {@UniqueConstraint(columnNames = "username" )})` 는 컬럼중에 username 이라는 컬럼이 있는데 이 username 을 유니크 key 로 설정해서 중복 username 이 엔티티에 insert 되지 않도록 하는것입니다 이를 RDBMS 로 대입 해보면
 
-```
-org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException: Unique index or primary key violation: "PUBLIC.UK2JSK4EAKD0RMVYBO409WGWXUW_INDEX_F ON PUBLIC.USER_ENTITY(USERNAME NULLS FIRST) VALUES ( /* 1 */ 'Time' )"; SQL statement:
-insert into user_entity (id, password, username) values (default, ?, ?) [23505-214]
-```
-이렇게 오류가 나게 됩니다 유니크값 동일에러가 발생합니다 그것을 방지하기 위해서 엔티티에 제약조건을 걸어준상태이고 
+mysql 기준으로 @GeneratedValue == auto increment 가 되는것이고 @UniqueConstraint 는 테이블을 만들때 제약조건 중에 Unique 를 설정하는 부분입니다 
+
 
 UserRepository 는 좀 특이하지만 JpaRepository 상속받음으로써 굳이 적지 않아도 부모가 가지고 있는 일정한 메서드를 바로 사용할 수있습니다 
 대표적으로 save (insert) , findbyId (select) 이렇게 구성이 되어 있습니다 그러면 우리는 이제 웹화면으로 가서 가입을 해보면
 
 ![csrf_token](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/37d4e9f4-9a9f-4306-bfab-e75a1059fb0c)
 
-이제 하단 csrf_input 이 생겼습니다 실제라이브 시스템에는 이를 당연히 hidden 처리 해서 사용자 눈에는 보이지 않게끔 처리해야 합니다만 우리는 눈에 보이고 설명을 하는것이 좋으니 그대로 가겠습니다 
+이제 하단 csrf_input 이 생겼습니다 실제라이브 시스템에는 이를 당연히 hidden 처리 해서 사용자 눈에는 보이지 않게끔 처리해야 합니다만 우리는 눈에 보이고 설명을 하는것이 좋으습니다만 지금은 그냥 보이는 채로 진행을 하겠습니다 
 
-그대로 회원가입을 진행을 하면 
 
 ![회원가입](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/16662694-6ab1-4d26-9823-522750aeb637)
 
 회원가입을 하게 되면 이렇게 옆에 console 에 뜨는데 저는 같은 username 을 두번 보내서 한번은 성공해서 저장하고 다른 한번은 제약조건이 발생되어서 
-fail 하는 모습을 보여드린것입니다 우리는 이제 DB 에 저장을 한 거 까지는 완료 되었습니다 그리고 return 되는 비밀번호는 원래 보여서는 안되지만 현재 인코딩 되어서 잘 저장된 모습을 볼 수 있습니다 
-
-이렇게 해서 간단한 회원가입 페이지와 로직을 만들었고 다음장에는 csrf_filter 에 대해서 간단하게 공부하고 로그인하는 로직을 만들도록 하겠습니다 
+fail 하는 모습을 보여드린것입니다 우리는 이제 DB 에 저장을 한 거 까지는 완료 되었습니다 그리고 return 되는 비밀번호는 원래 보여서는 안되지만 현재 인코딩 되어서 잘 저장된 모습을 볼 수 있습니다
