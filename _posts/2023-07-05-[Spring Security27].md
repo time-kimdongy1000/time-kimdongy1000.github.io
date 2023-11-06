@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 27 OAuth2 @AuthenticationPrincipal 
 author: kimdongy1000
 date: 2023-07-05 12:00
@@ -7,7 +6,6 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security , OAuth2 ]
 math: true
 mermaid: true
-
 ---
 
 우리는 지난시간 까지 정말로 길게 승인코드 발급부터 해서 access_token 을 발급받고 이 accesS_token 을 발급받아서 최종적으로 User 객체를 얻어와서 
@@ -15,16 +13,8 @@ mermaid: true
 사용자를 가져오는 방식은 1부 form 로그인하고 동일하다 소스를 보자
 
 
-
 ## @AuthenticationPrincipal
 ```
-
-package com.cybb.main.controller;
-
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class DemoController {
@@ -49,5 +39,3 @@ Name: [30283228-fa36-4d88-82c3-c9494dc44bfd], Granted Authorities: [[ROLE_USER, 
 ```
 
 간단한 정보가 나오는것으로 끝이나게 된다 이제 우리는 로그인해서 유저정보를 가져와서 뿌리는거 까지 한바퀴를 돌아보았다 
-
-
