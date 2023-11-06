@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 18 인가서버 구축
 author: kimdongy1000
 date: 2023-06-15 10:00
@@ -7,7 +6,6 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true
-
 ---
 
 지난시간까지 JWT 하다가 갑자기 왜 인가서버와 , 리소스 서버 구축하기로 변경이 되었냐면 이 주제를 할려고 앞에서 JWT 발급과 검증과정에 대해서 공부를 했다 
@@ -16,17 +14,18 @@ mermaid: true
 ## Git 주소 
 https://gitlab.com/kimdongy1000/spring_security_web/-/tree/main_Authentication_Server?ref_type=heads
 
-
 ## 인가서버 
 앞으로 인가서버는 프로그램에 로그인을 담당할 것이며 로그인에 성공하면 JWT 를 발급해주고 리소스 서버가 던지는 JWT 에 대해서 검증과 유효성을 판단하는 서버를 만들것이다 
 
 ## 리소스 서버 
 앞으로 리소스 서버는 로그인 화면은 없습니다 클라이언트는 JWT 토큰을 통해서 자신의 권한을 전달하면 그에 맞는 자원을 조회 할 수 있는 서버를 만들것입니다 
 
+이 내용은 차후 Oauth2 에서도 한번더 해볼예정입니다만 .. 사실 여기서 하는 프로젝트는 반쪽짜리 이고 제가 하고 싶은 내용을 다루는것이니 실제 운영 하고는 다를 수 있습니다
+
 
 ## 내가 생각하는 프로세스 Flow
 
-그럼 구체적으로 프로세서 flow 를 살펴보면 
+그럼 구체적으로 프로세스 flow 를 살펴보면 
 
 1) 클라이언트는 리소스 서버에 자원을 요청합니다 
 
@@ -42,130 +41,69 @@ https://gitlab.com/kimdongy1000/spring_security_web/-/tree/main_Authentication_S
 
 7) jwt 유효 여부를 확인한 후 리소스 서버는 적절한 행동을 취합니다 (유효 요청한 자원 발급 , 무효 다시 인가서버의 로그인 화면 요청)
 
-
-이렇게 진행이 될꺼 같습니다 
-
 그럼 총 2개의 서버가 만들어질것입니다 먼저 인가서버를 구축하고 리소스서버를 구축하겠습니다 
 
 
 ## 인가서버 maven 
 
 ```
-
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
-	<groupId>com.demo</groupId>
-	<artifactId>SpringBoot_web_Security</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>SpringBoot_web_Security</name>
-	<description>Project_Amadeus</description>
-	<properties>
-		<java.version>11</java.version>
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-api</artifactId>
-			<version>0.11.5</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl -->
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-impl</artifactId>
-			<version>0.11.5</version>
-			<scope>runtime</scope>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson -->
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-jackson</artifactId>
-			<version>0.11.5</version>
-			<scope>runtime</scope>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-
-
-		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-
-
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-
-</project>
-
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>0.11.5</version>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <scope>runtime</scope>
+    </dependency>
+</dependencies>
 
 ```
+
 인가서버는 거의 그대로입니다 그리고 회원가입이나 , 로그인 로직같은 경우는 우리가 이제까지 해왔던 로직이기 떄문에 생략하겠습니다 GIT 소스를 참고해주세요 
 
-
 ## SecurityConfig 
-
 ```
-
-package com.cybb.main.config;
-
-import com.cybb.main.user.CustomAuthenticationProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-
 @Configuration
 public class SecurityConfig {
 
@@ -212,44 +150,19 @@ public class SecurityConfig {
 
         httpSecurity.csrf().disable();
 
-
-
-
         httpSecurity.authenticationProvider(customAuthenticationProvider);
 
         return httpSecurity.build();
     }
 }
 
-
 ```
 
-전체적인 SecurityConfig 는 올리겠습니다 여기서 크게 다른점은 `httpSecurity.csrf().disable();` 입니다 이는 서버간의 통신에서 서버끼리는 CSRF 토큰을 주고 받기가 어렵기 때문에 주로 서버끼리 통신에는 이 CRSF 토큰을 사용하지 않는 편입니다 
-
-그리고 로그아웃을 설정했습니다 이 로그아웃을 할때 필요한것은 로그아웃 url , 로그아웃 성공시 오는 페이지 그리고 인증 및 인가 제거 쿠키 제거가 포함되어 있습니다 
+전체적인 SecurityConfig 는 올리겠습니다 여기서 크게 다른점은 `httpSecurity.csrf().disable();` 입니다 이는 서버간의 통신에서 서버끼리는 CSRF 토큰을 주고 받기가 어렵기 때문에 주로 서버끼리 통신에는 이 CRSF 토큰을 사용하지 않는 편입니다 그리고 로그아웃을 설정했습니다 이 로그아웃을 할때 필요한것은 로그아웃 url , 로그아웃 성공시 오는 페이지 그리고 인증 및 인가 제거 쿠키 제거가 포함되어 있습니다 
 
 
 ## JwtController
 ```
-
-package com.cybb.main.controller;
-
-import com.cybb.main.dto.JwtDto;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.time.Duration;
-import java.util.Date;
-
 
 @Controller
 @RequestMapping("jwt")
@@ -288,11 +201,7 @@ public class JwtController {
             throw new RuntimeException(e);
         }
     }
-
-
 }
-
-
 ```
 
 이 JwtController 은 로그인을 성공하게 되면 성공 페이지 및 Jwt 토큰을 발행하는 핸들러로 이루어졌습니다 토큰 만료시간은 1분으로 진행하겠습니다 
@@ -300,23 +209,6 @@ public class JwtController {
 
 ## JWTParseController
 ```
-
-package com.cybb.main.controller;
-
-import com.cybb.main.dto.JwtResponseDto;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.SignatureException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.Map;
 
 @Controller
 public class JWTParseController {
@@ -397,15 +289,14 @@ public class JWTParseController {
             return new ResponseEntity<>(jwtResponseDto , HttpStatus.OK);
 
         }
-
     }
 }
 
 ```
+
 JWTParseController 은 전체접근이 가능한 페이지로 리소스 서버가 JWT 유효성 검증을 위해서 통신하기 위한 핸들러이빈다 리소스 서버 작성할때 이곳과 통신하는 소스를 작성할 예정입니다 
 
 ```
-
 package com.cybb.main.dto;
 
 public class JwtResponseDto {
@@ -440,23 +331,19 @@ public class JwtResponseDto {
         this.message = message;
     }
 }
-
-
 ```
 
 JwtResponseDto 는 리소스 서버와 인가서버 동시에 쓰는 Jwt 와 관련한 정보입니다 여기에는 jwt 상태와 , 에러메세지 등을 담을 예정입니다 
 
 
 ## jwt.html 
-```
 
+```
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <link href="/bootStrap/css/bootstrap.min.css" rel="stylesheet">
-
-
 
     <title>jwt 발급페이지 </title>
 </head>
@@ -471,13 +358,7 @@ JwtResponseDto 는 리소스 서버와 인가서버 동시에 쓰는 Jwt 와 관
     <button id = "btn_logout" class="btn btn-primary" type="submit" >로그아웃</button>
 </form>
 
-
 <input  id = "jwt_input">
-
-
-
-
-
 
 <script src="/bootStrap/js/bootstrap.bundle.min.js"></script>
 <script src="/resources/js/jwt.js"></script>

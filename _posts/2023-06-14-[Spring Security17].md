@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 17 JWT 4 JWT 발급과 검증과정 2
 author: kimdongy1000
 date: 2023-06-14 10:00
@@ -7,7 +6,6 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true
-
 ---
 
 지난시간에 JWT 발급에대해서 공부했는데 이번에는 이제 발급된 JWT 가 되돌아올때 JWT 를 유효성검사에 대해서 알아보겠습니다
@@ -15,13 +13,11 @@ mermaid: true
 ## JWT 검증소스 
 
 ```
-
-
 private boolean parseJwt(String jwt){
 
     boolean returnFlag = false;
-    try{
 
+    try{
 
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
@@ -56,9 +52,6 @@ private boolean parseJwt(String jwt){
     }
 
     return returnFlag;
-
-
-
 }
 
 ```
@@ -66,7 +59,6 @@ private boolean parseJwt(String jwt){
 여기에 parseClaimsJws 호출을 통해서 jwt 유효성 검사를 하게 됩니다 
 
 ## DefaultJwtParse 
-
 ```
 
 public class DefaultJwtParser implements JwtParser 
@@ -118,15 +110,10 @@ public <T> T parse(String compact, JwtHandler<T> handler)
 
 ## parse 
 ```
-
 @Override
 public Jwt parse(String jwt) throws ExpiredJwtException, MalformedJwtException, SignatureException {
 
-    // TODO, this logic is only need for a now deprecated code path
-    // remove this block in v1.0 (the equivalent is already in DefaultJwtParserBuilder)
     if (this.deserializer == null) {
-        // try to find one based on the services available
-        // TODO: This util class will throw a UnavailableImplementationException here to retain behavior of previous version, remove in v1.0
         this.deserializeJsonWith(LegacyServices.loadFirst(Deserializer.class));
     }
 
@@ -173,8 +160,6 @@ public Jwt parse(String jwt) throws ExpiredJwtException, MalformedJwtException, 
         base64UrlEncodedDigest = sb.toString();
     }
 
-
-    // =============== Header =================
     Header header = null;
 
     CompressionCodec compressionCodec = null;
@@ -193,8 +178,7 @@ public Jwt parse(String jwt) throws ExpiredJwtException, MalformedJwtException, 
         compressionCodec = compressionCodecResolver.resolveCompressionCodec(header);
     }
 
-    // =============== Body =================
-    String payload = ""; // https://github.com/jwtk/jjwt/pull/540
+    String payload = ""; 
     if (base64UrlEncodedPayload != null) {
         byte[] bytes = base64UrlDecoder.decode(base64UrlEncodedPayload);
         if (compressionCodec != null) {
@@ -210,7 +194,6 @@ public Jwt parse(String jwt) throws ExpiredJwtException, MalformedJwtException, 
         claims = new DefaultClaims(claimsMap);
     }
 
-    // =============== Signature =================
     if (base64UrlEncodedDigest != null) { //it is signed - validate the signature
 
         JwsHeader jwsHeader = (JwsHeader) header;
@@ -225,7 +208,6 @@ public Jwt parse(String jwt) throws ExpiredJwtException, MalformedJwtException, 
         }
 
         if (algorithm == null || algorithm == SignatureAlgorithm.NONE) {
-            //it is plaintext, but it has a signature.  This is invalid:
             String msg = "JWT string has a digest/signature, but the header does not reference a valid signature " +
                 "algorithm.";
             throw new MalformedJwtException(msg);
@@ -238,14 +220,13 @@ public Jwt parse(String jwt) throws ExpiredJwtException, MalformedJwtException, 
             throw new IllegalStateException("A signing key resolver and " + object + " cannot both be specified. Choose either.");
         }
 
-        //digitally signed, let's assert the signature:
         Key key = this.key;
 
-        if (key == null) { //fall back to keyBytes
+        if (key == null) { 
 
             byte[] keyBytes = this.keyBytes;
 
-            if (Objects.isEmpty(keyBytes) && signingKeyResolver != null) { //use the signingKeyResolver
+            if (Objects.isEmpty(keyBytes) && signingKeyResolver != null) { 
                 if (claims != null) {
                     key = signingKeyResolver.resolveSigningKey(jwsHeader, claims);
                 } else {
@@ -264,7 +245,6 @@ public Jwt parse(String jwt) throws ExpiredJwtException, MalformedJwtException, 
 
         Assert.notNull(key, "A signing key must be specified if the specified JWT is digitally signed.");
 
-        //re-create the jwt part without the signature.  This is what needs to be signed for verification:
         String jwtWithoutSignature = base64UrlEncodedHeader + SEPARATOR_CHAR;
         if (base64UrlEncodedPayload != null) {
             jwtWithoutSignature += base64UrlEncodedPayload;
@@ -272,7 +252,7 @@ public Jwt parse(String jwt) throws ExpiredJwtException, MalformedJwtException, 
 
         JwtSignatureValidator validator;
         try {
-            algorithm.assertValidVerificationKey(key); //since 0.10.0: https://github.com/jwtk/jjwt/issues/334
+            algorithm.assertValidVerificationKey(key); 
             validator = createSignatureValidator(algorithm, key);
         } catch (WeakKeyException e) {
             throw e;
@@ -297,14 +277,12 @@ public Jwt parse(String jwt) throws ExpiredJwtException, MalformedJwtException, 
 
     final boolean allowSkew = this.allowedClockSkewMillis > 0;
 
-    //since 0.3:
+    
     if (claims != null) {
 
         final Date now = this.clock.now();
         long nowTime = now.getTime();
 
-        //https://tools.ietf.org/html/draft-ietf-oauth-json-web-token-30#section-4.1.4
-        //token MUST NOT be accepted on or after any specified exp time:
         Date exp = claims.getExpiration();
         if (exp != null) {
 
@@ -323,8 +301,6 @@ public Jwt parse(String jwt) throws ExpiredJwtException, MalformedJwtException, 
             }
         }
 
-        //https://tools.ietf.org/html/draft-ietf-oauth-json-web-token-30#section-4.1.5
-        //token MUST NOT be accepted before any specified nbf time:
         Date nbf = claims.getNotBefore();
         if (nbf != null) {
 
@@ -357,10 +333,11 @@ public Jwt parse(String jwt) throws ExpiredJwtException, MalformedJwtException, 
 }
 
 ```
-이 부분이 JWT 의 유효성 검사를 하게 되는데 너무 긴데 하나씩 가보도록 하겠습니다 
+좀 길어보입니다만 하나씩 가보겠습니다 
+
+
 
 ```
-
 Assert.hasText(jwt, "JWT String argument cannot be null or empty.");
 
 if ("..".equals(jwt)) {
@@ -369,6 +346,7 @@ if ("..".equals(jwt)) {
 }
 
 ```
+
 먼저 jwt 가 존재하는지 검사하고 jwt 없이 이를 연결하는 .. 만 오게 되는지 찾게 됩니다 그때는 MalformedJwtException 을 던져서 에러를 처리합니다 에러 도 
 `String msg = "JWT string '..' is missing a header.";` JWT 헤더를 찾을 수 없어 이렇게 나오게 되네요
 
@@ -379,7 +357,7 @@ String base64UrlEncodedDigest = null;
 
 ```
 
-. 을 기준으로 각 header , payload sign 을 구분할 수 있기에 일단 String 으로 구분할 수 있게 각 변수를 선언합니다 
+.(점) 을 기준으로 각 header , payload sign 을 구분할 수 있기에 일단 String 으로 구분할 수 있게 각 변수를 선언합니다 
 
 ```
 
@@ -417,9 +395,6 @@ if (sb.length() > 0) {
 
 ```
 
-그 결과는 그 아래 여기에 담기게 됩니다 그러면 일단 각 헤더 payload , sign 은 각 분리가 다 되었습니다 
-
-
 ## 헤더 디코드
 ```
 
@@ -439,21 +414,21 @@ if (base64UrlEncodedHeader != null) {
 
 ```
 
-그리고 먼저 헤더를 원래의 값으로 만드는 역활을 합니다 BASE64로 인코딩된것은 다시 디코딩하게 되고 이를 
+그리고 먼저 헤더를 원래의 값으로 만드는 역할을 합니다 BASE64로 인코딩된것은 다시 디코딩하게 되고 이를 
 `Map<String, Object> m = (Map<String, Object>) readValue(origValue);` 를 통해서 Map 타입으로 만들게 됩니다 
 그럼 여기 m 에는 
 
 ```
-m = {LinkedHashMap@7787}  size = 1
+m = {LinkedHashMap}  size = 1
  "alg" -> "HS512"
-
 ```
+
 이렇게 암호화 방식이 담기게 되고 
 
 ## PayLoad 디코드
 ```
+String payload = ""; 
 
-String payload = ""; // https://github.com/jwtk/jjwt/pull/540
 if (base64UrlEncodedPayload != null) {
     byte[] bytes = base64UrlDecoder.decode(base64UrlEncodedPayload);
     if (compressionCodec != null) {
@@ -461,37 +436,33 @@ if (base64UrlEncodedPayload != null) {
     }
     payload = new String(bytes, Strings.UTF_8);
 }
-
 ```
+
 헤더와 마찬가지로 payload 도 같은 방식으로 decode 하게 됩니다 그럼 이 payload 에는 
 `{"sub":"user","jti":"Time","iat":1694315824,"exp":1694315860}` 가 담기게 됩니다 
 
-그리고 이 payload 를 
 
 ```
-
 Claims claims = null;
 
 if (!payload.isEmpty() && payload.charAt(0) == '{' && payload.charAt(payload.length() - 1) == '}') { //likely to be json, parse it:
     Map<String, Object> claimsMap = (Map<String, Object>) readValue(payload);
     claims = new DefaultClaims(claimsMap);
 }
-
 ```
 
 이렇게 Claims 객체에 각 위치에 담기게 됩니다 
 
-## 서명 디코드 
+## 서명 유효성 검사
 
-이부분이 제일 핵심입니다 헤더와 , payload 는 충분히 변조가 될 수 있기에 마지막 서명부분으로 이 jwt 가 여기서 발급이 되엇고 유효성 검사를 하게 됩니다 
+이부분이 제일 핵심입니다 헤더와 , payload 는 충분히 변조가 될 수 있기에 마지막 서명부분으로 이 jwt 가 여기서 발급이 되었고 유효성 검사를 하게 됩니다 
 제일 중요한 부분인 만큼 제일 깁니다 
 
 `if (base64UrlEncodedDigest != null)` 먼저 base64UrlEncodedDigest null 체크를 하게 됩니다 
 
 
 ```
-
- SignatureAlgorithm algorithm = null;
+SignatureAlgorithm algorithm = null;
 
 if (header != null) {
     String alg = jwsHeader.getAlgorithm();
@@ -501,51 +472,42 @@ if (header != null) {
 }
 
 if (algorithm == null || algorithm == SignatureAlgorithm.NONE) {
-    //it is plaintext, but it has a signature.  This is invalid:
     String msg = "JWT string has a digest/signature, but the header does not reference a valid signature " +
         "algorithm.";
     throw new MalformedJwtException(msg);
 }
-
 ```
 
 그리고 jwsHeader 에서 알고리즘을 뽑아내고 이 알고리즘이 없으면 MalformedJwtException 를 던지게 됩니다 물론 이에 대한 대전제는 base64UrlEncodedDigest != null 이 아닐때 입니다 서멍없이 들어올때는 다른 루트로 jwt 를 뽑아냅니다 
 
-```
 
+```
 if (key != null && keyBytes != null) {
     throw new IllegalStateException("A key object and key bytes cannot both be specified. Choose either.");
 } else if ((key != null || keyBytes != null) && signingKeyResolver != null) {
     String object = key != null ? "a key object" : "key bytes";
     throw new IllegalStateException("A signing key resolver and " + object + " cannot both be specified. Choose either.");
 }
-
-
 ```
 
 마찬가지로 개인 key 도 존재하는지 살펴보게 됩니다 그게 없으면 역시나 에러를 던지게 됩니다 
 
 ```
-
  if (!Objects.isEmpty(keyBytes)) {
 
     Assert.isTrue(algorithm.isHmac(),
         "Key bytes can only be specified for HMAC signatures. Please specify a PublicKey or PrivateKey instance.");
-
     key = new SecretKeySpec(keyBytes, algorithm.getJcaName());
 }
-
 ```
-
 그리고 이 key 에 개인key(바이트) 그리고 알고리즘 타입을 key 를 넣게 됩니다 
 
-```
 
+```
 String jwtWithoutSignature = base64UrlEncodedHeader + SEPARATOR_CHAR;
 if (base64UrlEncodedPayload != null) {
     jwtWithoutSignature += base64UrlEncodedPayload;
 }
-
 ```
 
 그리고 jwt 는 기존의 헤더와 payload 를 합해서 개인키와 암호화 알고리즘으로 합해젔음으로 다시 jwt 를 조립을 하게 됩니다 그 과정을 보여주는 것이고 
@@ -553,10 +515,11 @@ if (base64UrlEncodedPayload != null) {
 ```
 JwtSignatureValidator validator;
 try {
-    algorithm.assertValidVerificationKey(key); //since 0.10.0: https://github.com/jwtk/jjwt/issues/334
+    algorithm.assertValidVerificationKey(key); 
     validator = createSignatureValidator(algorithm, key);
 }
 ```
+
 JwtSignatureValidator 안에 알고리즘과 key 를 넣고 createSignatureValidator jwt 를 검증할 수있는 validator 를 만들게 됩니다 하단에서 
 
 ```
@@ -572,14 +535,11 @@ if (!validator.isValid(jwtWithoutSignature, base64UrlEncodedDigest)) {
 하단에서 jwtWithoutSignature 앞에서 다시 조립한 헤더와 , payload 와 base64UrlEncodedDigest 를 비교해서 이 토큰이 올바르게 발급이 되었고 변조가 되었는지 확인을 하게 됩니다 이 부분을 넘어가게 되면 서명부분 jwt 가 변조되지는 않았다는 것입니다 
 
 ## 만료시간 체크
-
 ```
 
 final Date now = this.clock.now();
 long nowTime = now.getTime();
 
-//https://tools.ietf.org/html/draft-ietf-oauth-json-web-token-30#section-4.1.4
-//token MUST NOT be accepted on or after any specified exp time:
 Date exp = claims.getExpiration();
 if (exp != null) {
 
@@ -600,36 +560,29 @@ if (exp != null) {
 
 ```
 이 부분에서는 만료시간을 체크하게 됩니다 이제 클레임에서 lat 와 exp 를 분리해서 시간으 비교하게 됩니다 
-
 이때 if (max.after(exp)) 에서 넘어가게 되면 그 시간의 차이를 분석해서 jwt 만료시간으로 부터 얼만큼 멀어졌는지 보여주게 됩니다 ExpiredJwtException 를 던지게 됩니다 
-
 이제 만료시간까지 넘어가면 이제 완전한 유효성이 검증이 된것이고 
 
 ```
 Jwt jwt = parse(compact);
 ```
+
 로 돌아와서 jwt 를 받게 됩니다 
 
 ```
-
-header = {DefaultJwsHeader@7752}  size = 1
+header = {DefaultJwsHeader}  size = 1
  "alg" -> "HS512"
-body = {DefaultClaims@7754}  size = 4
+body = {DefaultClaims}  size = 4
  "sub" -> "user"
  "jti" -> "Time"
- "iat" -> {Integer@7799} 1694317794
- "exp" -> {Integer@7801} 1694317830
+ "iat" -> {Integer} 1694317794
+ "exp" -> {Integer} 1694317830
 signature = "-TCHwQJDNVaKa-gGz9-AGErJ0yXoK8xnrgeyMVHr2k0IwoXXOQDiaCWE0AySn1cPsuCRcY0xkAxm-frYwzrrQQ"
- value = {byte[86]@7802} [45, 84, 67, 72, 119, 81, 74, 68, 78, 86, 97, 75, 97, 45, 103, 71, 122, 57, 45, 65, 71, 69, 114, 74, 48, 121, 88, 111, 75, 56, 120, 110, 114, 103, 101, 121, 77, 86, 72, 114, 50, 107, 48, 73, 119, 111, 88, 88, 79, 81, 68, 105, 97, 67, 87, 69, 48, 65, 121, 83, 110, 49, 99, 80, 115, 117, 67, 82, 99, 89, 48, 120, 107, 65, 120, 109, 45, 102, 114, 89, 119, 122, 114, 114, 81, 81]
- coder = 0
- hash = 0
-
 ```
 
 이런 정보를 담게 되고 이 데이터는 
 
 ```
-
 if (jwt instanceof Jws) {
     Jws jws = (Jws) jwt;
     Object body = jws.getBody();
