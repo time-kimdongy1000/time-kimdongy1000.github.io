@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 1
 author: kimdongy1000
 date: 2023-05-09 10:49
@@ -7,13 +6,12 @@ categories: [Back-end, Spring - Security ]
 tags: [ Spring-Security ]
 math: true
 mermaid: true
-
 ---
 
-# Spring Secuirty 란 
 
+# Spring Secuirty 란 
 Spring Security is a powerful and highly customizable authentication and access-control framework. It is the de-facto standard for securing Spring-based applications.
-스프링 시큐리티는 강력하고 높은 커스터마이징 가능한 인증 그리고 허가 컨트롤이 가능한 프레임워크 입니다. 이것은 사실상 보안의 기준이 됩니다 스프링 기반의 어플리케이션들에 대한 
+스프링 시큐리티는 강력하고 높은 커스터마이징 가능한 인증 그리고 허가 컨트롤이 가능한 프레임워크 입니다. 스프링 기반의 어플리케이션들에 대한 보안의 기준이 됩니다.
 
 Spring Security is a framework that focuses on providing both authentication and authorization to Java applications.
 스프링 시큐리는 인증과 인가 둘다 집중한 java 어플리케이션 프레임워크입니다
@@ -27,9 +25,7 @@ java version (opend-jdk) 11
 Spring boot 2.7.1
 maven 
 
-
 이런 형식으로 갈 예정이고 안에 maven 은 하단에 정리해서 쓰도록 하겠습니다 
-
 ```
 <dependencies>
 	
@@ -59,16 +55,9 @@ maven
 
 크게는 web , security 에 대해서만 의존성을 주입후 여러가지 재미 있는것들을 해볼예정입니다 
 
+
 ## 간단한 Controller 만들기 
-
 ```
-
-package com.cybb.main.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 @RestController
 public class DemoController {
     
@@ -78,20 +67,17 @@ public class DemoController {
         return "demo";
     }
 }
-
-
 ```
 
 우리는 이렇게 간단한 demo 핸들러를 만들고 실행을 해보자 
 
-우리는 주소창에 http://localhost:8080/demo  입력하고 엔터를 치지만 아래 스크린샷처럼 demo rest 페이지가 나오는것이 아니라 지금과 같은 로그인 페이지가 나오게 됩니다 
+우리는 주소창에 http://localhost:8080/demo  입력하고 엔터를 치지만 아래 스크린샷처럼 demo 페이지가 나오는것이 아니라 지금과 같은 로그인 페이지가 나오게 됩니다 
 
 ![스크린샷 2023-08-06 105416](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/39942fb0-5695-4970-ab8e-50a4607773fb)
 
 이런 설정은 시큐리티의 가장 기본적인 로그인 페이지입니다 그럼 로그인을 할려면 아이디 비밀번호가 있어야 하는데 아무런 설정없이 실행하는 경우에는 아이디 비밀번로를 
 임의로 만들어서 발급을 해줍니다 
 
-실행한 콘솔을 보시면
 
 ## admin 아이디 비밀번호
 
@@ -108,4 +94,4 @@ This generated password is for development use only. Your security configuration
 
 이렇게 우리가 만든 기본적인 페이지가 나오게됩니다 
 
-아무런 설정이 없을때 시큐리티는 들어오는 모든 요청을 fitler 해서 권한이 없으면 로그인 페이지로 되돌리게 됩니다 이것이 가장 기본적인 스프링의 시큐리티의 인증 인가 어플리케이션입니다 우리는 앞으로 이런 시큐리티를 활용하면서 다양한 로그인 방법 및 시큐리티 프레임워크를 소개해 나가는 시간을 가질예정입니다 
+아무런 설정이 없을때 시큐리티는 들어오는 모든 요청을 fitler 해서 권한이 없으면 로그인 페이지로 되돌리게 됩니다 이것이 가장 기본적인 스프링의 시큐리티의 인증 인가 어플리케이션입니다 우리는 앞으로 이런 시큐리티를 활용하면서 다양한 로그인 방법 및 시큐리티 프레임워크를 소개해 나가는 시간을 가질예정입니다
