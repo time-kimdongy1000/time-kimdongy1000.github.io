@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 22 OAuth2 ClientRegistration 
 author: kimdongy1000
 date: 2023-07-02 10:00
@@ -7,7 +6,6 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security , OAuth2 ]
 math: true
 mermaid: true
-
 ---
 
 우리는 지난시간에 KeyClock 의 연동과 간단한 용어 정리 그리고 개념에 대해서 공부를 해보았다 용어는 앞으로 반복 그리고 새로운것이 계속 나올것이기에 그때마다 정리를 하도록 하겠습니다 오늘부터는 어떻게 Spring - Security 가 KeyClocak 을 연동하고 최종적으로 사용자 자원을 가져오는지에 대해서 알아볼려고 합니다 
@@ -20,16 +18,7 @@ mermaid: true
 
 
 ## SecuirtyConfig 설정 
-
 ```
-
-package com.cybb.main.config;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-
 @Configuration
 public class SecurityConfig {
 
@@ -43,16 +32,11 @@ public class SecurityConfig {
     }
 }
 
-
-
 ```
-
-간단하게 작성을 하고 우리는 oauth2Login 디버그를 잡고 안에서 무슨일이 일어나는지 알아볼 예정입니다 
 
 ## OAuth2ClientRegistrationRepositoryConfiguration 
 
 ```
-
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(OAuth2ClientProperties.class)
 @Conditional(ClientsConfiguredCondition.class)
@@ -65,24 +49,19 @@ class OAuth2ClientRegistrationRepositoryConfiguration {
 				OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties).values());
 		return new InMemoryClientRegistrationRepository(registrations);
 	}
-
 }
-
 
 ```
 OAuth2ClientRegistrationRepositoryConfiguration 는 우리가 앞에서 application.properties 에서 정의한 keyClocak 연동값을 시큐리티에 저장을 하는 클래스 입니다 
-
 이때 returnType InMemoryClientRegistrationRepository 있으며 즉 연동 결과를 메모리에 저장하는 로직입니다 
-
-그리고 파라미터로 넘어오는 OAuth2ClientProperties properties 에서는 
+그리고 파라미터로 넘어오는 OAuth2ClientProperties properties 값들은 아래와 같은데 
 
 ```
-
-result = {OAuth2ClientProperties@5080} 
- provider = {HashMap@5081}  size = 1
-  "keycloak" -> {OAuth2ClientProperties$Provider@5087} 
+result = {OAuth2ClientProperties} 
+ provider = {HashMap}  size = 1
+  "keycloak" -> {OAuth2ClientProperties$Provider} 
    key = "keycloak"
-   value = {OAuth2ClientProperties$Provider@5087} 
+   value = {OAuth2ClientProperties$Provider} 
     authorizationUri = "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/auth"
     tokenUri = "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/token"
     userInfoUri = "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/userinfo"
@@ -90,10 +69,10 @@ result = {OAuth2ClientProperties@5080}
     userNameAttribute = "preferred_username"
     jwkSetUri = "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/certs"
     issuerUri = "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project"
- registration = {HashMap@5082}  size = 1
-  "keycloak" -> {OAuth2ClientProperties$Registration@5099} 
+ registration = {HashMap}  size = 1
+  "keycloak" -> {OAuth2ClientProperties$Registration} 
    key = "keycloak"
-   value = {OAuth2ClientProperties$Registration@5099} 
+   value = {OAuth2ClientProperties$Registration} 
     provider = null
     clientId = "Spring-Oauth2-Authorizaion-client"
     clientSecret = "NIe2qftuPcclGWFiBFicEWoK5SfYs7ql"
@@ -102,18 +81,15 @@ result = {OAuth2ClientProperties@5080}
     redirectUri = "http://localhost:8081/login/oauth2/code/keycloak"
     scope = {LinkedHashSet@5107}  size = 2
     clientName = "Spring-Oauth2-Authorizaion-client"
-
 ```
 
 우리가 앞에서 선언한 값들이 의존에 의해서 넘어오는것을 확인할 수 있습니다 
 
 ## OAuth2ClientPropertiesRegistrationAdapter 
-
 ```
-
 public final class OAuth2ClientPropertiesRegistrationAdapter {
     
-    ....
+    ...
 
     private static ClientRegistration getClientRegistration(String registrationId,
             OAuth2ClientProperties.Registration properties, Map<String, Provider> providers) {
@@ -133,9 +109,7 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
         map.from(properties::getClientName).to(builder::clientName);
         return builder.build();
     }
-
 }
-
 
 ```
 
@@ -143,27 +117,27 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 
 Builder builder = getBuilderFromIssuerIfPossible(registrationId, properties.getProvider(), providers); 만 호출이 되더라도 
 
-```
 
-result = {ClientRegistration$Builder@5385} 
+```
+result = {ClientRegistration$Builder} 
  registrationId = "keycloak"
  clientId = null
  clientSecret = null
- clientAuthenticationMethod = {ClientAuthenticationMethod@5386} 
- authorizationGrantType = {AuthorizationGrantType@5387} 
+ clientAuthenticationMethod = {ClientAuthenticationMethod} 
+ authorizationGrantType = {AuthorizationGrantType} 
  redirectUri = "{baseUrl}/{action}/oauth2/code/{registrationId}"
  scopes = null
  authorizationUri = "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/auth"
  tokenUri = "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/token"
  userInfoUri = "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/userinfo"
- userInfoAuthenticationMethod = {AuthenticationMethod@5392} 
+ userInfoAuthenticationMethod = {AuthenticationMethod} 
  userNameAttributeName = "preferred_username"
  jwkSetUri = "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/certs"
  issuerUri = "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project"
  configurationMetadata = {LinkedHashMap@5396}  size = 52
  clientName = "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project"
-
 ```
+
 
 이미 필요한 값들은 다 들어가 있는것을 알 수 있다 현재 이곳은 Client 그리고 Provider 에 대한 데이터는 이미 다들어가 있는것을 확인할 수 있다 이런 원리는 사실 
 우리가 앞에서 본 Properties 값 중에 
@@ -176,27 +150,26 @@ Provier 가 필요한 모든 값들을 읽어 올 수 있습니다
 
 
 ```
-
 private static Builder getBuilderFromIssuerIfPossible(String registrationId, String configuredProviderId,
-			Map<String, Provider> providers) {
-		String providerId = (configuredProviderId != null) ? configuredProviderId : registrationId;
-		if (providers.containsKey(providerId)) {
-			Provider provider = providers.get(providerId);
-			String issuer = provider.getIssuerUri();
-			if (issuer != null) {
-				Builder builder = ClientRegistrations.fromIssuerLocation(issuer).registrationId(registrationId);
-				return getBuilder(builder, provider);
-			}
-		}
-		return null;
-	}
+        Map<String, Provider> providers) {
+    String providerId = (configuredProviderId != null) ? configuredProviderId : registrationId;
+    if (providers.containsKey(providerId)) {
+        Provider provider = providers.get(providerId);
+        String issuer = provider.getIssuerUri();
+        if (issuer != null) {
+            Builder builder = ClientRegistrations.fromIssuerLocation(issuer).registrationId(registrationId);
+            return getBuilder(builder, provider);
+        }
+    }
+
+    return null;
+}
 
 ```
 
 이 부분에서 provider 값과 issuer 값을 분리해내서 fromIssuerLocation 을 호출하게 됩니다 
 
 ```
-
 public static ClientRegistration.Builder fromIssuerLocation(String issuer) {
     Assert.hasText(issuer, "issuer cannot be empty");
     URI uri = URI.create(issuer);
@@ -210,13 +183,10 @@ public static ClientRegistration.Builder fromIssuerLocation(String issuer) {
 getBuilder 호출시
 
 ```
-
 private static Supplier<ClientRegistration.Builder> oidc(URI issuer) {
-    // @formatter:off
     URI uri = UriComponentsBuilder.fromUri(issuer)
             .replacePath(issuer.getPath() + OIDC_METADATA_PATH)
             .build(Collections.emptyMap());
-    // @formatter:on
     return () -> {
         RequestEntity<Void> request = RequestEntity.get(uri).build();
         Map<String, Object> configuration = rest.exchange(request, typeReference).getBody();
@@ -230,79 +200,33 @@ private static Supplier<ClientRegistration.Builder> oidc(URI issuer) {
     };
 }
 
-
-
 ```
 
 이 부분으로 넘어오게 되는데 이곳에서 `RequestEntity<Void> request = RequestEntity.get(uri).build();` 요청정보를 만들고 
-
 `Map<String, Object> configuration = rest.exchange(request, typeReference).getBody();` 요청이 들어가고 그것을 body 를 추출해서 
-
 Map 타입의 설정정보를 만들어내게 되는데 
+
 
 ## configuration 
 ```
-
-configuration = {LinkedHashMap@6558}  size = 53
+configuration = {LinkedHashMap}  size = 53
  "issuer" -> "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project"
  "authorization_endpoint" -> "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/auth"
  "token_endpoint" -> "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/token"
  "introspection_endpoint" -> "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/token/introspect"
  "userinfo_endpoint" -> "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/userinfo"
  "end_session_endpoint" -> "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/logout"
- "frontchannel_logout_session_supported" -> {Boolean@6629} true
- "frontchannel_logout_supported" -> {Boolean@6629} true
  "jwks_uri" -> "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/certs"
  "check_session_iframe" -> "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/login-status-iframe.html"
- "grant_types_supported" -> {ArrayList@6636}  size = 7
- "acr_values_supported" -> {ArrayList@6638}  size = 2
- "response_types_supported" -> {ArrayList@6640}  size = 8
- "subject_types_supported" -> {ArrayList@6642}  size = 2
- "id_token_signing_alg_values_supported" -> {ArrayList@6644}  size = 12
- "id_token_encryption_alg_values_supported" -> {ArrayList@6646}  size = 3
- "id_token_encryption_enc_values_supported" -> {ArrayList@6648}  size = 6
- "userinfo_signing_alg_values_supported" -> {ArrayList@6650}  size = 13
- "userinfo_encryption_alg_values_supported" -> {ArrayList@6652}  size = 3
- "userinfo_encryption_enc_values_supported" -> {ArrayList@6654}  size = 6
- "request_object_signing_alg_values_supported" -> {ArrayList@6656}  size = 13
- "request_object_encryption_alg_values_supported" -> {ArrayList@6658}  size = 3
- "request_object_encryption_enc_values_supported" -> {ArrayList@6660}  size = 6
- "response_modes_supported" -> {ArrayList@6662}  size = 7
  "registration_endpoint" -> "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/clients-registrations/openid-connect"
- "token_endpoint_auth_methods_supported" -> {ArrayList@6666}  size = 5
- "token_endpoint_auth_signing_alg_values_supported" -> {ArrayList@6668}  size = 12
- "introspection_endpoint_auth_methods_supported" -> {ArrayList@6670}  size = 5
- "introspection_endpoint_auth_signing_alg_values_supported" -> {ArrayList@6672}  size = 12
- "authorization_signing_alg_values_supported" -> {ArrayList@6674}  size = 12
- "authorization_encryption_alg_values_supported" -> {ArrayList@6676}  size = 3
- "authorization_encryption_enc_values_supported" -> {ArrayList@6678}  size = 6
- "claims_supported" -> {ArrayList@6680}  size = 10
- "claim_types_supported" -> {ArrayList@6682}  size = 1
- "claims_parameter_supported" -> {Boolean@6629} true
- "scopes_supported" -> {ArrayList@6685}  size = 10
- "request_parameter_supported" -> {Boolean@6629} true
- "request_uri_parameter_supported" -> {Boolean@6629} true
- "require_request_uri_registration" -> {Boolean@6629} true
- "code_challenge_methods_supported" -> {ArrayList@6690}  size = 2
- "tls_client_certificate_bound_access_tokens" -> {Boolean@6629} true
  "revocation_endpoint" -> "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/revoke"
- "revocation_endpoint_auth_methods_supported" -> {ArrayList@6695}  size = 5
- "revocation_endpoint_auth_signing_alg_values_supported" -> {ArrayList@6697}  size = 12
- "backchannel_logout_supported" -> {Boolean@6629} true
- "backchannel_logout_session_supported" -> {Boolean@6629} true
  "device_authorization_endpoint" -> "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/auth/device"
- "backchannel_token_delivery_modes_supported" -> {ArrayList@6703}  size = 2
  "backchannel_authentication_endpoint" -> "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/ext/ciba/auth"
- "backchannel_authentication_request_signing_alg_values_supported" -> {ArrayList@6707}  size = 9
- "require_pushed_authorization_requests" -> {Boolean@6709} false
  "pushed_authorization_request_endpoint" -> "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/ext/par/request"
- "mtls_endpoint_aliases" -> {LinkedHashMap@6713}  size = 8
 
 ```
 
-아래처럼 이렇게 되는것입니다 
-
-그런정보를 
+이런 configuration 정보를 만들어내개 됩니다 
 
 ```
 
@@ -317,7 +241,6 @@ if (metadata.getUserInfoEndpointURI() != null) {
 withProviderConfiguration 부분을 통해서 
 
 ```
-
 private static ClientRegistration.Builder withProviderConfiguration(AuthorizationServerMetadata metadata,
         String issuer) {
     String metadataIssuer = metadata.getIssuer().getValue();
@@ -327,24 +250,22 @@ private static ClientRegistration.Builder withProviderConfiguration(Authorizatio
     String name = URI.create(issuer).getHost();
     ClientAuthenticationMethod method = getClientAuthenticationMethod(metadata.getTokenEndpointAuthMethods());
     Map<String, Object> configurationMetadata = new LinkedHashMap<>(metadata.toJSONObject());
-    // @formatter:off
+    
     return ClientRegistration.withRegistrationId(name)
-            .userNameAttributeName(IdTokenClaimNames.SUB)
-            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-            .clientAuthenticationMethod(method)
-            .redirectUri("{baseUrl}/{action}/oauth2/code/{registrationId}")
-            .authorizationUri((metadata.getAuthorizationEndpointURI() != null) ? metadata.getAuthorizationEndpointURI().toASCIIString() : null)
-            .providerConfigurationMetadata(configurationMetadata)
-            .tokenUri(metadata.getTokenEndpointURI().toASCIIString())
-            .issuerUri(issuer)
-            .clientName(issuer);
-    // @formatter:on
+        .userNameAttributeName(IdTokenClaimNames.SUB)
+        .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+        .clientAuthenticationMethod(method)
+        .redirectUri("{baseUrl}/{action}/oauth2/code/{registrationId}")
+        .authorizationUri((metadata.getAuthorizationEndpointURI() != null) ? metadata.getAuthorizationEndpointURI().toASCIIString() : null)
+        .providerConfigurationMetadata(configurationMetadata)
+        .tokenUri(metadata.getTokenEndpointURI().toASCIIString())
+        .issuerUri(issuer)
+        .clientName(issuer);    
 }
 
 ```
 
 이곳에서 나머지 필요한 모든 값들을 설정을 하게 됩니다 이렇게 해서 ClientRegitsrtaion 이 하나 만들어지게 됩니다 그럼 사실 우리는 앞에서 
-
 
 ```
 
@@ -360,19 +281,8 @@ spring.security.oauth2.client.registration.keycloak.clientAuthenticationMethod=c
 
 spring.security.oauth2.client.provider.keycloak.issuerUri=http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project
 
-
-
 ```
 
 이렇게 client 부분은 client 설정이기때문에 고정 Provider 부분은 사실상 issuerUri 있으면 연동이 되는것이다 그래서 주석잡고나 또는 지우고 진행을 해도 알아서 연동을 하게 됩니다 실제 모든 정보는 http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project 와 통신해서 전부 가져올 수 있기 때문입니다 
 
-오늘은 기본적으로 properties 에 등록된 정보를 어떻게 시큐리티가 가져와서 연동을 하게 되는지에 대해서 알아보았습니다 앞으로는 이런식으로 계속 글이 쓰여질 예정입니다 
-
-
-
-
-
-
-
-
-
+오늘은 기본적으로 properties 에 등록된 정보를 어떻게 시큐리티가 가져와서 연동을 하게 되는지에 대해서 알아보았습니다 앞으로는 이런식으로 계속 글이 쓰여질 예정입니다
