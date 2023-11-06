@@ -44,27 +44,28 @@ public Authentication attemptAuthentication(HttpServletRequest request, HttpServ
 ```
 if (this.postOnly && !request.getMethod().equals("POST")) {
 			throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
-		}
+}
 
 ```
 이 부분을 마딱드리게 되는데 이때 로그인의 요청은 항상 post 로그인이야 한다 그렇지 않으면 에러를 던지며 끝이 나게 된다 
 
+
 ```
 
 String username = obtainUsername(request);
-		username = (username != null) ? username.trim() : "";
-		String password = obtainPassword(request);
-		password = (password != null) ? password : "
+username = (username != null) ? username.trim() : "";
+String password = obtainPassword(request);
+password = (password != null) ? password : "
 
 ```
 
 지금보면 이제 요청정보에서 username , password 를 꺼내는 모습을 볼 수 있다 
 
 ```
-sernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,password);
-
+UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,password);
 ```
-어찌보면 제일 중요한 부분이다 sernamePasswordAuthenticationToken 이 앞으로 이 인증의 유무가 갈리게 되는것인데 
+
+어찌보면 제일 중요한 부분이다 UsernamePasswordAuthenticationToken 이 앞으로 이 인증의 유무가 갈리게 되는것인데 
 
 ```
 
@@ -105,9 +106,7 @@ authRequest = {UsernamePasswordAuthenticationToken@7299} "UsernamePasswordAuthen
 그 다음이는 return 을 해주게 되는데 
 
 ```
-
 return this.getAuthenticationManager().authenticate(authRequest);
-
 ```
 
 
@@ -118,13 +117,9 @@ return this.getAuthenticationManager().authenticate(authRequest);
 public class ProviderManager implements AuthenticationManager, MessageSourceAware, InitializingBean 
 
 
-
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		Class<? extends Authentication> toTest = authentication.getClass();
-		AuthenticationException lastException = null;
-		AuthenticationException parentException = null;
-		Authentication result = null;
-		Authentication parentResult = null;
+		...
+
 		int currentPosition = 0;
 		int size = this.providers.size();
 		for (AuthenticationProvider provider : getProviders()) {
@@ -137,20 +132,9 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 			}
 			try {
 				result = provider.authenticate(authentication);
-				if (result != null) {
-					copyDetails(authentication, result);
-					break;
-				}
-			}
-			catch (AccountStatusException | InternalAuthenticationServiceException ex) {
-				prepareException(ex, authentication);
-				// SEC-546: Avoid polling additional providers if auth failure is due to
-				// invalid account status
-				throw ex;
-			}
-			catch (AuthenticationException ex) {
-				lastException = ex;
-			}
+			}	
+
+				.....
 		}
 		if (result == null && this.parent != null) {
 			// Allow the parent to try.
@@ -158,47 +142,10 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 				parentResult = this.parent.authenticate(authentication);
 				result = parentResult;
 			}
-			catch (ProviderNotFoundException ex) {
-				// ignore as we will throw below if no other exception occurred prior to
-				// calling parent and the parent
-				// may throw ProviderNotFound even though a provider in the child already
-				// handled the request
-			}
-			catch (AuthenticationException ex) {
-				parentException = ex;
-				lastException = ex;
-			}
-		}
-		if (result != null) {
-			if (this.eraseCredentialsAfterAuthentication && (result instanceof CredentialsContainer)) {
-				// Authentication is complete. Remove credentials and other secret data
-				// from authentication
-				((CredentialsContainer) result).eraseCredentials();
-			}
-			// If the parent AuthenticationManager was attempted and successful then it
-			// will publish an AuthenticationSuccessEvent
-			// This check prevents a duplicate AuthenticationSuccessEvent if the parent
-			// AuthenticationManager already published it
-			if (parentResult == null) {
-				this.eventPublisher.publishAuthenticationSuccess(result);
-			}
 
-			return result;
+			...
 		}
-
-		// Parent was null, or didn't authenticate (or throw an exception).
-		if (lastException == null) {
-			lastException = new ProviderNotFoundException(this.messages.getMessage("ProviderManager.providerNotFound",
-					new Object[] { toTest.getName() }, "No AuthenticationProvider found for {0}"));
-		}
-		// If the parent AuthenticationManager was attempted and failed then it will
-		// publish an AbstractAuthenticationFailureEvent
-		// This check prevents a duplicate AbstractAuthenticationFailureEvent if the
-		// parent AuthenticationManager already published it
-		if (parentException == null) {
-			prepareException(lastException, authentication);
-		}
-		throw lastException;
+		
 	}
 
 ```
@@ -239,46 +186,17 @@ public Authentication authenticate(Authentication authentication) throws Authent
 			try {
 				user = retrieveUser(username, (UsernamePasswordAuthenticationToken) authentication);
 			}
-			catch (UsernameNotFoundException ex) {
-				this.logger.debug("Failed to find user '" + username + "'");
-				if (!this.hideUserNotFoundExceptions) {
-					throw ex;
-				}
-				throw new BadCredentialsException(this.messages
-						.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
-			}
-			Assert.notNull(user, "retrieveUser returned null - a violation of the interface contract");
-		}
-		try {
-			this.preAuthenticationChecks.check(user);
-			additionalAuthenticationChecks(user, (UsernamePasswordAuthenticationToken) authentication);
-		}
-		catch (AuthenticationException ex) {
-			if (!cacheWasUsed) {
-				throw ex;
-			}
-			// There was a problem, so try again after checking
-			// we're using latest data (i.e. not from the cache)
-			cacheWasUsed = false;
-			user = retrieveUser(username, (UsernamePasswordAuthenticationToken) authentication);
-			this.preAuthenticationChecks.check(user);
-			additionalAuthenticationChecks(user, (UsernamePasswordAuthenticationToken) authentication);
-		}
-		this.postAuthenticationChecks.check(user);
-		if (!cacheWasUsed) {
-			this.userCache.putUserInCache(user);
-		}
-		Object principalToReturn = user;
-		if (this.forcePrincipalAsString) {
-			principalToReturn = user.getUsername();
-		}
+		
+
+		...
+
 		return createSuccessAuthentication(principalToReturn, authentication, user);
 	}
 
 ```
 
-```
 
+```
 String username = determineUsername(authentication);
 boolean cacheWasUsed = true;
 UserDetails user = this.userCache.getUserFromCache(username);
@@ -306,16 +224,9 @@ protected final UserDetails retrieveUser(String username, UsernamePasswordAuthen
 		}
 		return loadedUser;
 	}
-	catch (UsernameNotFoundException ex) {
-		mitigateAgainstTimingAttack(authentication);
-		throw ex;
-	}
-	catch (InternalAuthenticationServiceException ex) {
-		throw ex;
-	}
-	catch (Exception ex) {
-		throw new InternalAuthenticationServiceException(ex.getMessage(), ex);
-	}
+
+	...
+	
 }
 
 
@@ -464,18 +375,9 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 			}
 			successfulAuthentication(request, response, chain, authenticationResult);
 		}
-		catch (InternalAuthenticationServiceException failed) {
-			this.logger.error("An internal error occurred while trying to authenticate the user.", failed);
-			unsuccessfulAuthentication(request, response, failed);
-		}
-		catch (AuthenticationException ex) {
-			// Authentication failed
-			unsuccessfulAuthentication(request, response, ex);
-		}
+
+		...	
 	}
-
-
-
 
 
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
@@ -484,13 +386,9 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 		context.setAuthentication(authResult);
 		SecurityContextHolder.setContext(context);
 		this.securityContextRepository.saveContext(context, request, response);
-		if (this.logger.isDebugEnabled()) {
-			this.logger.debug(LogMessage.format("Set SecurityContextHolder to %s", authResult));
-		}
-		this.rememberMeServices.loginSuccess(request, response, authResult);
-		if (this.eventPublisher != null) {
-			this.eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(authResult, this.getClass()));
-		}
+
+		...
+		
 		this.successHandler.onAuthenticationSuccess(request, response, authResult);
 	}
 

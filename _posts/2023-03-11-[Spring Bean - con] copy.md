@@ -29,7 +29,6 @@ Bean 의 명명규칙은 표준 java 규약을 사용하는것입니다 소문�
 
     </bean>
 
-
     <bean id ="MyCpuInfo" class="com.example.demo.MyCpuInfo">
         <constructor-arg name="cpuName" value="Intel" />
         <constructor-arg name="use" value="100" />
@@ -92,8 +91,7 @@ public class MyCpuInfo {
 
 ```
 
-우리는 bean 을 두가지 만들것이다 MySystemInfo Bean 하고 MyCpuInfo 두가지 bean 을 만들것이다 이떄 지금 처음 bean 을 만들었을대보다 다소 길어진 측면이 있지만 하나씩 실펴보자 
-먼저 MyCpuInfo를 소스를 먼저 보자 
+우리는 bean 을 두가지 만들것이다 MySystemInfo Bean 하고 MyCpuInfo 두가지 bean 을 만들것이다 이떄 지금 처음 bean 을 만들었을대보다 다소 길어진 측면이 있지만 하나씩 실펴보자 먼저 MyCpuInfo를 소스를 먼저 보자 
 
 두개의 필드 cpuName , use 가 존재하고 이를 주입받는곳은 생성자에서 주입을 받고 마지막으로 getter , setter 이 존재한다 이때 이 cpuName , use 를 주입해주는곳은 
 바로 bean.xml 에 ` <constructor-arg name="cpuName" value="Intel" /> <constructor-arg name="use" value="100" />` 이 두가지가 되는것이다 
@@ -143,24 +141,3 @@ use : 100
 ```
 
 우리는 이렇게 생성자에 있는 bean 타입에 대해서 주입하는 방법을 공부해보았다 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

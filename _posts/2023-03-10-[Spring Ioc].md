@@ -11,6 +11,7 @@ mermaid: true
 ## IoC 컨테이너
 IoC inversion of control 제어의 반전 이때 제어는 객체의 생성 주도권을 의미하는데 이전에 우리가 어떤 객체를 만들었는지 생각을 해보자 
 
+
 ```
 Student student = new Student();
 ```
@@ -32,9 +33,7 @@ Student student = new Student();
 ApplicationContext 인터페이스 자체는 IoC 컨테이너 자체를 나타내며 Bean 의 인스턴스화 , 조립을 담당합니다 이때 Bean 이 될 수 있는 개체들은 xml , 애노테이션 , java 코드로 표현이 됩니다 ApplicationContext 도 인터페이스 임으로 다른 구현체로 사용을 해야하는데 보통 ClassPathXmlApplicationContext 를 사용하게 됩니다 예를 들어서 bean 의 정의를 bean.xml 파일로 정의를 해두었을때 이를 Ioc 컨테이너가 읽게끔 만들고 싶으면 아래와 같은 코드를 사용하면됩니다 
 
 ```
-
 ApplicationContext ctx = new ClassPathXmlApplicationContext("bean.xml");
-
 ```
 
 
@@ -55,7 +54,6 @@ maven
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-starter-web</artifactId>
 </dependency>
-
 ```
 
 maven 은 web 만 가져와도 왠만한 spring 관련해서는 다 사용할 수 있다 그럼 다음의 코드를 보자 원래는 spring 레거시에서 진행을 해야 하지만 사실상 spring 레거시 프로젝트를 구하는게 사실상 어렵고 차세대로 boot 를 많이 씀으로 우리는 boot 를 활용해서 진행을 해볼려고 합니다
@@ -74,7 +72,6 @@ maven 은 web 만 가져와도 왠만한 spring 관련해서는 다 사용할 �
 	  	<bean id = "MySystemInfo" class = "com.cybb.main.MySystemInfo"></bean>
 
   </beans>
-
 ```
 
 그리고 이 파일이 핵심이다 물론 요즘은 이런식으로 Bean 설정파일을 만들지는 않지만 간혹 레거시한 프로젝트에서는 이렇게 bean 을 만들고 관리하고 있다 
@@ -116,9 +113,7 @@ public class SpringRestartApplication implements ApplicationRunner{
 
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("bean.xml");
 		MySystemInfo info =  ctx.getBean("MySystemInfo" , MySystemInfo.class);
-		
 	}
-		
 }
 
 ```
@@ -147,24 +142,3 @@ MySystemInfo Bean 생성
 역시 console 결과대로 생성자가 바로 호출되는것을 볼 수 있다 우리는 이제까지 java 에서 new 를 사용하지 않고는 생성자 호출을 할 수 없었지만 (정확히는 객체생성)
 지금은 new 연산자 없이 `ctx.getBean("MySystemInfo" , MySystemInfo.class);` 코드 한줄로 객체를 만들고 생성자를 만들어서 안에 있는 내용을 호출하는것을 보여주었다 
 이것이 제어의 역전이 일어난 것입니다
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

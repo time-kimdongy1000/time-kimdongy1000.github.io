@@ -8,29 +8,22 @@ math: true
 mermaid: true
 ---
 
-## Qualifier 
+## @Qualifier 
 우리는 지난시간에 Bean 의 Primary 설정을 통해서 여러개의 동일한 타입의 Bean 이 있다고 할지라도 우선적으로 Bean 을 주입할 수 있는 애노테이션 
 @Primary 로 선언을 했다 @Primary 의 위치는 @Bean 을 정의할때 사용함으로 보통 @Bean , @Component 하고 같이 쓰이는 경우가 많지만 
 이번에 배워볼 @Qualifier 는 Bean 을 주입받는 위치에서 어떤 Bean 을 주입받을지 결정한다 아래의 코드를 보자 
-
-
-MySystemInfo.interface
 
 ```
 
 package com.cybb.main;
 
 public interface MySystemInfo {
-	
-	public String mySystemInfo (String msg);
-	
+	public String mySystemInfo (String msg);	
 }
-
 
 ```
 
 
-Info1.java
 ```
 
 package com.cybb.main;
@@ -44,15 +37,11 @@ public class Info1 implements MySystemInfo{
 	public String mySystemInfo(String msg) {
 		return msg + "Info1 번이 호출되었습니다.";
 	}
-	
-	
-
 }
-
 
 ```
 
-Info2.java
+
 ```
 
 package com.cybb.main;
@@ -66,16 +55,12 @@ public class Info2 implements MySystemInfo {
 	public String mySystemInfo(String msg) {
 		return msg + "2번이 호출되었습니다";
 	}
-	
-	
-
 }
-
 
 ```
 
 
-SpringRestartApplication.java
+
 ```
 
 package com.cybb.main;
@@ -101,13 +86,8 @@ public class SpringRestartApplication implements ApplicationRunner{
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		
 		System.out.println(info.mySystemInfo("@Component 를 테스트 중입니다"));
-
 	}
-	
-	
-
 }
 
 ```
@@ -132,36 +112,4 @@ private MySystemInfo info;
 이렇게 나오게 된다 즉 Bean 을 생성할때 우선순위를 결정하는 @Primary , Bean 을 주입할때 이름을 통해서 주입하는 @Qualifier 가 각각 다른 상황에서 쓰이니 
 적절할때 사용토록 하자 
 
-지금은 @component 에서만 사용했지만 실제로 @Bean 에서도 사용할 수 있다 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+지금은 @component 에서만 사용했지만 실제로 @Bean 에서도 사용할 수 있다.

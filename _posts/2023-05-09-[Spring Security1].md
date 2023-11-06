@@ -31,59 +31,30 @@ maven
 이런 형식으로 갈 예정이고 안에 maven 은 하단에 정리해서 쓰도록 하겠습니다 
 
 ```
-
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
+<dependencies>
+	
+	<dependency>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
-	<groupId>com.demo</groupId>
-	<artifactId>SpringBoot_web_Security</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>SpringBoot_web_Security</name>
-	<description>Project_Amadeus</description>
-	<properties>
-		<java.version>11</java.version>
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+		<artifactId>spring-boot-starter-security</artifactId>
+	</dependency>
+	<dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-test</artifactId>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-test</artifactId>
+		<scope>test</scope>
+	</dependency>
 
-</project>
-
-
+</dependencies>
 ```
 
 크게는 web , security 에 대해서만 의존성을 주입후 여러가지 재미 있는것들을 해볼예정입니다 
@@ -125,11 +96,9 @@ public class DemoController {
 ## admin 아이디 비밀번호
 
 ```
-
 Using generated security password: aa5fb719-d2cf-46a9-9460-dee63292ca3d
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
 ```
 
 이렇게 비밀번호를 발급해 줍니다 그럼 아이디는 user 이 되고 비밀번호는 aa5fb719-d2cf-46a9-9460-dee63292ca3d 됩니다 이는 아무런 설정이 없을때 사용되는 비밀번호입니다 
@@ -140,7 +109,3 @@ This generated password is for development use only. Your security configuration
 이렇게 우리가 만든 기본적인 페이지가 나오게됩니다 
 
 아무런 설정이 없을때 시큐리티는 들어오는 모든 요청을 fitler 해서 권한이 없으면 로그인 페이지로 되돌리게 됩니다 이것이 가장 기본적인 스프링의 시큐리티의 인증 인가 어플리케이션입니다 우리는 앞으로 이런 시큐리티를 활용하면서 다양한 로그인 방법 및 시큐리티 프레임워크를 소개해 나가는 시간을 가질예정입니다 
-
-
-
-
