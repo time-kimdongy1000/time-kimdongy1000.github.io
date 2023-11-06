@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 21 OAuth2 기본개념 
 author: kimdongy1000
 date: 2023-07-01 10:00
@@ -7,12 +6,9 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security , OAuth2 ]
 math: true
 mermaid: true
-
 ---
 
 우리는 지난시간에 아무개념도 모른채 KeyClock 를 설치하고 SpringBoot 연동을 해서 로그인하는거 까지 살펴보았다 당분간은 로그인이 되는 과정보다는 먼저 OAuth2 에 대한 개념설명을 오늘 먼저 할려고 합니다 
-
-개념설명은 무엇보다 용어정리가 우선이 되어야 합니다 
 
 ## 용어정리 
 
@@ -43,7 +39,6 @@ mermaid: true
 
 Oauth2 는 큰틀에서 이렇게 움직입니다 
 
-계속해서 용어정리를 이어나가겠습니다 
 
 ## application.properties 
 
@@ -53,7 +48,7 @@ Oauth2 는 큰틀에서 이렇게 움직입니다
 이는 인가서버에서 클라이언트를 식별할때 사용하는 유일한 Key 값입니다 즉 우리가 만든 DemoController 의 Client Id 및 name 은 Spring-Oauth2-Authorizaion-client 가 되는 것입니다 
 
 2. clientSecret (clientSecret=NIe2qftuPcclGWFiBFicEWoK5SfYs7ql)
-이는 clientId 와 마찬가지로 clientId에 대한 비밀Key 입니다 이 Key 를 활용해서 인가서버와 통신할때 ClientId 와 같이 제출함으로서 이 ClientId 의 요청이 인가된 애플리케이션에서 요청이 들어왔는지 확인하게 됩니다 
+이는 clientId 와 마찬가지로 clientId에 대한 비밀 Key 입니다 이 Key 를 활용해서 인가서버와 통신할때 ClientId 와 같이 제출함으로서 이 ClientId 의 요청이 인가된 애플리케이션에서 요청이 들어왔는지 확인하게 됩니다 
 
 3. redirectUri (redirectUri=http://localhost:8081/login/oauth2/code/keycloak)
 사용자가 인가서버에 성공적으로 로그인을 마치고 나면 인가서버는 사용자를 이 Url 로 리디렉션 하게 됩니다 이 주소는 인가서버에 등록이 되어 있어야 합니다 
@@ -79,7 +74,7 @@ clientId 와 마찬가지로 이 클라이언트의 이름을 나타냅니다 �
 
 여섯번쨰로는 PKEC – enhanced Authorization Code Grant Type 
 
-이중 제일 많이 쓰이는 방식은 authorization Code Grant Type 이는 현재 spring boot 와 KeyClock 이 연동되어 있는 상태이며 리소스 소유자가 인서버로부터 로그인을 하면 
+이 중 제일 많이 쓰이는 방식은 authorization Code Grant Type 이는 현재 spring boot 와 KeyClock 이 연동되어 있는 상태이며 리소스 소유자가 인서버로부터 로그인을 하면 
 승인코드 발급 후 이 승인코드 발급 클라이언트는 이 승인코드를 통해 엑세스 코드를 발급받게 되고 클라이언트는 이 액세스 코드를 통해서 사용자 정보를 취득하게 됩니다 
 우리가 이 OAuth2 를 하는 동안엔 authorization Code Grant Type , Refresh Token Grant Type , PKEC – enhanced Authorization Code Grant Type 에 대해서 공부를 해볼예정입니다 
 
@@ -104,9 +99,4 @@ clientId 와 마찬가지로 이 클라이언트의 이름을 나타냅니다 �
 13. userNameAttribute(userNameAttribute=preferred_username)
 이는 리소스 서버로 부터 받은 사용자 정보를 해당 식별자를 통해서 가져오게 됩니다 사용자 정보를 불러올때 사용하는 key 값 
 
-많은 내용이긴 합니다만 이 내용을 잘 알고 있어야 다음시간부터 로그인이 되는 과정을 하나하나 살펴볼때 도움이 되며 그때 또한번 설명을 할 예정입니다 
-
-
-
-
-
+많은 내용이긴 합니다만 이 내용을 잘 알고 있어야 다음시간부터 로그인이 되는 과정을 하나하나 살펴볼때 도움이 되며 그때 또한번 설명을 할 예정입니다

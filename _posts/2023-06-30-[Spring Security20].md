@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 20 OAuth2
 author: kimdongy1000
 date: 2023-06-30 10:00
@@ -7,26 +6,20 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security , OAuth2 ]
 math: true
 mermaid: true
-
 ---
 
 우리는 지난시간에 시큐리티의 기본에 대해서 알아보았다 물론 전부다 알아본것은 아니지만 기본적인 로그인 구현 및 방식부터 해서 직접 어플리케이션을 만들어보고
 로그인도 해보았다 오늘부터 하게될 이 OAuth2 라는것은 우리들이 생각보다 익숙할것이다 
 
 요즘 웹사이트 로그인할때 보면 보통 그 사이트에서 제공하는 로그인 form 방식이 있는 반면에 구글 로그인 카카오로그인 네이버 로그인 이렇게 대표적인 로그인 
-
 버튼들이 있고 그것들을 통해서 우리는 사이트 가입없이 간편하게 로그인을 할 수 있는데 그러한 기술이 OAuth2 이다 우리는 OAuth2 에 대해서 알아볼려고 한다 
-
 그리고 제일 마지막에서는 구글 로그인 , 네이버 로그인 , 카카오그인을 개발하는 것으로 OAuth2 에 대한 내용을 마무리 하도록 하겠습니다
 
 OAuth2 는 우리가 앞으로 배울 OAuth2 - Login , OAuth2 - Client , OAuth2 - ResourceServer , OAuth2 - Authorization - Sever 
-이렇게 큰 기술이 4개나 존재하는데 그중에서 우리는 OAuth2 - Login , OAuth2 - Client 에 대해서만 알아볼 예정이고 
-
-OAuth2 - ResourceServer , OAuth2 - Authorization - Sever 는 좀더 공부가 필요한 부분이다 이에 대해서는 아마 올해 안에는 기술을 안할꺼 같습니다
+이렇게 큰 기술이 4개나 존재하는데 그중에서 우리는 OAuth2 - Login , OAuth2 - Client , OAuth2 - ResourceServer 이렇게 3개의 기술에 대해서 공부를 해볼 예정입니다
 
 
 ## 개발환경 
-
 JDK 11 이상 
 Spring boot 2.7.1 
 keycloak
@@ -40,7 +33,6 @@ Window11
 
 원래는 최신버전을 쓸려고 했는데 계속 설치를 해서 안되서 찾아보니 현재 20버전 이상에서는 window 에서 첫번째 실행은 되지만 두번째 실행부터는 안된다는 오류가 발견되었습니다 
 무엇인가 특별한 조치가 없는 관계로 원래쓰던 19.1 버전 링크를 남기겠습니다 
-
 <https://github.com/keycloak/keycloak/releases/download/19.0.1/keycloak-19.0.1.zip>
 
 여기서 알집을 받아준뒤 알집을 풀어줍니다 저는 C 에 풀었습니다 (바탕화면에도 상관 없습니다)
@@ -52,10 +44,10 @@ cmd 터미널 열어서 C:\keycloak-19.0.1\keycloak-19.0.1\bin 여기 까지 들
 .\kc.bat start-dev
 
 ```
-
 이렇게 하면 개발모드로 실행이되고 처음 실행하면 버전에 대해서 초기 설정을 진행합니다 (20 버전 이상부터는 이 초기설정에서 계속 오류 발생 구관이 명관...)
 
 3. 접속 
+
 주소가  http://0.0.0.0:8080 나오는데 이는 IPV6 주소이고 이는 http://localhost:8080 으로 접속을 하시면됩니다 
 
 ![2](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/608aae47-d8d7-4242-8e77-3cd92f1575d5)
@@ -108,82 +100,37 @@ cmd 터미널 열어서 C:\keycloak-19.0.1\keycloak-19.0.1\bin 여기 까지 들
 왼쪽메뉴에서 user 누르고 create user 클릭한뒤 본인이 원하는대로 설정을 하시면됩니다 그리고 save 누르면 유저가 생성이 됩니다 
 
 
-## spring 연동 
+## spring 연동 Maven
 
 ```
-
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
+<dependencies>
+	<dependency>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
-	<groupId>com.demo</groupId>
-	<artifactId>SpringBoot_web_Security</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>SpringBoot_web_Security</name>
-	<description>Project_Amadeus</description>
-	<properties>
-		<java.version>11</java.version>
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-client -->
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-oauth2-client</artifactId>
-		</dependency>
-
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-
-</project>
-
-
+		<artifactId>spring-boot-starter-security</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-test</artifactId>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-test</artifactId>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-oauth2-client</artifactId>
+	</dependency>
+</dependencies>
 ```
-
-기존 maven 에 spring-security-oauth2-client 부분만 추가하겠습니다 
 
 ## demoController 만들기 
-
 ```
-
-package com.cybb.main.controller;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 @RestController
 public class DemoController {
     
@@ -194,15 +141,10 @@ public class DemoController {
     }
 }
 
-
 ```
-
-간단한 demoController 만들어주고 
 
 ## application.properties 설정 
-
 ```
-
 server.port=8081
 
 spring.security.oauth2.client.registration.keycloak.clientId=Spring-Oauth2-Authorizaion-client
@@ -220,19 +162,15 @@ spring.security.oauth2.client.provider.keycloak.userInfoUri=http://localhost:808
 spring.security.oauth2.client.provider.keycloak.jwkSetUri=http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/certs
 spring.security.oauth2.client.provider.keycloak.userNameAttribute=preferred_username
 
-
-
-
-
 ```
 
-설정을 해주시면됩니다 이때 중요한것은 clientSecret 인데 
+저와 Relem 를 같이 입력했으면 이와 같지만 그게 아니라면 자신만의 주소 입력하셔야 합니다 단 Client - Secret 제외 
 
 ## ClientSecret 확인
 
 ![11](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/46f4d4a9-e098-4aa1-884f-ac319cfa8924)
 
-웹에서 이 부분 Client secret 클릭해서 확인후 붙여넣으시면됩니다 나머지는 저랑 
+웹에서 이 부분 Client secret 클릭해서 확인 후 붙여넣으시면됩니다
 
 ## Client ID 확인
 현재 spring.security.oauth2.client.registration.keycloak.clientId , spring.security.oauth2.client.registration.keycloak.clientName 에 들어가는 값으로
@@ -278,15 +216,4 @@ jwkSetUri -> jwks_uri
 우리는 그러면 개념은 다음시간부터 다루고 처음으로 인가서버와 , spring 애플리케이션을 연동을 해보았습니다 앞에서 우리는 인가서버와 그에 해당하는 리소스 서버를 오롯이 
 우리가 구현을 했다면 이 OAuth2-login , client 방식은 이미 구현이 되어 있는 인가서버를 통해서 로그인 후 권한을 획득 한후 권한에 알맞는 페이지로 인도하게 됩니다 
 
-다음시간부터는 이 Oauth2 의 개념부터 차근차근 해보도록 하겠습니다 
-
-
-
-
-
-
-
-
-
-
-
+다음시간부터는 이 Oauth2 의 개념부터 차근차근 해보도록 하겠습니다
