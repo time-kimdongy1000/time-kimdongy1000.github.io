@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 12 CsrfFilter
 author: kimdongy1000
 date: 2023-06-05 16:00
@@ -7,10 +6,9 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true
-
 ---
 
-지난시간 우리는 csrfFilter 에 대해서 약간 알아보았다 다시 정리해보면 Crsf 공격은 
+## CSRF 란
 
 CSRF(Cross-Site Request Forgery) 토큰은 웹 애플리케이션의 보안을 강화하는 데 사용되는 토큰종류이다 그럼 csrf 공격은 웹사이트 취약점을 이용한 공격의 한가지 방법입니다 
 
@@ -27,6 +25,7 @@ CSRF(Cross-Site Request Forgery) 토큰은 웹 애플리케이션의 보안을 �
 이렇게 CSRF 공격인데 방어하는 로직은 의외로 간단했다 
 
 ```
+
 <input  th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
 ```
@@ -34,10 +33,8 @@ CSRF(Cross-Site Request Forgery) 토큰은 웹 애플리케이션의 보안을 �
 하단에 이런 표기를 넣어주고 서버와의 통신때 이 정보를 같이 넘겨주면 되는것이다 그럼 이 csrf 는 어떤식으로 동작하는지에 대해서 알아볼 예정이다 
 
 ## CsrfFilter
-
 ```
 public final class CsrfFilter extends OncePerRequestFilter 
-
 
 @Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -101,10 +98,9 @@ request.setAttribute(csrfToken.getParameterName(), csrfToken);
 ```
 
 그런다음 요청정보에 csrf 토큰을 심어두고 요청은 끝이나게 됩니다 이때 앞에도 말했다 싶히 서버의 상태를 변경하지 않는 메소드 
-POST , DELETE , PATCH , PUT 메서드 호출할때만 동작이 되고 그 외에는 넘기게 됩니다 그 소스는 
+POST , DELETE , PATCH , PUT 메서드 호출할때만 동작이 되고 그 외에는 넘기게 됩니다 
 
 ```
-
 if (!this.requireCsrfProtectionMatcher.matches(request)) {
     if (this.logger.isTraceEnabled()) {
         this.logger.trace("Did not protect against CSRF since request did not match "
@@ -122,7 +118,6 @@ if (!this.requireCsrfProtectionMatcher.matches(request)) {
 토큰검증은 api 호출과 특정한 메서드 (post , patch , delete , put) 호출이 되면서 헤더 정보에 우리는 csrf 토큰을 심어서 보냈습니다 
 
 ```
-
 request.setAttribute(HttpServletResponse.class.getName(), response);
 CsrfToken csrfToken = this.tokenRepository.loadToken(request);
 
@@ -135,10 +130,10 @@ CsrfToken csrfToken = this.tokenRepository.loadToken(request);
 String actualToken = request.getHeader(csrfToken.getHeaderName());
 
 ```
+
 여기서 요청정보의 헤더값으로 토큰을 분리해서 가져오게 됩니다 이떄 csrfToken.getHeaderName() 값은 X-CSRF-TOKEN 인 값이고 우리는 앞에서 헤더에 key 값이 X-CSRF-TOKEN 인것으로 토큰을 심어서 보냈습니다 그러면 이제 actualToken 안에는 csrf 토큰이 담기게 됩니다 
 
 ```
-
 if (!equalsConstantTime(csrfToken.getToken(), actualToken))
 
 ```
@@ -147,5 +142,4 @@ if (!equalsConstantTime(csrfToken.getToken(), actualToken))
 실제 발급이 되었다고 할지라도 시간이 넘어가면 그 토큰은 유효하지 않게 됩니다 
 
 토큰이 옳으면 다음페이지 그렇지 않으면 로그인 페이지로 로그아웃 시켜서 인증을 확인하게 합니다 
-
-오늘은 이 csrf 토큰과 filter 에 대해서 공부를 해보았습니다 다음시간에 계속해서 회원가입 및 로그인 로직을 만들어보겠습니다 
+오늘은 이 csrf 토큰과 filter 에 대해서 공부를 해보았습니다 다음시간에 계속해서 회원가입 및 로그인 로직을 만들어보겠습니다
