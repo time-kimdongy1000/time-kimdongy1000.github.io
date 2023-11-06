@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 15 JWT 2 JWT 유효성 검증
 author: kimdongy1000
 date: 2023-06-11 10:00
@@ -7,28 +6,14 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true
-
 ---
 
 우리는 지난시간에 JWT 의 개요 및 생성을 했습니다 이번시간에는 발급된 JWT 를 검증한은 로직을 만들어보겠습니다 이번시간에는 POST - MAN 을 활용해서 
 간단한 서버 요청을 만들어보겠습니다
 
+## JWT 디코딩
+
 ```
-
-package com.cybb.main.controller;
-
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.SignatureException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Date;
-
 @Controller
 @RestController
 @RequestMapping("jwt")
@@ -106,25 +91,13 @@ public class DemoController {
         }
 
         return returnFlag;
-
-
-
     }
-
-
-
-
 }
-
-
 ```
-
 비밀key 는 상단에 정의를 해두고 하단에 새로운 메서드로 parseJwt 를 만들겠습니다 
 
-기본적으로 
 
 ```
-
 Claims claims = Jwts.parserBuilder()
 	.setSigningKey(SECRET_KEY)
 	.build()
@@ -133,20 +106,12 @@ Claims claims = Jwts.parserBuilder()
 
 ```
  
-claims 로 parserBuilder SECRET_KEY jwt 를 넣으면 기본적으로 jwt 형식 체크 , 개인키 검증 , 만료시간 검증 등등 진행하게 됩니다 만약 jwt 에 대해서 위와 같은 불일치 사유가 나오면
-에러를 던지고 끝나게 됩니다 그래서 저는 try - catch 로 아래와 같은 에러 로직을 만들고 테스트를 진행을 했습니다 
+claims 로 parserBuilder SECRET_KEY jwt 를 넣으면 기본적으로 jwt 형식 체크 , 개인키 검증 , 만료시간 검증 등등 진행하게 됩니다 만약 jwt 에 대해서 위와 같은 불일치 사유가 나오면에러를 던지고 끝나게 됩니다 그래서 저는 try - catch 로 아래와 같은 에러 로직을 만들고 테스트를 진행을 했습니다 
 
-다만 만료시간과 claims 를 변조하하게 되면 거진다 SignatureException 로 빠지게 됩니다 그래서 MalformedJwtException UnsupportedJwtException 직접적으로 보기가 힘듭니다 
-그래서 이정도로만 하게 되고 인증이 되면 화면에서는 true 가 나오게 되고 그렇지 않으면 화면은 false 와 에러는 콘솔에 찍히게 됩니다 
 
 ```
-
 JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted.
 개인키가 틀립니다 
 JWT expired at 2023-09-09T13:16:05Z. Current time: 2023-09-09T13:18:13Z, a difference of 128631 milliseconds.  Allowed clock skew: 0 milliseconds.
 jwt 시간만료
-
-
 ```
-
-
