@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 5 인증 전체과정
 author: kimdongy1000
 date: 2023-05-23 13:20
@@ -7,7 +6,6 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security ]
 math: true
 mermaid: true
-
 ---
 
 우리는 지난시간까지 인증이 없는 유저에 대해 시큐리티가 어떻게 인증페이지로 유도하는지 그리고 만들지도 않은 로그인 로그아웃 페이지를 어떻게 만들어내는지에 대해서 살펴보았다 이제 우리는 로그인할때 어떤 일이 일어나는지에 대해서 알아볼려고 합니다 
@@ -15,7 +13,6 @@ mermaid: true
 로그인에 관련한 필터는 UsernamePasswordAuthenticationFilter 이 기본이 되는데 여기서 부터는 조금 filter 의 내용이 길어집니다 그럴 수 밖에 없는게 진짜 로그인을 하고 안에 권한 부여 및 유저를 확인하는 작업을 진행하기 떄문입니다 천천히 가도록 하겠습니다 
 
 ## UsernamePasswordAuthenticationFilter
-
 ```
 public class UsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter 
 
@@ -31,7 +28,6 @@ public Authentication attemptAuthentication(HttpServletRequest request, HttpServ
 		password = (password != null) ? password : "";
 		UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
 				password);
-		// Allow subclasses to set the "details" property
 		setDetails(request, authRequest);
 		return this.getAuthenticationManager().authenticate(authRequest);
 	}
@@ -45,18 +41,16 @@ public Authentication attemptAuthentication(HttpServletRequest request, HttpServ
 if (this.postOnly && !request.getMethod().equals("POST")) {
 			throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
 }
-
 ```
+
 이 부분을 마딱드리게 되는데 이때 로그인의 요청은 항상 post 로그인이야 한다 그렇지 않으면 에러를 던지며 끝이 나게 된다 
 
 
 ```
-
 String username = obtainUsername(request);
 username = (username != null) ? username.trim() : "";
 String password = obtainPassword(request);
 password = (password != null) ? password : "
-
 ```
 
 지금보면 이제 요청정보에서 username , password 를 꺼내는 모습을 볼 수 있다 
@@ -65,10 +59,11 @@ password = (password != null) ? password : "
 UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,password);
 ```
 
-어찌보면 제일 중요한 부분이다 UsernamePasswordAuthenticationToken 이 앞으로 이 인증의 유무가 갈리게 되는것인데 
+어찌보면 제일 중요한 부분이다 UsernamePasswordAuthenticationToken 이 앞으로 이 인증의 유무가 갈리게 되는것인데 지금은 받은 username 하고 password 를 통해서 
+UsernamePasswordAuthenticationToken 객체만 만들어 놓았지 실제로 unauthenticated 살펴보면 이는 인증이 되지 않았음을 보여줍니다 
+
 
 ```
-
 public static UsernamePasswordAuthenticationToken unauthenticated(Object principal, Object credentials) {
 		return new UsernamePasswordAuthenticationToken(principal, credentials);
 	}
@@ -85,25 +80,22 @@ public static UsernamePasswordAuthenticationToken unauthenticated(Object princip
 				"Cannot set this token to trusted - use constructor which takes a GrantedAuthority list instead");
 		super.setAuthenticated(false);
 	}
+```
 
+여기서 authRequest 의 상태를 살펴보면
 
 ```
-이 작업을 보면 앞에서 넘어오는 username , password 를 UsernamePasswordAuthenticationToken 객체에 있는 principal , credentials 에 각각 심는것을 보여준다 
-다만 이때 유의해서 봐야 할것은 setAuthenticated 이다 인증여부를  true , false 로 다루는것이기에 일단 false 로 두고 인증이 되지 않은 채로 false 로만 두고 토큰을 반환한다 그래서 여기까지 온 token 값을 살펴보면 
-
-```
-authRequest = {UsernamePasswordAuthenticationToken@7299} "UsernamePasswordAuthenticationToken [Principal=user, Credentials=[PROTECTED], Authenticated=false, Details=null, Granted Authorities=[]]"
+authRequest = {UsernamePasswordAuthenticationToken} "UsernamePasswordAuthenticationToken [Principal=user, Credentials=[PROTECTED], Authenticated=false, Details=null, Granted Authorities=[]]"
  principal = "user"
  credentials = "08877e55-bd37-43d9-9bc6-1e52495631d0"
- authorities = {Collections$EmptyList@7300}  size = 0
+ authorities = {Collections$EmptyList}  size = 0
  details = null
  authenticated = false
 
 ```
-
 앞에서 넘겨준 username , credentials 만 존재하고 나머지는 아직 값이 없고 authenticated false 인것을 볼 수 있습니다 
 
-그 다음이는 return 을 해주게 되는데 
+그 다음에는 ProviderManager 에게 return 해주는데 사실상 이 ProviderManager 가 시큐리티 전반에 걸쳐서 인증 / 인가를 담당하는 부분입니다 
 
 ```
 return this.getAuthenticationManager().authenticate(authRequest);
@@ -111,12 +103,8 @@ return this.getAuthenticationManager().authenticate(authRequest);
 
 
 ## ProviderManager
-
 ```
-
 public class ProviderManager implements AuthenticationManager, MessageSourceAware, InitializingBean 
-
-
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		...
 
@@ -133,47 +121,24 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 			try {
 				result = provider.authenticate(authentication);
 			}	
-
-				.....
+			.....
 		}
 		if (result == null && this.parent != null) {
-			// Allow the parent to try.
 			try {
 				parentResult = this.parent.authenticate(authentication);
 				result = parentResult;
 			}
-
 			...
-		}
-		
+		}	
 	}
-
 ```
 
-지금보면 이제 다른 클래스로 넘어온것을 볼 수 있습니다 ProviderManager UsernamePasswordAuthenticationFilter 가 하는 역활은 요청에서 아이디 비밀번호를 추출해서
-`UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,password);` 미인가 토큰만 만들고 
-실제 이런 토큰에 권한과 인증여부를 판별하는 곳은 ProviderManager 가 되는것입니다 
-
-디버깅을 조금 내려오면
-
-```
-try {
-	parentResult = this.parent.authenticate(authentication);
-	result = parentResult;
-}
-
-```
-이 부분이 보일것입니다 그런데 좀 이상하게 보입니다 다시 한번 자신의 부모의 authenticate 함수를 호출하게 됩니다 그러면 자기자신이 구현체이기 때문에 
-위의 함수가 한번더 호출이 됩니다 그런데 이번에는 
-
-`result = provider.authenticate(authentication);` 호출이 들어가게 되고 이때 이 호출되는 부분은 
-
+디버깅을 조금 내려오면`result = provider.authenticate(authentication);` 를 호출하게 되고 이 호출은 아래의 클래스를 호출하게 되는데 
 
 
 ## AbstractUserDetailsAuthenticationProvider
 
 ```
-
 public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, authentication,
 				() -> this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.onlySupports",
@@ -186,12 +151,10 @@ public Authentication authenticate(Authentication authentication) throws Authent
 			try {
 				user = retrieveUser(username, (UsernamePasswordAuthenticationToken) authentication);
 			}
-		
-
 		...
-
 		return createSuccessAuthentication(principalToReturn, authentication, user);
 	}
+}
 
 ```
 
@@ -203,14 +166,12 @@ UserDetails user = this.userCache.getUserFromCache(username);
 
 ```
 지금보면 넘어오는 인증객체의 username 을 추츨해서 UserDetails 라는 객체를 만들고 있습니다 이 UserDetails 또한 시큐리티에서 중요한 인터페이스 입니다 실제로 모든 유저들은 이 UserDetails 구현체에 담기게 됩니다 그리고 `user = retrieveUser(username, (UsernamePasswordAuthenticationToken) authentication);` 부분에서 
-실제 user 의 정보가 담기게 되는데 아래로 따라가면 
+실제 user 의 정보가 담기게 되는데 
 
 
 ## DaoAuthenticationProvider
-
 ```
 public class DaoAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider 
-
 
 @Override
 protected final UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication)
@@ -224,9 +185,7 @@ protected final UserDetails retrieveUser(String username, UsernamePasswordAuthen
 		}
 		return loadedUser;
 	}
-
-	...
-	
+	...	
 }
 
 
@@ -248,7 +207,6 @@ private void prepareTimingAttackProtection() {
 ```
 public class InMemoryUserDetailsManager implements UserDetailsManager, UserDetailsPasswordService
 
-
 public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		UserDetails user = this.users.get(username.toLowerCase());
 		if (user == null) {
@@ -263,26 +221,21 @@ public UserDetails loadUserByUsername(String username) throws UsernameNotFoundEx
 `UserDetails user = this.users.get(username.toLowerCase());` 이를 통해서 `private final Map<String, MutableUserDetails> users = new HashMap<>();`
 여기 HashMap 에 담겨 있는 user 를 검색해서 가져오게 됩니다 만약 없으면 UsernameNotFoundException 던지고 끝이나고 그게 아니라면 이제 이 진짜 user 의 데이터를 심어주게 됩니다 
 
-다시되돌아오게 되면 
+그러면 다시 AbstractUserDetailsAuthenticationProvider 되돌아 옵니다 이제 유저도 찾았으니 모두 return 을 받은것이지요 
+`user = retrieveUser(username, (UsernamePasswordAuthenticationToken) authentication);`
 
 ```
-user = retrieveUser(username, (UsernamePasswordAuthenticationToken) authentication);
-
-```
-이제 이 user 객체 안에는 
-
-```
-user = {User@7824} "org.springframework.security.core.userdetails.User [Username=user, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, credentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[]]"
+user = {User} "org.springframework.security.core.userdetails.User [Username=user, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, credentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[]]"
  password = "{bcrypt}$2a$10$TGqvEOp2TW98azOTgkejbOhbEkepWtD8p8ushIcXeDnjBxO1KCcWS"
  username = "user"
- authorities = {Collections$UnmodifiableSet@7836}  size = 0
+ authorities = {Collections$UnmodifiableSet}  size = 0
  accountNonExpired = true
  accountNonLocked = true
  credentialsNonExpired = true
  enabled = true
 
 ```
-이런 데이터가 들어오게 됩니다 그럼 끝이냐 아닙니다 아직 비밀번호 검증을 안했기 때문에 이제 그 검증을 해야 합니다 바로 하단 
+이런 데이터가 들어오게 됩니다 그럼 끝이냐 아닙니다 아직 비밀번호 검증을 안했기 때문에 이제 그 검증을 해야 합니다 
 
 ```
 try {
@@ -295,9 +248,7 @@ try {
 
 ## DaoAuthenticationProvider
 ```
-
 public class DaoAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider 
-
 
 @Override
 @SuppressWarnings("deprecation")
@@ -345,16 +296,13 @@ String presentedPassword = authentication.getCredentials().toString();
 this.passwordEncoder.matches(presentedPassword, userDetails.getPassword()) 그리고 loadByUsername 을 했을때 넘어오는 저장된 비밀번호와 passwordEncoder 로 
 매핑을 시켜서 일치하는지 여부를 판단합니다 올바르면 이제 추가 인증까지 완료가 된것입니다 그것이 아니고 비밀번호가 틀렸다면 역시나 BadCredentialsException 을 던지고 끝이나게 됩니다 
 
-그리고 모든 인증이 완료되었으니 시큐리티 이 인증객체를 자신의 인증컨텍스트에 심어놓고 사용을 해야 비로소 진정한 인증이 끝나게 됩니다 
+그러면 인증은 끝났습니다 다만 시큐리티에서 인증은 SecurityContext 에 객체를 심어야 완벽하게 끝이나게 되는것입니다 
 
 
 ## AbstractAuthenticationProcessingFilter
 ```
-
 public abstract class AbstractAuthenticationProcessingFilter extends GenericFilterBean
 		implements ApplicationEventPublisherAware, MessageSourceAware 
-
-
 
 	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
@@ -363,22 +311,22 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 			return;
 		}
 		try {
+
 			Authentication authenticationResult = attemptAuthentication(request, response);
 			if (authenticationResult == null) {
-				// return immediately as subclass has indicated that it hasn't completed
 				return;
 			}
+
 			this.sessionStrategy.onAuthentication(authenticationResult, request, response);
-			// Authentication success
+
 			if (this.continueChainBeforeSuccessfulAuthentication) {
 				chain.doFilter(request, response);
 			}
+
 			successfulAuthentication(request, response, chain, authenticationResult);
 		}
-
 		...	
 	}
-
 
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
@@ -394,8 +342,6 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 
 ```
 
-이 안에서 successfulAuthentication 로 넘어가게 되면 
-
 ```
 
 SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -407,10 +353,8 @@ this.securityContextRepository.saveContext(context, request, response);
 
 먼저 인증컨텍스트에 createEmptyContext 빈 컨텍스트 한자리 마련해두고 여기에 setAuthentication 함수를 호출해 인증이 완료된 객체를 심어줍니다 
 그렇게 되면 시큐리티 인증이 끝나게 되고 하단 this.successHandler.onAuthenticationSuccess(request, response, authResult); 을 통해서 
-인증이 끝난 콜백 함수를 호출하러 가게 됩니다 
+인증이 끝난 콜백 함수를 호출하러 가게 됩니다 그러면 시큐리티의 인증은 끝이나게 됩니다 
 
-
-정말 길고긴 인증과정입니다 정리를 한번 하도록 하겠습니다 아래는 요청순서대로 간략하게 정리를 하는 부분입니다 
 
 ## 정리 및 요약 
 
@@ -429,9 +373,4 @@ return this.getAuthenticationManager().authenticate(authRequest); 함수를 통�
 DaoAuthenticationProvider 에서 진행을 하게 됩니다 
 
 6. 5번 작업으로 인해서 인증이 완벽하게 되었으면 이제 시큐리티는 이 정보를 가지고 SecurityContext 에 인증정보를 심게 됩니다 이로서 인증은 마무리 되고
-인증이 완료된 직후 행동을 onAuthenticationSuccess 를 호출하게 됩니다 
-
-
-
-엄청 길다 이 부분이 시큐리티 부분에서 제일 긴부분입니다 처음에는 이해가 안가고 그럴 수 있지만 반복적으로 디버깅을 하면서 어떤 데이터 어떤 객체가 생성되는지 잘 살펴보면 
-충분히 이해하실 수 있습니다 이로서 우리는 인증에 필요한 기본 필터를 알아보았습니다 앞으로는 우리가 직접 커스텀하게 유저를 만들거나 , 로그인 페이지를 생성하는 그런 작업을 하면서 시큐리티를 계속해서 공부해나가겠습니다 
+인증이 완료된 직후 행동을 onAuthenticationSuccess 를 호출하게 됩니다
