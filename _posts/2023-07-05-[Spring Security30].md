@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 30 OIDC 로그아웃
 author: kimdongy1000
 date: 2023-07-05 18:00
@@ -7,7 +6,6 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security , OAuth2 ]
 math: true
 mermaid: true
-
 ---
 
 지난시간에 OIDC 인증에 관련한 Flow 를 살펴보았습니다 잠깐 복습을 해보자면 OIDC 는 인증에 관련한 프레임워크로 OAuth2.0 위의 계층에 존재하는 프레임워크입니다 
@@ -15,23 +13,19 @@ access_token , refres_token 은 인가쪽인 부분임으로 이 부분은 로�
 이 부분을 다루도록 하겠습니다 
 
 ## Security 로그아웃 
-사실 시큐리티 로그아웃은 간다합니다 Security 컨텍스트에 저장되어 있는 정보를 삭제 (세선무효화 쿠키 삭제) 등을 하고 리딕렉션을 처음 로그인 페이지로 보내게 되면 
-사실상 클라이언트 상에서는 OIDC 로그아웃이나 , OAuth2 로그아웃이냐 동일하게 보일 예정입니다 시큐리티 로그아웃은 OAuth2 , OIDC 나 상관없이 
+사실 시큐리티 로그아웃은 간단합니다 Security 컨텍스트에 저장되어 있는 정보를 삭제 (세선무효화 쿠키 삭제) 등을 하고 리딕렉션을 처음 로그인 페이지로 보내게 되면 
+사실상 클라이언트 상에서는 OIDC 로그아웃이나 , OAuth2 로그아웃이나 동일하게 보일 예정입니다 시큐리티 로그아웃은 OAuth2 , OIDC 나 상관없이 
 모두 LogoutFilter 를 타고 이 필터의 결과가 
 
-
 ```
-
 SecurityContext context = SecurityContextHolder.getContext();
 SecurityContextHolder.clearContext();
 if (this.clearAuthentication) {
 	context.setAuthentication(null);
 }
-
 ```
 
-이렇게 컨텍스를 지우는것으로 끝이나기 때문입니다 그럼 굳이 OIDC 로그아웃을 하는 이유는 이는 클라이언트 로그아웃 뿐만 아니라 KeyClock 에 있는 세션정보까지도 없애기 위한 로그아웃입니다 우리 다른 어플리케이션 보면 모든기기에서 로그아웃 하기 이런 기능을 본적이 있습니다 이 버튼을 누르면 내가 인증인가를 했던 모든기기에서 로그아웃이 진행이 되기 때문에 이 코드를 동작시키면 우리는 다시 로그인을 해야하는 상황이 오기 때문입니다 
-
+이렇게 컨텍스를 지우는것으로 끝이나기 때문입니다 그럼 굳이 OIDC 로그아웃을 하는 이유는 이는 클라이언트 로그아웃 뿐만 아니라 KeyClock 에 있는 세션정보까지도 없애기 위한 로그아웃입니다 우리 다른 어플리케이션 보면 모든기기에서 로그아웃 하기 이런 기능을 본적이 있습니다 이 버튼을 누르면 내가 인증 인가를 했던 모든기기에서 로그아웃이 진행이 되기 때문에 이 코드를 동작시키면 우리는 다시 로그인을 해야하는 상황이 오기 때문입니다 
 
 로그인을 한 상태에서 `http://localhost:8081/logout` 이렇게 로그아웃 요청을 주게 되면 
 
@@ -41,58 +35,42 @@ if (this.clearAuthentication) {
 
 
 ## LogoutFilter 
-
 ```
-public class LogoutFilter extends GenericFilterBean {
-
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
-		doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
-	}
-
-	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
-		if (requiresLogout(request, response)) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			if (this.logger.isDebugEnabled()) {
-				this.logger.debug(LogMessage.format("Logging out [%s]", auth));
-			}
-			this.handler.logout(request, response, auth);
-			this.logoutSuccessHandler.onLogoutSuccess(request, response, auth);
-			return;
-		}
-		chain.doFilter(request, response);
-	}
-
-
+@Override
+public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+		throws IOException, ServletException {
+	doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
 }
 
+private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+		throws IOException, ServletException {
+	if (requiresLogout(request, response)) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug(LogMessage.format("Logging out [%s]", auth));
+		}
+		this.handler.logout(request, response, auth);
+		this.logoutSuccessHandler.onLogoutSuccess(request, response, auth);
+		return;
+	}
+	chain.doFilter(request, response);
+}
 ```
 
 이렇게 LogoutFilter 가 동작을 하게 됩니다 
-
 `Authentication auth = SecurityContextHolder.getContext().getAuthentication();` 현재 시큐리티 컨텍스트 에 저장된 인증객체를 가져오고 
 `this.handler.logout(request, response, auth);` 호출을 통해서 로그아웃을 시도하게 됩니다 
 
 
-##
+## CompositeLogoutHandler
 
 ```
-
-public final class CompositeLogoutHandler implements LogoutHandler {
-
-	@Override
-	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-		for (LogoutHandler handler : this.logoutHandlers) {
-			handler.logout(request, response, authentication);
-		}
+@Override
+public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+	for (LogoutHandler handler : this.logoutHandlers) {
+		handler.logout(request, response, authentication);
 	}
-
-
-
 }
-
 ```
 
 이쪽으로 호출이 되는데 이때 handler 3개의 핸들러가 저장이 되어 있고 이를 3번 호출하면서 각 핸들러마다 로그아웃을 진행하게 됩니다 
@@ -101,14 +79,14 @@ public final class CompositeLogoutHandler implements LogoutHandler {
 
 ```
 
-logoutHandlers = {Arrays$ArrayList@8211}  size = 3
- 0 = {CsrfLogoutHandler@8214} 
-  csrfTokenRepository = {LazyCsrfTokenRepository@8216} 
- 1 = {SecurityContextLogoutHandler@8222} 
-  logger = {LogAdapter$Slf4jLocationAwareLog@8224} 
+logoutHandlers = {Arrays$ArrayList}  size = 3
+ 0 = {CsrfLogoutHandler} 
+  csrfTokenRepository = {LazyCsrfTokenRepository} 
+ 1 = {SecurityContextLogoutHandler} 
+  logger = {LogAdapter$Slf4jLocationAwareLog} 
   invalidateHttpSession = true
   clearAuthentication = true
- 2 = {LogoutSuccessEventPublishingLogoutHandler@8409} 
+ 2 = {LogoutSuccessEventPublishingLogoutHandler} 
   eventPublisher = {AnnotationConfigServletWebServerApplicationContext@8411} "org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@ca30bc1, started on Sat Oct 14 20:57:48 KST 2023"
 
 ```
@@ -120,18 +98,11 @@ LogoutSuccessEventPublishingLogoutHandler
 이렇게 총 3개의 핸들러에서 로그아웃을 호출하게 되는데 하나씩 들어가보면 
 
 ## CsrfLogoutHandler
-
 ```
-
-public final class CsrfLogoutHandler implements LogoutHandler {
-
-	@Override
-	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-		this.csrfTokenRepository.saveToken(null, request, response);
-	}
-
+@Override
+public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+	this.csrfTokenRepository.saveToken(null, request, response);
 }
-
 ```
 
 이쪽으로 들어와서 saveToken 토큰 함수를 호출하게 되는데 함수명만 보면 무엇인가 저장하는거 처럼 보이지만 다음 메서드 호출로 가보자 
