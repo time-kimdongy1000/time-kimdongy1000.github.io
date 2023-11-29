@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 31 Resource Server
 author: kimdongy1000
 date: 2023-07-09 10:00
@@ -7,7 +6,6 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security , OAuth2 ]
 math: true
 mermaid: true
-
 ---
 
 우리는 앞에서 OAuth2Login 과 OIDC 에 대해서 공부를 해보았다 이 부분은 주로 클라이언트와 관련된 내용이었다 인증 / 인가와 관련된 내용을 뒤로 하고 오늘 부터는 
@@ -45,69 +43,32 @@ keyclock 19.0.1
 
 
 ## maven 설정
-
 ```
-
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
+<dependencies>
+	<dependency>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
-	<groupId>com.demo</groupId>
-	<artifactId>SpringBoot_web_Security</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>SpringBoot_web_Security</name>
-	<description>Project_Amadeus</description>
-	<properties>
-		<java.version>11</java.version>
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+		<artifactId>spring-boot-starter-security</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-oauth2-resource-server -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-
-		</dependency>
-
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-
-</project>
-
-
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-test</artifactId>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-test</artifactId>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+	</dependency>
+</dependencies>
 ```
 
 maven 에서 알 수 있다 싶히 spring-boot-starter-oauth2-resource-server 의존성을 주입받게 되면 이제 이 프로젝트는 리소스 서버에 관련한 설정을 자동으로 진행을 하게 된다 
@@ -115,34 +76,23 @@ maven 에서 알 수 있다 싶히 spring-boot-starter-oauth2-resource-server �
 ## application.properties 
 
 ```
-
 server.port=8082
 
 spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project
 spring.security.oauth2.resourceserver.jwt.jwkSetUri=http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/certs
-
 
 ```
 
 서버 포트는 이렇게 변경을 하고 나머지는 이렇게 적어준다 이에 대한 설명은 다음시간에 하도록 하자
 
 ## demoController
-
 ```
-
-package com.cybb.main.controller;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 @RestController
 public class DemoController {
 
     @GetMapping("")
     public String demoController(){return "demonController";}
 }
-
-
 ```
 
 인가를 받은 클라이언트는 여기에 접근해서 demoController 을 얻을것이다 
@@ -161,7 +111,6 @@ demoController 에 접근을 해보자 이때 클라이언트는 post-man 을 �
 http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/auth?response_type=code&client_id=Spring-Oauth2-Authorizaion-client&scope=email%20profile&state=KvR7XkC1EIAIjMCYxLr4Ljs_gzTuprTn5_tHWMrljY4%3D&redirect_uri=http://localhost:8081/login/oauth2/code/keycloak
 
 ```
-
 postman 에 이 주소를 입력하게 되면 자동으로 파라미터를 세팅하게 되는데 이 주소는 우리가 앞에서 OAuth2AuthorizationRequestRedirectFilter 에 의해서 만들어지는것을 우리는 보았습니다 자세한 내용은 <https://time-kimdongy1000.github.io/posts/Spring-Security24/> 참조해주시면됩니다 
 
 위의 주소로 post - man 을 실행을 하게 되면 
@@ -209,14 +158,7 @@ state - KvR7XkC1EIAIjMCYxLr4Ljs_gzTuprTn5_tHWMrljY4%3D
 ![5](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/8c00376f-ae11-4c10-b8cb-55e31f1cc663)
 
 이렇게 핸들러 적고 post - man 에 Authorization 토큰으로 Bearer Token 으로 아까 받은 access_token 을 입력하고 send 하면 이렇게 
-demoController 이 나오게 됩니다 이때 이 http 메세지는 이와 같이 만들어지게 됩니다 
+demoController 이 나오게 됩니다 
 
-```
-
-GET / HTTP/1.1
-Host: localhost:8082
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkcDdscEZZUFktZG84aTlVNlZwM3NxYjRhdHl1dHN3MURVUXRaWml3SV9zIn0.eyJleHAiOjE2OTgzMjYxODEsImlhdCI6MTY5ODMyNTg4MSwiYXV0aF90aW1lIjoxNjk4MzI1Njc4LCJqdGkiOiIyMTQyNTlhYy1mZjkwLTQ5MzktOTk5Zi00YmJhNjM1NDczZDMiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL1NycGluZy1PYXV0aDItQXV0aG9yaXphaW9uLVByb2plY3QiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiMzAyODMyMjgtZmEzNi00ZDg4LTgyYzMtYzk0OTRkYzQ0YmZkIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiU3ByaW5nLU9hdXRoMi1BdXRob3JpemFpb24tY2xpZW50Iiwic2Vzc2lvbl9zdGF0ZSI6IjYzNTU1ZDlhLTM3M2YtNGNjNi1iNDM3LTdiOWU5YWIzYTgzNSIsImFjciI6IjAiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiIsImRlZmF1bHQtcm9sZXMtc3JwaW5nLW9hdXRoMi1hdXRob3JpemFpb24tcHJvamVjdCJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsInNpZCI6IjYzNTU1ZDlhLTM3M2YtNGNjNi1iNDM3LTdiOWU5YWIzYTgzNSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6InRpbWUgdXNlciIsInByZWZlcnJlZF91c2VybmFtZSI6InVzZXIxIiwiZ2l2ZW5fbmFtZSI6InRpbWUiLCJmYW1pbHlfbmFtZSI6InVzZXIiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSJ9.LzakV4C-6B_Amw0Uf0TmAD61V_Au6BhAyop_ervaJlijkgdiq_HgZcADxrL0zO2YQYdxwOikHZO4VolHP7ZpMMKwL-laqmhRQOQnEBzVLmpgq4MYhLYpXb-YxesxtIcWey4znjJYO2CfONxnzmYVeI7fJIQNWObAnnXpMEXCR3nSFLcjBo_uj43isc2kIFd_z5qYjVLavjYXi1DeZ0b9sMWfoLGmrO258xjXphzWDtMzufsGAqHSJUlqLrbP2XcQtfs2sMR-3coDUwMdio7QFPKaLVrqdEdU5ygnXlHqzRnC5lurYXPymsL3t2fVpAXyDkRHEEvDPu-4p2CQnnh8jg
-
-```
 
 그럼 우리는 다음시간부터 어떻게 해서 access_token 을 이용해서 리소스 서버에 접근할 수 있는지에 대해서 공부를 계속해보도록 하겠습니다 

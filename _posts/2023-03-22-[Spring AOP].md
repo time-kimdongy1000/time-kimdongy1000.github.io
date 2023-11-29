@@ -59,18 +59,6 @@ public class AppConfig {
 
 LoggerAspect.java
 ```
-
-package com.cybb.main.aop;
-
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.stereotype.Component;
-
-import java.lang.reflect.Method;
-
 @Aspect
 @Component
 public class LoggerAspect {
@@ -84,18 +72,8 @@ public class LoggerAspect {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method method =  methodSignature.getMethod();
         System.out.println(method.getName() + "실행");
-
-
     }
-
-
 }
-
-
-
-
-
-
 ```
 @Aspect 애노테이션을 달아서 이 클래스에서 Aspect 정의를 하겠다는 뜻입니다 이때 이 클래스는 메서드와 필드를 가질 수 있고 pointCut , Advice 를 선언할 수 있습니다 
 그리고 Bean 에 감지가 되어야 함으로 @Component 를 사용하여 줍니다 Spring 공식문서에는 단순 @Aspect 만으로 Bean 을 감지할 수 없기에 이 Bean 을 감지할 수 있는 애노테이션 
@@ -141,15 +119,6 @@ public void before(JoinPoint joinPoint){
 ## 핵심 코드 작성 
 
 ```
-
-package com.cybb.main.controller;
-
-import com.cybb.main.domain.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 @RestController
 public class HomeController {
 
@@ -255,16 +224,6 @@ insertUserafter 종료
 그럼 핸들러를 약간 수정해서 
 
 ```
-
-package com.cybb.main.controller;
-
-import com.cybb.main.domain.User;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 @RestController
 public class HomeController {
 
@@ -339,28 +298,4 @@ java.lang.RuntimeException: name 이 올바르지 않습니다
 이걸게 결과가 나온다 먼저 @Before 가 실행이 된다 그러다 에러 발생해서 @AfterThrowing 에 ㅇㅆ는 메서드를 호출 그리고 @After 는 오류 유무와 상관 없이 항상 호출이 됩니다 
 그리고 그 이후 나오는 메세지는 실제 핸들러의 마지막 catch 부분에서 동작하는 thro new RuntimeException 에 동작되는 메세지입니다 
 
-우리는 그러면 Aop 의 처음과 끝까지 한번 코딩을 해보았고 다음 포스터에서 간단한 프로그램을 한번 만들어보겠습니다 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+우리는 그러면 Aop 의 처음과 끝까지 한번 코딩을 해보았고 다음 포스터에서 간단한 프로그램을 한번 만들어보겠습니다

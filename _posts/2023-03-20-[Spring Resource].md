@@ -19,9 +19,6 @@ org.springframework.core.io. 하위에 있는 Resource 는 하위 수준 리소�
 
 ## Resource
 ```
-
-package org.springframework.core.io;
-
 public interface Resource extends InputStreamSource {
 
     boolean exists();
@@ -62,23 +59,6 @@ public interface Resource extends InputStreamSource {
 
 
 ```
-
-package com.cybb.main;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-
-import java.io.File;
-import java.io.FileReader;
-
 @SpringBootApplication
 public class SpringRestartApplication implements ApplicationRunner {
 

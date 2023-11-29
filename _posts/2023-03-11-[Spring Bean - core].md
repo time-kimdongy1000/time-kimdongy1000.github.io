@@ -39,8 +39,6 @@ Bean 의 명명규칙은 표준 java 규약을 사용하는것입니다 소문�
 
 ## MySystemInfo
 ```
-package com.example.demo;
-
 public class MySystemInfo {
 
     private final MyCpuInfo myCpuInfo;
@@ -59,8 +57,6 @@ public class MySystemInfo {
 
 ## MyCpuInfo
 ```
-package com.example.demo;
-
 public class MyCpuInfo {
 
     private String cpuName;
@@ -103,15 +99,6 @@ constructor-arg 생성자 파라미터라는 뜻으로 생성자 안에 들어�
 ## Ioc 컨테이너 생성
 
 ```
-package com.example.demo;
-
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 @SpringBootApplication
 public class SpringCoreApplication implements ApplicationRunner {
 
@@ -125,7 +112,6 @@ public class SpringCoreApplication implements ApplicationRunner {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("bean.xml");
 		MySystemInfo mySystemInfo = ctx.getBean("MySystemInfo" , MySystemInfo.class);
 		mySystemInfo.MySystemInfoSay();
-
 	}
 }
 

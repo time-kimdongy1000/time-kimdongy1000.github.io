@@ -71,22 +71,6 @@ maven 은 다음처럼 더 추가를 해주겠습니다
 
 ## SpringCoreApplication.java
 ```
-
-package com.example.demo;
-
-import com.example.demo.repository.MysqlRepository;
-import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 		public class SpringCoreApplication implements ApplicationRunner {
 
@@ -109,11 +93,6 @@ import java.sql.Connection;
 ## MysqlRepository.java
 
 ```
-
-package com.example.demo.repository;
-
-import org.mybatis.spring.SqlSessionTemplate;
-
 public class MysqlRepository {
 
     private final SqlSessionTemplate sqlSessionTemplate;
@@ -179,7 +158,6 @@ Bean 을 삽입해서 mysql 을 연결할 수 있는것입니다
 그렇게 해서 최종 결과를 살펴보면
 
 ```
-
 @Override
 public void run(ApplicationArguments args) throws Exception {
 
@@ -188,7 +166,6 @@ public void run(ApplicationArguments args) throws Exception {
     MysqlRepository mysqlRepository = ctx.getBean("mysqlRepository" , MysqlRepository.class);
     System.out.println(mysqlRepository.result());
 }
-
 ```
 
 우리가 mysqlBean 을 만들때 하단에 mysqlRepository bean 을 생성해서 그 bean 주입해주고 그 결과를 반환받을 쿼리 까지 사용한 것입니다 그래서 결과는 
@@ -197,5 +174,4 @@ public void run(ApplicationArguments args) throws Exception {
 2023-03-12 11:01:23.381  INFO 7028 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
 15
 ```
-
 이렇게 HikariPool-1 - Start completed. 연결하고 15라는 값이 세팅이 되는것을 확인할 수 있습니다 

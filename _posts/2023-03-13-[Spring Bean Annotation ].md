@@ -32,10 +32,6 @@ MySystemInfo2 info2 =  ctx.getBean(MySystemInfo2.class);
 우리는 앞에서 Bean 을 새롭게 만들때 @Bean 이라는 애노테이션을 활용했지만 이는 메서드 선언 안에서만 활용되는 반면 @Component 클래스 레벨에서 Bean 을 만들떄 사용하는 애노테이션입니다 
 
 ```
-package com.cybb.main;
-
-import org.springframework.stereotype.Component;
-
 @Component
 public class MySystemInfo {
 
@@ -50,11 +46,6 @@ public class MySystemInfo {
 ## @Autowired 
 
 ```
-package com.cybb.main;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 @Component
 public class MySystem {
 	
@@ -76,16 +67,6 @@ public class MySystem {
 이런식으로 @Autowired 활용해서 필드의 MySystemInfo 를 주입해주는것입니다 이때 @Autowired 주석의 일부분이지만 실제로 Ioc 컨테이너에 다녀와서 찾은 객체 타입 또는 이름을 가져와서 주입해주는 식입니다 자 그럼 실제로 Ioc 컨테이너 소스가 없어졌는지도 한번 보겠습니다.
 
 ```
-
-package com.cybb.main;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 @SpringBootApplication
 public class SpringRestartApplication implements ApplicationRunner{
 	

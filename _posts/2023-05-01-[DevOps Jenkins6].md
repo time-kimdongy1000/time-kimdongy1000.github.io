@@ -84,5 +84,4 @@ workspace 안의 디렉터리도 마찬가지로 job 의 이름을 짓는대로 
 ![1](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/99247d4f-8c07-4466-a5da-aec2efe51af4)
 이렇게 maven 이 빌드되면 target 에 쌓이는것을 볼 수 있습니다 이곳은 jenkins 의 메인 작업 무대이며 우리는 이곳을 활용해서 앞으로 그리고 계속 작업을 해나갈 예정입니다 
 
-오늘은 간단하게 jenkins 디렉터리 구조에 대해서 공부해보는 시간을 가져보았습니다 
-
+오늘은 간단하게 jenkins 디렉터리 구조에 대해서 공부해보는 시간을 가져보았습니다

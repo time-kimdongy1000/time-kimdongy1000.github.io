@@ -67,12 +67,6 @@ Hello MVC Project
 
 
 ```
-package com.cybb.main.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-
-
 @Controller
 public class HelloController {
 
@@ -93,15 +87,6 @@ surfix=.html
 ## SpringResourceTemplateResolver.java
 
 ```
-
-package com.cybb.main.config;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
-
 @Configuration
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
@@ -168,8 +153,6 @@ Hello MVC Project 2
 이렇게 html 을 수정을 하자 그리고 controller 에 다음과 같이 코딩을 할것이다 
 
 ```
-
-
 @GetMapping("/hello/web")
 @ResponseBody
 public UserModel UserModel(@ModelAttribute UserModel userModel){
@@ -188,9 +171,6 @@ HelloController 이와 같이 핸들러 하나를 추가하고
 UserModel.java
 
 ```
-
-package com.cybb.main.model;
-
 public class UserModel {
 
     private String name;
@@ -222,7 +202,6 @@ public class UserModel {
 일단 우리는 핸들러를 다시보자 
 
 ```
-
 @GetMapping("/hello/web")
 @ResponseBody
 public UserModel UserModel(@ModelAttribute UserModel userModel){
@@ -249,7 +228,6 @@ localhost:8080/hello/web?name=kimdongy1000&age=25 이렇게 요청정보가 들�
 그리고 핸들러를 한번더 수정을 하겠다 
 
 ```
-
 @GetMapping("/hello/web")
 public String UserModel(@ModelAttribute("model") UserModel userModel){
     return "hello2";
@@ -275,7 +253,6 @@ age  : <input th:value="${model.age}">
 
 
 
-
 </body>
 </html>
 
@@ -295,15 +272,8 @@ clinet 에 데이터를 반환할 수 있는것을 보았다
 @ControllerAdvice 를 활용해서 전역적으로 사용하는 Model 에 대해서 알아보겠습니다 
 
 
-GlobalControllerAdvice.java
+## GlobalControllerAdvice.java
 ```
-
-package com.cybb.main.controller.advice;
-
-import com.cybb.main.model.AdminUser;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ModelAttribute;
-
 @ControllerAdvice
 public class GlobalControllerAdvice {
 
@@ -367,18 +337,4 @@ appName :  <input th:value="${appName}">
 
 ```
 
-이렇게 되면 우리는 @ModelAttribute 에 대해서 모두 공부한거 같다 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+이렇게 되면 우리는 @ModelAttribute 에 대해서 모두 공부한거 같다

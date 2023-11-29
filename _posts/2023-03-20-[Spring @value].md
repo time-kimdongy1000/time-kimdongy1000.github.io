@@ -13,15 +13,6 @@ mermaid: true
 
 
 ```
-
-package com.cybb.main;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 @SpringBootApplication
 public class SpringRestartApplication implements ApplicationRunner {
 
@@ -87,14 +78,6 @@ APP_NAME=Spring_Boot_App
 
 ## SpringRestartApplication
 ```
-package com.cybb.main;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 @SpringBootApplication
 public class SpringRestartApplication implements ApplicationRunner {
 

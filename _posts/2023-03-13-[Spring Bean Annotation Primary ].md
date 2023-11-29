@@ -12,8 +12,6 @@ mermaid: true
 기본적으로 동일한 이름의 Bean 은 단 한개만 만들 수 있습니다 예를 들어서 다음과 같은 소스코드가 있을때는 에러가 발생합니다 
 
 ```
-package com.cybb.main;
-
 public class MySystemInfo {
 	
 	public MySystemInfo() {
@@ -25,12 +23,6 @@ public class MySystemInfo {
 ```
 
 ```
-
-package com.cybb.main;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 @Configuration
 public class AppConfig {
 	
@@ -49,16 +41,6 @@ public class AppConfig {
 ```
 
 ```
-
-package com.cybb.main;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 @SpringBootApplication
 public class SpringRestartApplication implements ApplicationRunner{
 	
@@ -144,9 +126,6 @@ public MySystemInfo info2() {
 AppConfig 는 이렇게 수정하고 
 
 ```
-
-package com.cybb.main;
-
 public class MySystemInfo {
 	
 	private final String msg;
@@ -167,15 +146,6 @@ MySystemInfo 는 들어온 값 한번의 msg 를 생성자를 통해 세팅을�
 
 
 ```
-
-package com.cybb.main;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class SpringRestartApplication implements ApplicationRunner{
@@ -204,9 +174,6 @@ public class SpringRestartApplication implements ApplicationRunner{
 
 ## @Component @Primary 의 조합 
 ```
-
-package com.cybb.main;
-
 public interface MySystemInfo {
 	
 	public String mySystemInfo (String msg);
@@ -214,12 +181,6 @@ public interface MySystemInfo {
 ```
 
 ```
-
-package com.cybb.main;
-
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Component;
-
 @Component
 @Primary
 public class Info1 implements MySystemInfo{
@@ -232,11 +193,6 @@ public class Info1 implements MySystemInfo{
 ```
 
 ```
-
-package com.cybb.main;
-
-import org.springframework.stereotype.Component;
-
 @Component
 public class Info2 implements MySystemInfo {
 
@@ -253,16 +209,6 @@ public class Info2 implements MySystemInfo {
 
 SpringRestartApplication.java
 ```
-
-package com.cybb.main;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 @SpringBootApplication
 public class SpringRestartApplication implements ApplicationRunner{
 	

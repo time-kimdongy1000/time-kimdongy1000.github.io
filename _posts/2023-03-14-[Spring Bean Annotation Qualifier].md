@@ -14,9 +14,6 @@ mermaid: true
 이번에 배워볼 @Qualifier 는 Bean 을 주입받는 위치에서 어떤 Bean 을 주입받을지 결정한다 아래의 코드를 보자 
 
 ```
-
-package com.cybb.main;
-
 public interface MySystemInfo {
 	public String mySystemInfo (String msg);	
 }
@@ -25,11 +22,6 @@ public interface MySystemInfo {
 
 
 ```
-
-package com.cybb.main;
-
-import org.springframework.stereotype.Component;
-
 @Component(value = "Info1")
 public class Info1 implements MySystemInfo{
 
@@ -43,11 +35,6 @@ public class Info1 implements MySystemInfo{
 
 
 ```
-
-package com.cybb.main;
-
-import org.springframework.stereotype.Component;
-
 @Component(value = "Info2")
 public class Info2 implements MySystemInfo {
 
@@ -62,17 +49,6 @@ public class Info2 implements MySystemInfo {
 
 
 ```
-
-package com.cybb.main;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 @SpringBootApplication
 public class SpringRestartApplication implements ApplicationRunner{
 	

@@ -17,7 +17,6 @@ mermaid: true
 Boot 기준으로 설명을 드리면 우리가 앞에서 제일 먼저 볼 수 있는 애노테이션이다 
 
 ```
-
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -38,11 +37,11 @@ public @interface SpringBootApplication {}
 그외에는 전부 Bean 으로 등록을 해주는것인데 
 
 ```
-
 @AliasFor(annotation = ComponentScan.class, attribute = "basePackages")
 String[] scanBasePackages() default {};
 
 ```
+
 scanBasePackages 라고 basePackages 가 있다 이 basePackages 는 우리가 처음 프로젝트를 만들때 기본 패키지를 등록하게 되어 있다 
 
 
@@ -55,9 +54,6 @@ scanBasePackages 라고 basePackages 가 있다 이 basePackages 는 우리가 �
 
 ## 사용자 정의 Bean 스캔 
 ```
-
-package com.cybb.main2;
-
 public class MySystemInfo2 {
 	
 	public MySystemInfo2() {
@@ -68,12 +64,6 @@ public class MySystemInfo2 {
 ```
 
 ```
-
-package com.cybb.main2;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 @Configuration
 public class AppConfig2 {
 	
@@ -91,20 +81,6 @@ BasePackages 는 com.cybb.main 이지만 우리는  com.cybb.main2 코드를 넣
 
 
 ```
-
-package com.cybb.main;
-
-
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import com.cybb.main2.AppConfig2;
-import com.cybb.main2.MySystemInfo2;
-
 @SpringBootApplication
 public class SpringRestartApplication implements ApplicationRunner{
 

@@ -19,21 +19,6 @@ Spring 이 추구하는 유효성 검사는 단순 웹계층에 국한되지 않
 예를 들어서 다음과 같은 도메인 클래스가 있다고 하자
 
 ```
-package com.cybb.main.controller;
-
-import com.cybb.main.domain.User;
-import com.cybb.main.domain.Users;
-import com.cybb.main.message.CustomMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.ArrayList;
-import java.util.List;
-
 @Controller
 public class CustomController {
     @Autowired
@@ -76,13 +61,6 @@ public class CustomController {
 ```
 
 ```
-
-package com.cybb.main.domain;
-
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.RequestScope;
-
-
 public class User {
 
     private int userId;
@@ -118,13 +96,6 @@ public class User {
 ```
 
 ```
-package com.cybb.main.domain;
-
-import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
 public class Users {
 
@@ -146,11 +117,6 @@ public class Users {
 ```
 
 ```
-
-package com.cybb.main.message;
-
-
-
 public class CustomMessage<T> {
 
     private String message;
@@ -173,8 +139,6 @@ public class CustomMessage<T> {
         this.domain = domain;
     }
 }
-
-
 
 ```
 
@@ -206,14 +170,6 @@ catch(Exception e){
 
 
 ```
-
-package com.cybb.main.domain.vaild;
-
-import com.cybb.main.domain.User;
-import org.springframework.util.StringUtils;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
-
 public class UserValidation implements Validator {
 
     @Override
@@ -330,11 +286,4 @@ errors.getAllErrors().forEach(e -> {
 });
 
 ```
-사용해서 던져주면 됩니다 그러면 처음으로 맞이하는 에러를 바로 return 을 시키고 mvc 핸들러를 종료하게 됩니다 
-
-
-
-
-
-
-
+사용해서 던져주면 됩니다 그러면 처음으로 맞이하는 에러를 바로 return 을 시키고 mvc 핸들러를 종료하게 됩니다

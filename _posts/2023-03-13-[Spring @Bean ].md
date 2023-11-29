@@ -23,8 +23,6 @@ java code 방식으로 bean 을 구성한다 이번시간부터는 이런 방식
 @Bean 과 @Configuration 을 나타내면 
 
 ```
-package com.cybb.main;
-
 public class MySystemInfo {
 	
 	public MySystemInfo() {
@@ -34,12 +32,6 @@ public class MySystemInfo {
 ```
 
 ```
-
-package com.cybb.main;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 @Configuration
 public class AppConfig {
 	
@@ -52,16 +44,6 @@ public class AppConfig {
 ```
 
 ```
-package com.cybb.main;
-
-
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
 @SpringBootApplication
 public class SpringRestartApplication implements ApplicationRunner{
 

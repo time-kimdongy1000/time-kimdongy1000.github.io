@@ -16,17 +16,6 @@ Request 스코프는 HTTP 로직과 같이 움직이는것으로 request , respo
 
 ## 소스코드
 ```
-
-package com.example.demo.contorller;
-
-import com.example.demo.config.RequestBeanSystem;
-import com.example.demo.model.SystemModel;
-import com.example.demo.service.SystemService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RestController;
-
 @RestController
 public class InterRestController {
 
@@ -60,13 +49,9 @@ public class InterRestController {
 
 
 ```
-SystemModel.java
+
+## SystemModel.java
 ```
-
-
-package com.example.demo.model;
-
-
 public class SystemModel {
 
     private String systemName;
@@ -91,16 +76,9 @@ public class SystemModel {
 
 
 ```
-SystemService.service
+
+## SystemService.service
 ```
-
-package com.example.demo.service;
-
-import com.example.demo.config.RequestBeanSystem;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-
 @Component
 public class SystemService {
 
@@ -146,12 +124,6 @@ public class RequestBeanSystem {
 
 
 ```
-package com.example.demo.config;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.context.annotation.RequestScope;
-
 @Configuration
 public class WebConfig {
 

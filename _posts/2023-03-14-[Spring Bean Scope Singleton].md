@@ -16,8 +16,6 @@ Spring 의 Bean 의 범위는 총6가지가 존재한다 이 6개는 각각의 �
 즉 싱글톤 범위로 지정된 Bean 은 IoC 컨테이너에 정확히 단 한개의 인스턴스를 생성하게 됩니다 그럼 소스코드를 보자 
 
 ```
-package com.cybb.main;
-
 public class MySystemInfo {
 	
 	public String returnMsg() {
@@ -30,15 +28,6 @@ public class MySystemInfo {
 
 
 ```
-package com.cybb.main;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 @SpringBootApplication
 public class SpringRestartApplication implements ApplicationRunner{
 	
@@ -69,11 +58,6 @@ public class SpringRestartApplication implements ApplicationRunner{
 
 
 ```
-package com.cybb.main;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 @Component
 public class System1 {
 	
@@ -92,11 +76,6 @@ public class System1 {
 ```
 
 ```
-package com.cybb.main;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 @Component
 public class System2 {
 	
@@ -113,11 +92,6 @@ public class System2 {
 ```
 
 ```
-package com.cybb.main;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 @Component
 public class System3 {
 	
@@ -134,11 +108,6 @@ public class System3 {
 ```
 
 ```
-package com.cybb.main;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 @Configuration
 public class AppConfig {
 	
@@ -170,8 +139,6 @@ com.cybb.main.MySystemInfo@3468ee6e
 객체의 주소값은 동일하기에 동일한 단 하나의 인스턴스를 서로다른 곳에서 사용하고 있다 그래서 다음과 같은 상황도 볼 수 있는데 예를 들어서
 
 ## 싱글톤 객체의 메모리 위치 공유
-
-MySystemInfo.java
 ```
 
 package com.cybb.main;

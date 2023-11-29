@@ -83,14 +83,4 @@ OS name: "linux", version: "3.10.0-1160.el7.x86_64", arch: "amd64", family: "uni
 ![3](https://github.com/SH-Yeon93/ImageStore/assets/58513678/61e3c1ec-2260-4500-acd6-5b96745f98bc)
 
 git 설치했을 제일 하단에 보면 Maven 이 있는데 여기에 이렇게 쓰면된다 연동 끝이다 그리고 저장을 하자 
-이렇게 되면 일단 최소한의 패키지로 maven 프로젝트를 빌드할 수 있는 환경은 되었다 앞으로는 이를 통해서 실제 gitlab 하고 연동을 해서 소스를 fetch - pull 한 다음 빌드 진행을 하도록 할것이다 
-
-
-
-
-
-
-
-
-
-
+이렇게 되면 일단 최소한의 패키지로 maven 프로젝트를 빌드할 수 있는 환경은 되었다 앞으로는 이를 통해서 실제 gitlab 하고 연동을 해서 소스를 fetch - pull 한 다음 빌드 진행을 하도록 할것이다
