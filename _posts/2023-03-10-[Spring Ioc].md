@@ -1,5 +1,5 @@
 ---
-title: Spring Ioc 와 DI 
+title: Spring Ioc
 author: kimdongy1000
 date: 2023-03-09 20:17
 categories: [Back-end, Spring - Core]
