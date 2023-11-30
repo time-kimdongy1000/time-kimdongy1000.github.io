@@ -1,20 +1,27 @@
 ---
-title: Spring Ioc 와 Component Scan
+title: Spring Ioc @ComponentScan
 author: kimdongy1000
-date: 2023-03-12 11:22
+date: 2023-03-13 12:00
 categories: [Back-end, Spring - Core]
-tags: [Component Scan]
+tags: [IoC , '@ComponentScan']
 math: true
 mermaid: true
 ---
 
-## Component Scan
-우리는 앞의 예제 마지막에소 왜 생성자가 두번 호출되는지에 대해서 간략하게 말하면서 Bean Scan 에 대해서 말한적이 있다 Bean Scan Componet Scan 동일한 뜻으로 사용되며 
-실제로 spring 은 실행이 될때 런타임 시점이세 감지되는 모든 Bean 을 이미 IoC 컨테이너에 미리 넣어두게 된다 우리가 직접 설정할 수도 있지만 Spring 이 권하는 방식은 이미 
-선언되어 있는 Bean Scan 룰을 따르길 바란다 그럼 Spring 에서 이미 만들어 놓은 룰을 한번 보자 
+## @ComponentScan
+사실 앞에서 런타임시 자동으로 bean 을 찾아서 등록해준다고 했지만 실제로는 @ComponentScan 애노테이션 기반으로 자동으로 등록이 된다 이 애노테이션은 범위 안에 있는 패키지들을 스캔해서 이들 중에서 bean 으로 등록될만한것들을 찾아서 bean 을 만들고 IoC 컨테이너에 넣는 역할을 하게 됩니다 즉 우리가 앞에서 자동으로 자연스럽게 bean 을 불러오는 방식에는 
+이와 같은 애노테이션이 있기 때문이다 그럼 다시 소스로 와보자 우리 패키지 아무리 보더라도 @ComponentScan 찾아 볼 수가 없다 사실 이는 숨겨져 있는데 
 
 ## @SpringBootApplication
-Boot 기준으로 설명을 드리면 우리가 앞에서 제일 먼저 볼 수 있는 애노테이션이다 
+```
+
+@SpringBootApplication
+public class SpringRestart2Application implements ApplicationRunner{
+
+
+}
+```
+boot 환경에서는 이 애노테이션이 핵심이다 이것으로 인해서 이 애플리케이션이 boot 인지 아닌지 판변을 하게 되는데 
 
 ```
 @Target(ElementType.TYPE)
@@ -25,99 +32,86 @@ Boot 기준으로 설명을 드리면 우리가 앞에서 제일 먼저 볼 수 
 @EnableAutoConfiguration
 @ComponentScan(excludeFilters = { @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
 		@Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })
-public @interface SpringBootApplication {}
-
-```
-
-이 애노테이션을 까보면 이와 같은 여러개의 또다른 애노테이션이 있는데 우리가 살펴볼것은은 @ComponentScan 을 살펴보면된다 
-여러개가 붙어있긴 하지만 excludeFilters 특정 Bean 을 ComponentScan 에서 제외하겠다는 뜻이다 즉 저기에 들어가는 특정 Bean 들은 스캔등록으로 사용하지 않겠다는 뜻이다 
-특징적으로 Filter 를 Bean 으로 등록을 하지 않겠다는 뜻인데 기본적으로 사용자 정의 Filter 같은 경우중에서 TypeExcludeFilter 와 AutoConfigurationExcludeFilter 로 구현이 되어 있는 
-커스텀 필터는 기본적으로 Bean 으로 등록을 하지 않겠다는 뜻이다 
-
-그외에는 전부 Bean 으로 등록을 해주는것인데 
-
-```
-@AliasFor(annotation = ComponentScan.class, attribute = "basePackages")
-String[] scanBasePackages() default {};
-
-```
-
-scanBasePackages 라고 basePackages 가 있다 이 basePackages 는 우리가 처음 프로젝트를 만들때 기본 패키지를 등록하게 되어 있다 
-
-
-![spring-base-package1](https://user-images.githubusercontent.com/58513678/224592594-7d0d00cf-a4bd-474c-9ef2-1cb43d25349d.jpg)
-
-아래에 보면 Package 가 존재하는데 이게 기본 패키지가 되는것이다 즉 spring 에서 감지하는 basePackages 에 포함이 되는것이다 
-
-
-그럼 만약에 BasePackage 를 벗어나는 Bean 을 선언했을때에는 어떤 현상이 일어나는지 살펴보자 
-
-## 사용자 정의 Bean 스캔 
-```
-public class MySystemInfo2 {
-	
-	public MySystemInfo2() {
-		
-		System.out.println("MySystemInfo2");
-	}
-}
-```
-
-```
-@Configuration
-public class AppConfig2 {
-	
-	@Bean
-	public MySystemInfo2 info2() {
-		
-		return new MySystemInfo2();
-	}
+public @interface SpringBootApplication {
 
 }
 
 ```
-BasePackages 는 com.cybb.main 이지만 우리는  com.cybb.main2 코드를 넣고 기동을 해보자 만약 Bean 스캔이 되면 생성자가 호출이 될것이다 
-역시나 생성자 호출이 일어나지 않는다 그럼 강제적으로 읽혔을때 한번 살펴보자
+이 애노테이션안으로 들어가게 되면 그제야 보이는것이 하나가 있다 바로 @ComponentScan 이다 이 @ComponentScan 을 기준으로 런타임시 애플리케이션의 모든 bean 이 될만한것들을 탐색하게 됩니다 그래서 기본적인 beanScan 범위는 SpringBootApplication 애노테이션이 달려있는 파일로 부터 하위가 된다 
 
+그럼 잠깐 파일위치를 보자
+
+-project 
+	-src
+		-main
+			-java
+				-com
+					-cybb
+						-main
+							-SpringRestart2Application.java 
+							-ClassRommA.java
+							-Student.java 
+						-main2
+							-Student2.java	
+
+이렇게 되어 있다 즉 SpringRestart2Application.java  파일을 기준으로 동일레벨 또는 하위레벨은 전부 대상이 됩니다 그렇기에 지금처럼 main2 - Student2.java 는 bean 대상이 아닙니다 
 
 ```
 @SpringBootApplication
-public class SpringRestartApplication implements ApplicationRunner{
+public class SpringRestart2Application implements ApplicationRunner{
+
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringRestartApplication.class, args);
+		SpringApplication.run(SpringRestart2Application.class, args);
 	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		
 
-		ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class , AppConfig2.class);
-		MySystemInfo info =  ctx.getBean(MySystemInfo.class);
-		MySystemInfo2 info2 =  ctx.getBean(MySystemInfo2.class);
+		Student2 student2 = applicationContext.getBean("student2" , Student2.class);
+		System.out.print(student2.hashCode());		
 	}
 }
-
+```
+예를 들어서 이와같이 작성을 하게 되면 bean 을 찾을 수 없게 됩니다 참고로 ApplicationContext 즉 IoC 컨테이너도 외부주입으로 사용할 수 있습니다 
+이때는 어떤 에러가 발생하냐면
 
 ```
-강제로 읽게 하는 방법은 AnnotationConfigApplicationContext 에 우리가 정의한 Configuration 파일을 읽게 시키면된다 
+Description:
+A component required a bean named 'student2' that could not be found.
+
+
+Action:
+Consider defining a bean named 'student2' in your configuration.
 
 ```
+student2 bean 이름으로 된 컴포넌트를 찾을 수 없습니다 이렇게 나오게 됩니다 즉 bean 범위가 아닐때엔는 Ioc 컨테이너는 스캔을 하지도 않고 bean 을 만들지도 않게 됩니다 
+자 그럼 이대로 끝이냐 그렇지 않습니다 사실 spring 은 bean 의 범위를 설정을 할 수 있습니다 
 
-나의 시스템은 정상입니다
-MySystemInfo2
+## 스캔범위 지정 
+```
+@SpringBootApplication(scanBasePackages = {"com.cybb.*"})
+public class SpringRestart2Application implements ApplicationRunner{
 
+	@Autowired
+	private ApplicationContext applicationContext;
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringRestart2Application.class, args);
+	}
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+		
+
+		Student2 student2 = applicationContext.getBean("student2" , Student2.class);
+		System.out.print(student2.hashCode());		
+	}
+}
 ```
 
-이때의 결과는 다르게 나타난데 Bean 을 읽은것이다 즉 런타임시에는 basePackage 에 포함되지 않았기에 스캔이 되지 않았지만 
-강제로 읽게 시켜서 Ioc 컴포넌트에 넣었을때는 Bean 이 생겨나서 생성자가 호출되는것을 확인했다 그럼 이제 우리는 이 패키지를 자동으로 스캔되게끔 설정을 해보자 
-
-소스는 간단하다 
-`@SpringBootApplication(scanBasePackages = "com.cybb.*")` 이렇게 좀더 상위 레벨로 Bean 스캔 범위 설정을 해두면 런타임시 Ioc 컨테이너에 Bean 을 생성해서 넣어둔다 
-그것을 알 수 있는게 생성자가 각 2번씩 호출되는것을 알 수 있다 
-
-```
-나의 시스템은 정상입니다
-MySystemInfo2
-```
-
-그러면 우리는 우리가 원하는 대로 component scan 과 사용자 설정 Bean 스캔 범위 설정에 대해서 공부해보았다 
+이떄는 상단에 scanBasePackages 을 사용함으로서 bean 의 범위를 재지정 할 수 있습니다 이때는 com.cybb 아래에 있음으로 이 아래에 있는 모든 범위로 지정을 하게 되면
+이제 spring IoC는 기동시 이 범위 하단에 있는 모든 bean 을 스캔하고 bean 이 될만한것들을 넣고 기동을 하게 됩니다 
