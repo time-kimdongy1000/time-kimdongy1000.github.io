@@ -458,8 +458,4 @@ Connect_mysql :55
 
 ```
 
-이렇게 나와서 다중DB 연결할떄  @Primary 역활과 @Qualifier 역활에 대해서 알아보았습니다 
-
-
-
-
+이렇게 나와서 다중DB 연결할떄  @Primary 역활과 @Qualifier 역활에 대해서 알아보았습니다
