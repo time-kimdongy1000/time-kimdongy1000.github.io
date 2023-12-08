@@ -36,11 +36,4 @@ spring.config.import=file:/C:/webProject/20230522_properties/application.propert
 
 우리는 앞으로 properties 이름을 applition-dev.properties 로 둘것이다 그러면 이 프러퍼티는 우리가 실행변수(현재 사진 가운데 VM 옵션) 이렇게 주게 되면 
 이 어플리케이션은 dev 이름을 가진 properties 를 로드하게 된다 마찬가지로 운영으로 넘어가게 되면 우리는 이 이름을 application-prod.properties 로 두고 기동을 하게 되면 
-이제 prod 환경으로 파일을 읽게 되는것이다 
-
-자 그럼 보안에 강력한 개발을 진행을 해보자 
-
-
-
-
-
+이제 prod 환경으로 파일을 읽게 되는것이다

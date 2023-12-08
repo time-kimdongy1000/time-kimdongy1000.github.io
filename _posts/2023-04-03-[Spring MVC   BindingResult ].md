@@ -60,13 +60,6 @@ form 을 살펴보기 전에 spring boot 의 정적 리소스 관리에 대해�
 기본적으로 현재 보이는 hello.js 파일위치를 보면 이것이 boot 에서 선언하는 기본위치이다 이 위치를 바로 사용할 수 있지만 다른 path 를 자원관리 위치로 설정을 할때는 어떻게 해야 할지 살펴보자 
 
 ```
-
-package com.cybb.main.config;
-
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
@@ -84,7 +77,6 @@ Spring boot 는 이 설정을 안해도 되지만 spring 은 이 설정을 해�
 그럼 다른위치도 동작시킬 수 있는지 살펴보자 
 
 ![1](https://user-images.githubusercontent.com/58513678/229426414-14beac02-d657-4f4b-8747-4f986222cf26.jpg)
-
 
 
 우리는 다른 위치에 hello2.js 파일을 만들고 한번 html 에서 불러보자
@@ -163,13 +155,10 @@ Hello MVC Project 2
 ```
 
 자 우리가 얼핏보면  `<script src = "/js/hello.js"></script>` classpath 아래에 있는 정적 리소스 자원을 절대위치로 찾아오는것 처럼 보이지만 실제로는 모두 http 통신을 하는것이다 get 요청으로 localhost:8080/js/ 라고 요청을 넣으면 `<script src = "/[매핑주소]/[찾을 파일명]"></script>` 이렇게 되는것이다 
-그럼 이제 spring 은 classpath:/static/js/ 위치와 classpath:/js/customJs/ 아래 위치에서 hello.js 그리고 hello2.js 파일을 찾게 된다 그리고 파일이 있으면 js 정적파일을 등록하고 스크립트 파일로 읽을 수 있게끔 만들어주는것이다 
+그럼 이제 spring 은 classpath:/static/js/ 위치와 classpath:/js/customJs/ 아래 위치에서 hello.js 그리고 hello2.js 파일을 찾게 된다 그리고 파일이 있으면 js 정적파일을 등록하고 스크립트 파일로 읽을 수 있게끔 만들어주는것이다 그럼 간단하게 spirng 이 어떻게 정적자원을 관리하는지 보았다 
 
-그럼 간단하게 spirng 이 어떻게 정적자원을 관리하는지 보았다 
 
 그럼 우리는 기본정책을 사용해서 계속해서 JS 로 먼저 유효성 검사를 진행을 해보자 그럼 여기서는 ES6 자바스크립트 문법을 활용해서 프런트 유효성검사를 진행을 할것이다 
-
-
 ## hello.html
 
 그럼 다시 html 을 적용해보자 
@@ -207,8 +196,6 @@ Hello MVC Project 2
 
 ## 프런트 검증
 ```
-
-// DOM 객체 찾아오기
 const firstName = document.querySelector("#form-table .firstName");
 const secondName = document.querySelector("#form-table .secondName");
 const age = document.querySelector("#form-table .age");
@@ -243,9 +230,7 @@ form_button.addEventListener('click' , (e => {
 
 
 ```
-간단하게 제약조건에 대해서 정규식으로 파악하고 정규식은 다음에 공부할 일이 있을테니 일단 지금은 정규식이라고 특정 문자열 패턴으로 현재 문자열이 올바른 패턴인지 아닌지 판단하는 라이브러리이다 
-프로그래밍언어 거의 대부분 같은 패턴으로 걸러낼 수 있다 `const rex_name = new RegExp('[a-zA-Z]');` 간단하게 적으면 rex_name 은 패턴을 검색할때 a-zA-Z 즉 숫자 없이 a-zA-Z 사이에 있는 알파벳만 
-사용해서 검사를 하겠다는 것이다 이때는 알파벳 외에는 전부 패턴에서 false 를 반환한다 
+간단하게 제약조건에 대해서 정규식으로 파악하고 정규식은 다음에 공부할 일이 있을테니 일단 지금은 정규식이라고 특정 문자열 패턴으로 현재 문자열이 올바른 패턴인지 아닌지 판단하는 라이브러리이다 프로그래밍언어 거의 대부분 같은 패턴으로 걸러낼 수 있다 `const rex_name = new RegExp('[a-zA-Z]');` 간단하게 적으면 rex_name 은 패턴을 검색할때 a-zA-Z 즉 숫자 없이 a-zA-Z 사이에 있는 알파벳만 사용해서 검사를 하겠다는 것이다 이때는 알파벳 외에는 전부 패턴에서 false 를 반환한다 
 
 그럼 여기서는 프런트에서 원하는 제약조건으로 잘 걸러지게 된다 하지만 프런트는 언제든지 데이터를 조작할 수 있게 된다 즉 이 웹페이지를 통하지 않더라도 데이터를 충분히 보낼 수 있다 
 postman 이나 또는 단순 스크립트 조작으로 제약조건을 태우지 않고 보낼 수 있게 된다 그래서 서버에서 한번더 이 데이터를 검사할것이다 
@@ -253,24 +238,7 @@ postman 이나 또는 단순 스크립트 조작으로 제약조건을 태우지
 ## 서버에서 검증 
 혹시 우리 앞에서 spring - core 에서 배운것이 기억이 날까 앞에서 우리는 Validation 에 대해서 공부를 했다 spring 고유 기능으로 첫번째 서버 검증은 이 기능을 활용해서 진행을 할것이다 
 
-
-HelloController.java
-
 ```
-
-package com.cybb.main.controller;
-
-import com.cybb.main.model.UserModel;
-import com.cybb.main.model.valid.UserModelValid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-
 @Controller
 public class HelloController {
 
@@ -308,17 +276,7 @@ public class HelloController {
 
 ```
 
-UserModelValid.java
 ```
-package com.cybb.main.model.valid;
-
-import com.cybb.main.model.UserModel;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
-
-import java.util.regex.Pattern;
-
 @Component
 @RequestScope
 public class UserModelValid implements Validator {
@@ -361,8 +319,7 @@ public class UserModelValid implements Validator {
 물론 이렇게 개발을 해도 진행을 해도 된다 보통 form 문으로 돌아가거나 아니면 통합 오류 페이지를 만들어서 redirect 시키는게 일반적이지만 이번에는 다른 방법으로 오류 검증을 하고
 그 검증에 오류가 발생하면 다시 오류 내역하고 form 문으로 돌아가는방식으로 개발을 진행을 해보자 
 
-## BindingResult 이것을 활용해서 이번엔 적용을 해보자 
-
+## BindingResult 활용
 ```
 
 <!DOCTYPE html>
@@ -401,7 +358,6 @@ html 을 수정하자 th 는 타임리프 문법으로 th:if 는 해당 필드�
 
 
 ```
-
 @GetMapping("/hello/web2")
 public String userModel2(@ModelAttribute("user") UserModel userModel , BindingResult bindingResult){
 
@@ -427,39 +383,4 @@ public String userModel2(@ModelAttribute("user") UserModel userModel , BindingRe
 오류가 있는 문구가 나오게 되는것이다 
 
 우리는 이렇게 web 에서 넘어오는 파라미터를 controller 에서 프런트에서 진행한것을 보았고 그리고 앞에서 배운 Validator 로 구현체를 만들어서 유효성 검사를 진행했다 
-그 결과를 통합 오류 페이지로 redirect 로 전달하거나 , 또는 다시 form 문으로 전달하는것을 보았다 오류 메세지와 함께 말이다 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+그 결과를 통합 오류 페이지로 redirect 로 전달하거나 , 또는 다시 form 문으로 전달하는것을 보았다 오류 메세지와 함께 말이다

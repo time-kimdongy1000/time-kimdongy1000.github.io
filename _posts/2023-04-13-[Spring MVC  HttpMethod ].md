@@ -23,40 +23,40 @@ HTTPMethod 는 클라이언트가 서버에 요청을 보낼 떄 어떤 동작�
 ```
 
 <dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jdbc -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
-		</dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jdbc -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-jdbc</artifactId>
+</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>2.1.214</version>
-		</dependency>
+<!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <version>2.1.214</version>
+</dependency>
 
 ```
 
@@ -96,31 +96,14 @@ public String hello(){
 
 ```
 
-이렇게 @RequestMapping 를 활용해서 사용할 수 있습니다 @RequestMapping(value = "/hello" , method = RequestMethod.GET) == @GetMapping("/hello") 임으로 편하신것을 사용하시면되지만
-저는 주로 @GetMapping 를 활용하는 편입니다 
+이렇게 @RequestMapping 를 활용해서 사용할 수 있습니다 @RequestMapping(value = "/hello" , method = RequestMethod.GET) == @GetMapping("/hello") 임으로 편하신것을 사용하시면되지만 저는 주로 @GetMapping 를 활용하는 편입니다 
 
 그리고 리소스는 단순 웹페이지 뿐만아니라 현재 이 어플리케이션에서 조회할 수 있는 모든 자원들을 뜻합니다 예를 들어서 특정 유저를 가져오는 보여주는것도 만들어보겠습니다 
-
 JPA 를 사용함으로 JPA 코드가 나오지만 이에 대해서는 기술하지 않습니다 
 
 
 
 ```
-
-package com.cybb.main.controller;
-
-import com.cybb.main.dto.UserDto;
-import com.cybb.main.entity.UserEntity;
-import com.cybb.main.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-
 @Controller
 public class HelloController {
 
@@ -144,17 +127,6 @@ public class HelloController {
 
 UserService.java
 ```
-
-package com.cybb.main.service;
-
-import com.cybb.main.dto.UserDto;
-import com.cybb.main.entity.UserEntity;
-import com.cybb.main.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-
 @Service
 public class UserService {
 
@@ -179,13 +151,6 @@ public class UserService {
 
 UserRepository.java
 ```
-
-package com.cybb.main.repository;
-
-import com.cybb.main.entity.UserEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity , Long> {
 
@@ -197,15 +162,6 @@ public interface UserRepository extends JpaRepository<UserEntity , Long> {
 
 UserEntity.java
 ```
-
-package com.cybb.main.entity;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-
 @Entity
 public class UserEntity {
 
@@ -254,9 +210,6 @@ public class UserEntity {
 
 UserDto.java
 ```
-
-package com.cybb.main.dto;
-
 public class UserDto {
 
     private Long id;
@@ -296,8 +249,7 @@ public class UserDto {
 
 
 ```
-여기서 잠깐 설명을 하자면 JPA 는 이제 mybatis 에서 xml 역활을 대신하게 됩니다 기본적으로 CRUD 가 있는상태이고 이는 직접 명시하지 않아도 부모에 있는메서드를 가져다 쓰는 상속구조이기 
-때문에 UserRepository 는 비어 있어도 됩니다 
+여기서 잠깐 설명을 하자면 JPA 는 이제 mybatis 에서 xml 역활을 대신하게 됩니다 기본적으로 CRUD 가 있는상태이고 이는 직접 명시하지 않아도 부모에 있는메서드를 가져다 쓰는 상속구조이기 때문에 UserRepository 는 비어 있어도 됩니다 
 
 그리고 UserEntity 는 테이블 형태로 DB 에서 테이블명을 뜻하며 이 java 클래스는 테이블을 뜻하게 됩니다 그리고 UserDto 는 UserEntity 데이터를 인계받아서 UserDto 로 인계하는 역활을 합니다 
 
@@ -510,6 +462,4 @@ public void deleteUser(Long id) {
 ```
 이렇게 만들 수 있습니다 그리고 한번더 같은 id 로 조회 하면 없는 값이라고 나오게 됩니다 
 
-이렇게 우리는 HttpMethod 로 여러가지 핸들러를 직접 만들어보았습니다 
-
-
+이렇게 우리는 HttpMethod 로 여러가지 핸들러를 직접 만들어보았습니다

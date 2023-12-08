@@ -113,5 +113,4 @@ firewall-cmd --permanent --zone=public --add-port=8080/tcp
 
 ![1](https://github.com/SH-Yeon93/ImageStore/assets/58513678/a5fc303a-29b4-4711-8e9c-963fa9106e61)
 그렇게 해서 로그인을 성공하면 이와 같은 화면이 나온다 jenkins 도 예전것을 보면 UI 가 상당히 구리지만 요즘은 Blue Ocence 를 개발하면서 상당히 세련된 UI 를 제공하고 있다 
-우리는 최신 버전에서 Jenkins 와 관련한 다양한 CI/CD 지속적인 배포에 대해서 공부를 해볼것이다 
-
+우리는 최신 버전에서 Jenkins 와 관련한 다양한 CI/CD 지속적인 배포에 대해서 공부를 해볼것이다

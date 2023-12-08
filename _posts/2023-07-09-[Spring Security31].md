@@ -43,7 +43,6 @@ keyclock 19.0.1
 
 
 ## maven 설정
-
 ```
 <dependencies>
 	<dependency>
@@ -86,7 +85,6 @@ spring.security.oauth2.resourceserver.jwt.jwkSetUri=http://localhost:8080/realms
 서버 포트는 이렇게 변경을 하고 나머지는 이렇게 적어준다 이에 대한 설명은 다음시간에 하도록 하자
 
 ## demoController
-
 ```
 @RestController
 public class DemoController {
@@ -94,7 +92,6 @@ public class DemoController {
     @GetMapping("")
     public String demoController(){return "demonController";}
 }
-
 ```
 
 인가를 받은 클라이언트는 여기에 접근해서 demoController 을 얻을것이다 
@@ -112,7 +109,6 @@ demoController 에 접근을 해보자 이때 클라이언트는 post-man 을 �
 http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/auth?response_type=code&client_id=Spring-Oauth2-Authorizaion-client&scope=email%20profile&state=KvR7XkC1EIAIjMCYxLr4Ljs_gzTuprTn5_tHWMrljY4%3D&redirect_uri=http://localhost:8081/login/oauth2/code/keycloak
 
 ```
-
 postman 에 이 주소를 입력하게 되면 자동으로 파라미터를 세팅하게 되는데 이 주소는 우리가 앞에서 OAuth2AuthorizationRequestRedirectFilter 에 의해서 만들어지는것을 우리는 보았습니다 자세한 내용은 <https://time-kimdongy1000.github.io/posts/Spring-Security24/> 참조해주시면됩니다 
 
 위의 주소로 post - man 을 실행을 하게 되면 
@@ -160,4 +156,7 @@ state - KvR7XkC1EIAIjMCYxLr4Ljs_gzTuprTn5_tHWMrljY4%3D
 ![5](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/8c00376f-ae11-4c10-b8cb-55e31f1cc663)
 
 이렇게 핸들러 적고 post - man 에 Authorization 토큰으로 Bearer Token 으로 아까 받은 access_token 을 입력하고 send 하면 이렇게 
-demoController 이 나오게 됩니다 그럼 우리는 다음시간부터 어떻게 해서 access_token 을 이용해서 리소스 서버에 접근할 수 있는지에 대해서 공부를 계속해보도록 하겠습니다 
+demoController 이 나오게 됩니다 
+
+
+그럼 우리는 다음시간부터 어떻게 해서 access_token 을 이용해서 리소스 서버에 접근할 수 있는지에 대해서 공부를 계속해보도록 하겠습니다 

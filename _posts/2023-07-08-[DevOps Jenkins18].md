@@ -253,21 +253,4 @@ Stage "STOP REMOTE TOMECAT" skipped due to when conditional
 Stage "STOP REMOTE TOMECAT" skipped due to when conditional 이렇게 이 stage 를 띄어 넘겠다는 뜻이다 그리고 83번 실행을 살펴보면 when 을 만족하기 때문에 
 그대로 실행을 하는 모습을 보이고 있는것이다 자 우리는 첫번째 상황에 대한 파이프라인 대처를 만들었다 
 
-앞으로 파이프라인은 내가 실무에서 겪은 또는 내가 앞으로 구축하고 싶은 상황을 부여해서 스크립트를 만들어나갈 계획입니다 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+앞으로 파이프라인은 내가 실무에서 겪은 또는 내가 앞으로 구축하고 싶은 상황을 부여해서 스크립트를 만들어나갈 계획입니다 <2023-07-08-[DevOps Jenkins18].md>

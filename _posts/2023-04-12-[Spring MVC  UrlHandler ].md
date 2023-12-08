@@ -20,13 +20,6 @@ https://blog.naver.com/kimdongy1000/221831687013
 
 HelloController.java
 ```
-
-package com.cybb.main.controller;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
-
 @RestController
 public class HelloController {
 
@@ -307,5 +300,4 @@ fetch 문구를 활용할것이다
 {id: 'time2', boardNumber: '21313123'}
 ```
 
-이렇게 데이터 들어오는것을 확인할 수 있다 
-
+이렇게 데이터 들어오는것을 확인할 수 있다
