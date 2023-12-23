@@ -9,32 +9,98 @@ mermaid: true
 ---
 
 ## Aspect-Oriented Programming 
-일명 OP 는 프로그램 구조에 대한 또 다른 사고 방식을 제공하여 객체 지향 프로그래밍 OOP 을 보안합니다 
-OOP 에서 모듈화의 핵심 단위는 클래스인 반면 AOP 에서는 모듈화 단위가 Aspect AOP 는 IoC 컨테이너에 의존되지 않은 독립적 프로그램입니다 
+소프트웨어에 개발에서 코드를 모듈화 하는 방법중에 하나로 관심사를 중심으로 코드를 구조화 하는 기법입니다 횡단 관심사와 , 핵심 관심사를 모듈화 해서 분리하고 
+횡단 관심사를 여러 모듈 코드에서 중복 없이 사용할 수 있도록 도와 줍니다 
 
-## AOP 의 개념 
+## 횡단 관심사 , 핵심 관심사 
+예를 들어서 다음의 로직이 있다 이 중에서 횡단 관심사와 , 핵심관심사를 분리해보자 
 
- 1. Aspect : 핵심기능 코드 사이에 침투한 부가기능을 모아놓은 모듈이다 + 어디에 적용시킬것인지에 대한 적용 (포인트컷)
-             예를 들어서 A 라는 테이블에 값을 집어 넣는다고 했을때 
-                
-                a. 트랜잭션 시작 
-                b. AutoCommit false 
-                c. 핵심기능 (데이터 삽입)            
-                d. AutoCommit true 
-                e. commit (트랜잭션 종료)
-이때 부가기능을 모아놓은 모듈을  Advice 라고 하고 어디에 적용할지를 PointCut 이라고 한다 이이때 Aspect 는 이 Advice + PointCut 을 합친거라고 생각하면 된다 
-
-2. PointCut : Advice 가 실행될 위치 
-
-3. Advice : 부가기능을 모아놓은 모듈
-
-## Aspect 지원 
-Aspect 는 일반적으로 java code 로 선언하는 방식이 있고 전통적인 xml 방식으로 정의를 해두기도 합니다 우리는 java 코드로만 정의를 해서 사용을 해보겠습니다 
-
-
-
-AOP 의존성 추가
 ```
+로직 1.
+StartTranscation()
+SetAutoCommit(false)
+insertMember(user)
+commit()
+setAutoCommit(true)
+
+로직 2.
+StartTranscation()
+SetAutoCommit(false)
+updateMember(user)
+rollback();
+setAutoCommit(true)
+```
+
+이 두개의 로직중에 횡돤 관심사와 , 핵심 관심사를 분류를 해보면 핵심관심사는 결국 비즈니스 로직일 수 밖에 없다 그렇기 때문에 새로운 멤버를 추가하는 inserMember 이나 기존의 멤버를 업데이트 하는 updateMember 가 핵심관심사이고 그 사이에 트랜잭션에 관련한 모든것들을 횡단 관심사라고 한다 즉 Aop 이런 횡단 관심사들이 비즈니스 로직이 반복됨에 따라 
+계속해서 동일하게 반복되고 있는 것을 볼 수 있는데 AOP 는 이런 횡단 관심사를 한곳에 묶에서 중복으로 호출하지 않게 해서 개발자는 비즈니스 로직에만 신경쓰는 프로그래밍 기법을 말합니다 
+
+## AOP 의 용어 
+
+1. Aspect  
+    AOP에서의 모듈화 단위. 횡단 관심사를 담당하는 코드의 집합. Aspect는 어떤 특정한 관심사를 구현한 코드 모듈을 나타냅니다.
+
+2. Advice 
+    횡단 관심사를 구현한 코드. 메소드 실행 전, 후 또는 예외 발생 시 등과 같이 핵심 관심사에 결합될 수 있습니다.
+
+3. Join Point
+    Advice가 핵심 관심사에 결합되는 지점. 메소드 호출, 객체 생성 등과 같은 프로그램 실행 중의 특정 시점입니다.
+
+4. Pointcut 
+    어떤 Join Point에서 Advice를 실행할 것인지를 결정하는 표현식. 특정 메소드 호출, 특정 패키지 내의 모든 메소드 등과 같이 지정할 수 있습니다.
+
+
+## AOP 의 장점은
+1. 모듈화 
+    관심사를 분리함으로서 코드의 모듈화를 증가시킵니다 
+
+2. 재사용성
+    동일한 관심사를 여러 모듈에서 중복으로 구현하지 않고 재사용할 수 있습니다 
+
+3. 유지보수성 
+    핵심 관심사와 횡단 관심사가 분리되어서 코드를 더 쉽게 이해하고 유지보수 할 수 있습니다 
+
+
+## AOP 단점 
+1. 복잡성과 어려운 디버깅 
+    AOP 를 사용하면 코드의 흐름이 분산되기 때문에 디버깅 및 코드의 이해가 어려워질 수 있습니다 어떤 횡단 관심사가 언제 실행되는지 파악하기 어려운것이 단점입니다 
+
+2. 성능 오버헤드
+    AOP 가 코드를 실행중에 추가적인 동작을 수행함으로 성능 오버헤드가 발생할 수 있습니다 
+
+3. 횡단 관심사의 재사용의 어려움
+    특정 모듈에 횡단 관심사가 강력하게 결합을 하면 다른 모듈에서 사용하기 어려운 점이 있습니다 
+
+
+
+## 간단한 AOP 프로젝트 만들기 
+
+우리가 할 간단한 프로그램은 aop 를 활용해서 autoCommit 을 푸는거 부터 해서 insert 가 제대로 되면 commit 안되면 rollback 하는 횡단 관심사를 만들어서 진행을 하겠습니다
+필요한 maven 은 web , mybatis , ojdbc , aop 를 사용하겠습니다 
+
+```
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
+
+
+<dependency>
+    <groupId>org.mybatis.spring.boot</groupId>
+    <artifactId>mybatis-spring-boot-starter</artifactId>
+    <version>2.2.2</version>
+</dependency>
+
+<dependency>
+    <groupId>com.oracle.database.jdbc</groupId>
+    <artifactId>ojdbc8</artifactId>
+    <version>21.6.0.0.1</version>
+</dependency>
 
 <dependency>
     <groupId>org.springframework.boot</groupId>
@@ -43,259 +109,161 @@ AOP 의존성 추가
 
 ```
 
-
-AppConfig
+## AopConfig
 ```
-
 @Configuration
 @EnableAspectJAutoProxy
-public class AppConfig {
+public class AopConfig {
+
 }
+
 
 ```
 
-`@EnableAspectJAutoProxy` 를 통해 Aop 를 활성화 할 수 있습니다 
+먼저 Aop 를 사용할 conifg 를 작성합니다 이 config 는 aop 를 사용할때 쓰는 설정파일 이지만 지금은 그냥 bean 만 생성할 수 있게 하겠습니다 그리고 `@EnableAspectJAutoProxy` 는 
+AspectJ 기반의 AOP 를 사용하기 위해 자동 프록시 생성을 활성화 하는 어노테이션입니다 
 
 
-LoggerAspect.java
+## 횡단 관심사 만들기 
 ```
 @Aspect
 @Component
-public class LoggerAspect {
+public class DbAspect {
 
-    @Pointcut("execution(* com.cybb.main.controller..*.*(..))")
-    private void logPointCut(){}
+    private SqlSession sqlSession;
+    @Autowired
+    private SqlSessionTemplate sqlSessionTemplate;
 
-    @Before("logPointCut()")
-    public void before(JoinPoint joinPoint){
 
-        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        Method method =  methodSignature.getMethod();
-        System.out.println(method.getName() + "실행");
+    @Before("execution(* com.cybb.main.service..*.*(..))")
+    public void transactionStart(JoinPoint joinPoint) throws Exception{
+        System.out.println("===== 트랜잭션 시작 =====");
+
+        sqlSession = sqlSessionTemplate.getSqlSessionFactory().openSession();
+        Connection connection = sqlSession.getConnection();
+        connection.setAutoCommit(false);
     }
-}
-```
-@Aspect 애노테이션을 달아서 이 클래스에서 Aspect 정의를 하겠다는 뜻입니다 이때 이 클래스는 메서드와 필드를 가질 수 있고 pointCut , Advice 를 선언할 수 있습니다 
-그리고 Bean 에 감지가 되어야 함으로 @Component 를 사용하여 줍니다 Spring 공식문서에는 단순 @Aspect 만으로 Bean 을 감지할 수 없기에 이 Bean 을 감지할 수 있는 애노테이션 
-또는 Bean 을 선언을 해주어야 한다고 적혀 있습니다 (싱글톤 구성)
 
+    @AfterReturning(pointcut = "execution(* com.cybb.main.service..*.*(..))" )
+    public void transactionEndCommit(JoinPoint joinPoint) throws Exception{
+        System.out.println("===== 트랜잭션 종료 Commit =====");
 
-## PointCut 선언 
-```
-@Pointcut("execution(* com.cybb.main.controller..*.*(..))")
-private void logPointCut(){}
+        Connection connection = sqlSession.getConnection();
 
-```
-포인트컷은 이렇게 선언할 수 있는데 위에 `@Pointcut("execution(* com.cybb.main.controller..*.*(..))")` 어디서 실행할것인지 정의한것이고  `private void logPointCut(){}` 부분은 실제 위치에서 사용할 메서드인것입니다 
+        connection.commit();
+        connection.setAutoCommit(true);
 
-그럼 포인트컷의 표현식에 대해서 알아야 하는데 
+        sqlSession.close();
+    }
 
-1. execution 메서드 실행 조인 포인트를 매핑한다 스프링 AOP 에서 가장 많이 사용되는 표현식중에 하나이다 
-    a. 이때 "execution(* com.cybb.main.controller..*.*(..))" 있는 것들은 다음의 패턴을 따르는데 
-        i. 첫번째 * 는 접근제한자 패턴이다 와일드 카드를 쓰면 접근제한자 상관없이 적용하겠다는 뜻이고 
-            a. "execution(private com.cybb.main.controller..*.*(..))"  라고 사용하면 private 접근제한자를 가진 메서드만 Aop 를 사용하겠다는 뜻이다 
-        ii. 두번째 패키지와 클래스 이름에 대한 패턴 생략이 가능하며 연결할때는 . 을 사용함 그래서 지금 이  com.cybb.main.controller..*.* com.cybb.main.controller 하위에 있는 모든 패키지에 대해서 모든 클래스의 모든 메서드를 뜻한다 
-        iii. 그리고 마지막 (..) 은 마지막 메서드에 붙어 나오는 것으로 파라미터 패턴을 넣을 수 있다 (..) 지금 포현은 어떤 파라미터 상관없고 개수 상관 없는 것을 말한다 
+    @AfterThrowing(pointcut = "execution(* com.cybb.main.service..*.*(..))" , throwing = "ex")
+    public void transactionEndRollBack(JoinPoint joinPoint) throws Exception{
+        System.out.println("===== 트랜잭션 종료 에러발생 Rollback =====");
 
-이 execution 표현식이 가장 많이 쓰이는 방식중에 하나이다         
+        Connection connection = sqlSession.getConnection();
 
-## Advice 선언 
+        connection.rollback();
+        connection.setAutoCommit(true);
 
-```
-@Before("logPointCut()")
-public void before(JoinPoint joinPoint){
-    
-    MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-    Method method =  methodSignature.getMethod();
-    System.out.println(method.getName() + "실행");
-    
-    
-}
+        sqlSession.close();
+    }
 
-```
-
-이렇게 실행할 수 있다 이때 우리는 @Before 메서드가 실행되기 이전에 실행 이때 이전이라고 하면 이해가 안되지만 난중 다음 실제 호출했을때 어떻게 적용되는지 살펴보면 알게 된다 
-
-## 핵심 코드 작성 
-
-```
-@RestController
-public class HomeController {
-
-    @PostMapping("/insertUser")
-    public User insertUser(
-            @RequestParam("name") String name ,
-            @RequestParam("age") int age
-        ) throws Exception
-    {
-        try{
-
-            User user = new User();
-
-            System.out.println(name);
-            System.out.println(age);
-
-            user.setName(name);
-            user.setAge(age);
-            
-                    
-            return user;
-
-        }catch(Exception e){
-            throw new RuntimeException(e);
-        }
+    @After("execution(* com.cybb.main.service..*.*(..))" )
+    public void transactionEnd(JoinPoint joinPoint) throws Exception{
+        System.out.println("===== 로직 종료 =====");
 
     }
 }
 
 
 ```
+이 부분이 이제 횡단 관심사이다 이 횡단 관심사는 우리가 지정한 pointCut 에 들어가서 자동으로 붙게 된다 여기서 하나하나 알아보자 
 
-이렇게 이제 핸들러 하나를 만들어보자 핵심로직에서는 아무런 작업을 할 필요 없다 우리가 위에서 선언한 Aop 규칙으로 Srping 이 알아서 Advice 를 원하는 위치에 넣게 된다 
-그렇게 실행을 하고 핸들러를 호출하면 
+1. @Before 
+    지정한 포인트컷에서 제일 먼저 실행되는 횡단 관심사입니다 
 
-```
-insertUser실행
-kimdong
-10
+2. @After 
+    지정한 포인트컷에서 제일 마지막에 실행됩니다 이때는 핸들러의 에러여부 상관 없이 무조건 실행됩니다 
 
-```
+3. @AfterThrowing
+    지정한 포인트컷에서 에러가 발생했을때 동작하는 횡단 관심사입니다
 
-우리가 선언하지 않음 System.out.println 가 나오게 된다 그럼 이제 우리는 앞에서 메서드 실행 이전에 대한 기준을 알게 된것이다 여기서 이전은 메서드 (여기선 핸들러) 가 호출되고 나자마자 호출되는 것을 @Before 로 선언하는 것이다 마찬가지로 @After 이 있는데 마저 작성하면
+4. @AfterReturning
+    지정한 포인트컷에서 에러없이 끝이 났으면 실행되는 횡단 관심사입니다
 
-## @After
-```
+그렇다는 플로우는 이렇게 된다 
 
-@After("logPointCut()")
-public void after(JoinPoint joinPoint ){
+1. @Before -> 에러 없이 동작 완료 -> @AfterReturning -> @After
 
-    MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-    Method method =  methodSignature.getMethod();
-    System.out.println(method.getName() + "종료");
+2. @Before -> 에러 발생 -> @AfterThrowing -> @After
+
+이렇게 두가지 플로우를 따르게 됩니다 
+
+## PointCut 
+우리는 위에서 계속 지정한 포인트컷이라고 했다 이 뜻이 무엇이냐면 포인트컷은 이 횡돤관심사가 실행될 위치를 명시할 수 있습니다 
+`pointcut = "execution(* com.cybb.main.service..*.*(..))"` 이렇게 선언된것들이 pointcut 입니다 이렇게 명시적으로 사용할 수 있습니다 그럼 이 뜻이 무엇이냐 
+
+1. execution 
+    메서드 실행 조인 포인트를 매핑합니다 스프링 AOP 에서 가장 많이 사용하는 표현식중 하나입니다 즉 횡단 관심사를 어떤 메서드에 매핑을 시키기 위한 표현식이라고 생각하시면됩니다 
     
+    execution(modifiers-pattern? return-type-pattern declaring-type-pattern? method-name-pattern(param-pattern) throws-pattern?)
 
-}
+    표현식의 구조는 이렇게 되는데 
+        a. modifiers-pattern 메서드의 접근제한자를 나타내며 생략이 가능합니다 
+        b. return-type-pattern 메서드의 반환타입을 나타내며 생략이 가능합니다 
+        c. declaring-type-pattern 메서드를 선언한 클래스나 인터페이스 패턴을 나타내며 생략이 가능합니다 
+        d. method-name-pattern 메서드의 이름을 나타냅니다 
+        e. param-pattern 매서드의 매개변수를 나타냅니다 
+        f. throws-pattern 메서드에서 던지는 예외를 나타냅니다 
 
+2. execution(* com.cybb.main.service..*.*(..)) 분리 
+    a. * 를 접근제한자 모든 접근제한자에서 사용하겠다는 뜻입니다         
+    b. com.cybb.main.service 이 패키지 아래에 있는 곳에서 사용을 하겠다는 뜻입니다 이때 .. 은 와일드 카드로 이 service 하단에 있는 모든 패키지를 포함하게 됩니다 
+    c. *.* 이는 모든 클래스.모든 메서드 를 나타내며 
+    d. (..) 모든 매개변수를 뜻합니다
+
+종합하면 이 포인트컷은 com.cybb.main.service 포함 및 하단에 있는 모든 패키지에 이 포인트컷을 적용하겠다는 뜻입니다 
+
+## 핵심 관심사 적용
 ```
+package com.cybb.main.service;
 
-그럼 전체 결과를 보자 
+@Service
+public class MemberService {
 
-```
+    @Autowired
+    private MemberRepository memberRepository;
 
-insertUser실행
-kimdong
-10
-insertUser종료
+    public void insertMember(){
 
-```
+        Map<String , Object> dbParam = new HashMap<>();
+        dbParam.put("name" , "Time");
+        dbParam.put("age" , 20);
 
-그러면 실행과 종료를 이렇게 찍었다 다만 여기서는 After 의 좀더 다른 기능을 사용해보자 
-
-After 은 AfterReturing ,  AfterThrowing 가 존재하는데 성공적으로 마쳤을때 Afterreturing 를 사용해보자 
-
-## @AfterReturning
-```
-
-@AfterReturning(value = "logPointCut()" , returning = "object" )
-public void after(JoinPoint joinPoint , Object object){
-    System.out.println("return Object" + object);
-
-
-}
-
-```
-
-이는 핵심로직에서 return 데이터가 있을때 사용할 수 있는 pointcut 이며 위의 After 와 같이 사용하면 위와 같은 결과가 나온다 
-
-```
-
-insertUser실행
-kimdong
-10
-return Objectcom.cybb.main.domain.User@7ca2a82e
-insertUserafter 종료
-
-```
-
-즉 @AfterReturning 먼저 호출이 되고 @After 가 호출되는것을 볼 수 있다 
-
-
-마지막 에러 발생했을때 후처리 하는 AfterThrowing 를 찾아보자 
-그럼 핸들러를 약간 수정해서 
-
-```
-@RestController
-public class HomeController {
-
-    @PostMapping("/insertUser")
-    public User insertUser(
-            @RequestParam("name") String name ,
-            @RequestParam("age") int age
-        ) throws Exception
-    {
-        try{
-
-            User user = new User();
-            
-            if(!StringUtils.hasText(name)){
-                throw new RuntimeException("name 이 올바르지 않습니다");
-            }
-
-            System.out.println(name);
-            System.out.println(age);
-
-
-            user.setName(name);
-            user.setAge(age);
-
-
-
-            return user;
-
-        }catch(Exception e){
-            throw new RuntimeException(e);
-        }
-
+        memberRepository.insertMember(dbParam);
     }
 }
 
+```
+원래는 패키지 명을 안쓰는데 이번에는 필요할꺼 같아서 패키지명을 남깁니다 지금보면 핵심 관심사는 비즈니스 로직으로 새로운 member 를 넣는 작업을 하게 됩니다 이를 실행하게 되면 
+Spring AOP 는 알아서 @Before 부터 @After 까지 전부 실행을 하게 됩니다 그럼 실행을 해보자 
+
+## AfterReturing 
+```
+===== 트랜잭션 시작 =====
+===== 트랜잭션 종료 Commit =====
+===== 로직 종료 =====
 
 ```
+로직 시작과 종료가 올바르게 끝이나서 @AfterReturning -> @After 로 간것을 볼 수 있습니다 그렇다면 일부로 오류를 발생시키면 
 
-파라미터를 검증해서 문제가 생기게끔 만들어보자 
-
-## @AfterThrowing
+## AfterThrowing 
 ```
 
-@AfterThrowing(value = "logPointCut()" , throwing = "ex")
-public void afterThrowing (JoinPoint joinPoint , Throwable ex){
-    
-    System.out.println("===========Exception 발생==============");
-    System.out.println("ex.getCause() : " + ex.getCause());
-    System.out.println("ex.getMessage() : "  + ex.getMessage());
-    System.out.println("ex.getStackTrace() : " + ex.getStackTrace());
-    
-}
+===== 트랜잭션 시작 =====
+===== 트랜잭션 종료 에러발생 Rollback =====
+===== 로직 종료 =====
 
 ```
-
-자그럼 우리는 요청을 할때 핸들러 파라미터를 이상하게 보낼것이다 지금은 name 을 비어 있는 값을 보내면된다 
-
-```
-
-insertUser실행
-===========Exception 발생==============
-ex.getCause() : java.lang.RuntimeException: name 이 올바르지 않습니다
-ex.getMessage() : java.lang.RuntimeException: name 이 올바르지 않습니다
-ex.getStackTrace() : [Ljava.lang.StackTraceElement;@1d40326f
-insertUserafter 종료
-2023-03-22 11:00:23.436 ERROR 13220 --- [nio-8080-exec-2] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; nested exception is java.lang.RuntimeException: java.lang.RuntimeException: name 이 올바르지 않습니다] with root cause
-
-java.lang.RuntimeException: name 이 올바르지 않습니다
-
-```
-
-이걸게 결과가 나온다 먼저 @Before 가 실행이 된다 그러다 에러 발생해서 @AfterThrowing 에 ㅇㅆ는 메서드를 호출 그리고 @After 는 오류 유무와 상관 없이 항상 호출이 됩니다 
-그리고 그 이후 나오는 메세지는 실제 핸들러의 마지막 catch 부분에서 동작하는 thro new RuntimeException 에 동작되는 메세지입니다 
-
-우리는 그러면 Aop 의 처음과 끝까지 한번 코딩을 해보았고 다음 포스터에서 간단한 프로그램을 한번 만들어보겠습니다
+일부로 에러를 발생시키면 이렇게 @AfterThrowing -> @After 로 가게 됩니다 오늘은 Aop 를 활용해서 개발자는 비즈니스로직에만 중점을 개발을 하고 횡단 관심사는 분리를 해서 
+다른곳에서 개발한 후 적용을 하는 Aop 에 대해서 알아보았습니다 
