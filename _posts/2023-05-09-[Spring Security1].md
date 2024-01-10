@@ -28,17 +28,14 @@ maven
 이런 형식으로 갈 예정이고 안에 maven 은 하단에 정리해서 쓰도록 하겠습니다 
 ```
 <dependencies>
-	
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-security</artifactId>
 	</dependency>
 	<dependency>
-
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-web</artifactId>
 	</dependency>
-
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-test</artifactId>
@@ -49,11 +46,10 @@ maven
 		<artifactId>spring-security-test</artifactId>
 		<scope>test</scope>
 	</dependency>
-
 </dependencies>
 ```
 
-크게는 web , security 에 대해서만 의존성을 주입후 여러가지 재미 있는것들을 해볼예정입니다 
+크게는 web , security 에 대해서만 의존성을 주입 후 여러가지 재미 있는것들을 해볼 예정입니다 
 
 
 ## 간단한 Controller 만들기 
@@ -87,8 +83,8 @@ Using generated security password: aa5fb719-d2cf-46a9-9460-dee63292ca3d
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 ```
 
-이렇게 비밀번호를 발급해 줍니다 그럼 아이디는 user 이 되고 비밀번호는 aa5fb719-d2cf-46a9-9460-dee63292ca3d 됩니다 이는 아무런 설정이 없을때 사용되는 비밀번호입니다 
-이를 입력해서 로그인을 하게 되면 
+이때 임시번호를 발급해주고 하단 문구에 이 비밀번호는 오로지 개발단계에서만 쓰라고 경고를 해줍니다 
+
 
 ![스크린샷 2023-08-06 105416](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/1b0257ff-98c3-4e30-80dd-9f8d42d7a082)
 
