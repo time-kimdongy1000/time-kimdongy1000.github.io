@@ -7,8 +7,7 @@ tags: [ Spring-Security ]
 math: true
 mermaid: true
 ---
-
-우리는 지난시간에 새로운 유저를 한번 만들어보았습니다 이때 유저를 생성하는것도 중요하지만 또 한가지는 비밀번호 인코더에 대해서 이번시간에 대해서 알아보도록 하겠습니다 
+우리는 지난시간에 InMermory 를 만들때 PasswordEncoder 를 사용했었는데 오늘은 이에 대해서 알아보도록 하겠습니다 
 
 
 ```
@@ -28,33 +27,38 @@ public class SecurityConfig {
 }
 ```
 
-새로운 유저를 만들때 반드시 PasswordEncoder 를 활용해서 암호화를 하는 작업을 거쳐야 합니다 그럼 이 PasswordEncoder 에 대해서 알아보면
+## PasswordEncoder 정의
+사용자의 비밀번호를 안전하게 저장하고 인증 시 비밀번호를 비교하기 위해 사용되는 Spring Security의 인터페이스입니다. 
+비밀번호를 해싱(hashing)하고, 저장된 해시값과 사용자가 제공한 비밀번호를 비교하는 등의 작업을 수행합니다
 
-## PasswordEncoder
-```
+이는 인터페이스로 이를 구현하는 구현체 몇가지를 소개하보자면 
 
-public interface PasswordEncoder {
+1. BCryptPasswordEncoder
+	강력한 해싱알고리즘을 사용하게 되는데 이때 salt 를 사용해서 좀더 복잡한 암호화를 진행할 수 있습니다 
 
-	String encode(CharSequence rawPassword);
+2. NoOpPasswordEncoder
+	실제로 비밀번호를 해싱하지 않고 있는 plan_text 그대로 저장하는 구현체입니다 보안측면에서는 위험수준이며 시큐리티는 이를 통해서 비밀번호를 저장하는것을 경고 처리하고 있습니다 
 
-	boolean matches(CharSequence rawPassword, String encodedPassword);
+3. MessageDigestPasswordEncoder
+	MessageDigest 우리가 잘 아는 SHA 방식으로 해싱을 하는 암호화 구현체입니다 
 
-	default boolean upgradeEncoding(String encodedPassword) {
-		return false;
-	}
+이 중에서 시큐리가 가장 추천하는 암호화 방식은 BCryptPasswordEncoder 를 채택하고 있습니다 
 
-}
-```
+## 해싱 (Hash Algorithm)
+위에서 계속 Hash 알고리즘으로 했는데 이에 대해서 간략하게 설명을 하고 가자면 이는 단방향 (일방향) 함수 단방향 함수는 역으로 진행을 할 수 없으며 특정 입력값을 해싱 하게 되면 
+고정된 길이의 해싱 데이터를 return 하는 특징이 있습니다 이 밖에도 
 
-당연히 인터페이스이고 각 아래에 구현체가 있습니다 여기서는 명칭을 좀 알아야 하는데 
+1. 단방향 
+	단방향은 역으로 불가능합니다 이 말은 한번 해싱된 값을 다시 역으로 돌려서 원래의 텍스트로 만들 수 없습니다 
 
-1) rawPassword - 암호화 대상 비밀번호 입니다 즉 사용자가 사용할 비밀번호 인코딩 대상 보안은 매우 낮음 
-2) encodedPassword - 암호화가 완료된 비밀번호 즉 PasswordEncoder.encode() 를 통해서 인코딩이 완료된 비밀번호 
+2. 고정크기 
+	해싱은 입력된 텍스트의 길이와 상관없이 항상 고정된 길이를 return 하게 됩니다 이때 SHA-256 같은 경우는 항상 256 자리 즉 32바이트 = 256비트 이는 영문자 숫자 (1비트로 계산)
 
-통상적으로 이 2개 정도만 알고 있으면 PassWordEncoder 에 대해선 거의 다 배운것이다 
+3. 고유성
+	같은 입력값에는 같은 해싱 결과값이 도출하지만 조금이라도 다른 입력값에 대해서는 전혀 다른 해싱값이 도출됩니다 
 
-암호화 인코딩은 종류가 엄청많습니다 그 중에서도  시큐리티가 통상적으로 권장하고 있는 BCryptPasswordEncoder() 에 대해서 알아보겠습니다 
-시큐리티가 권장하고 있다는것은 그만큼 암호화 정도가 강력하다는 뜻입니다 
+4. 솔팅 
+	BCryptPasswordEncoder 같은 경우 salt 값을 추가할시 같은 입력에 대해서도 같은 출력을 보장하지 않습니다 이때 비밀번호는 해싱할때 salt 값을 해싱에 첨부해서 다른 raw_password 를 검증할떄 이 salt 값을 포함해서 검증을 진행하게 됩니다 
 
 
 ## BCryptPasswordEncoder
@@ -199,5 +203,6 @@ return BCrypt.checkpw(rawPassword.toString(), encodedPassword);
 
 ```
 
-비밀번호 검증은 이 matches 함수를 호출해서 원문하고 인코딩된 비밀번호를 비교하게 됩니다 그리고 안에서 salt 를 가져와서 비교하게 됩니다 그러면 여기서 질문하나가 생기게 되는데 salt 를 넣어준것이 아닌데 어떻게 salt 값을 알고 있냐? 사실 salt 는 반환되는것이 아니라 해싱된 데이터 안에 salt 가 포함이 되어 있음으로 이를 다시 
-salt 값과 인코딩된 값을 분리해서 비교를 하게됩니다 이때 passwordEncoder 의 중요한 비교방식은 암호문을 디코딩해서 원문하고 비교하는것이 아니라 입력하는 원문을 위에서 분리한 salt 값으로 다시 해싱해서 해싱된 값으로 비교를 해서 일치하면 true , 다르면 false 를 반환하는 것입니다 오늘은 시큐리티 유저생성 관련된것중에서 PasswordEncoder 에 대해서 알아보았습니다 
+비밀번호 검증은 이 matches 함수를 호출해서 원문하고 인코딩된 비밀번호를 비교하게 됩니다 그리고 안에서 salt 를 가져와서 비교하게 됩니다 그러면 여기서 질문하나가 생기게 되는데 salt 를 넣어준것이 아닌데 어떻게 salt 값을 알고 있냐? 사실 salt 는 반환되는것이 아니라 해싱된 데이터 안에 salt 가 포함이 되어 있음으로 이를 다시 salt 값과 인코딩된 값을 분리해서 비교를 하게됩니다 
+
+이때 passwordEncoder 의 중요한 비교방식은 암호문을 디코딩해서 원문하고 비교하는것이 아닙니다 해싱은 단방향이기 때문에 역으로 가는것이 불가능 그렇기에 입력되는 비밀번호를 같은 해싱함수로 해싱을 해서 비교를 하는 방식으로 비교합니다 이때 일치하면 true , 다르면 false 를 반환하는 것입니다 

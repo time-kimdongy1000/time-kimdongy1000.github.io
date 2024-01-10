@@ -8,19 +8,16 @@ math: true
 mermaid: true
 ---
 
-지난시간에는 User 를 만들때 사용한 PasswordEcndoer 를 활용했다면 이번시간에는 User 를 만들때 사용하는 Authorities , Role 를 활용한 유저생성 마지막에 대해서 공부를 해보도록 하겠습니다 
-
 ## Authorities , Role 의 각각 정의 
 
-```
-1) Role 정의 
+1. Role 정의 
 	이는 주로 이 User 가 가지는 그룹을 나타냅니다 일반 유저를 나타내는 유저 그리고 관리자를 나타내는 Admin 등등 지정할 수 있으며 이는 유저의 컨셉과 사용자의 사용법에 따라서 다르게 정의 됩니다 
 
 
-2) Authorities 정의 
+2. Authorities 정의 
 	이는 주로 권한을 나타냅니다 읽기 권한 쓰기 권한 수정권한 삭제권한 Role 처럼 권한을 나누고 메서드 호출할때 해당 Authorities 를 지정하게 되면 해당 권한을 가지고 있지 않은 유저는 해당 메서드를 호출 할 수 없습니다 
 
-```
+
 
 ## User Role , Authorities 정의 
 
@@ -86,6 +83,8 @@ public class SecurityConfig{
         httpSecurity.authorizeRequests().antMatchers("/admin/*").hasRole("ADMIN");
         httpSecurity.authorizeRequests().antMatchers("/normalRequest/*").authenticated();
 
+        httpSecurity.formLogin();
+
 
         return httpSecurity.build();
     }
@@ -125,7 +124,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws
 }
 
 ```
-용어정리가 중요합니다 SecurityFilterChain 하나로 시큐리티 설정을 좌지우지 하는것이기 때문에 여기 설정에 있는 모든것들은 다 중요하고 앞으로 이에 대해서 설명을 이어 나갈것입니다SecurityFilterChain 에 대해서는 다루지 않겠습니다 안의 내용은 인터페이스 이고 하단에 구현체들이 각각 구현을 하고 있어서 모든 내용을 다룰수 없습니다 
+용어정리가 중요합니다 SecurityFilterChain 하나로 시큐리티 설정을 좌지우지 하는것이기 때문에 여기 설정에 있는 모든것들은 다 중요하고 앞으로 이에 대해서 설명을 이어 나갈것입니다 SecurityFilterChain 에 대해서는 다루지 않겠습니다 안의 내용은 인터페이스 이고 하단에 구현체들이 각각 구현을 하고 있어서 모든 내용을 다룰수 없습니다 
 
 authorizeRequests -> 이 안에는 함축적인 단어인데 인증요청이라는 뜻입니다  
 antMatchers -> ant 표현식으로 표현된 request 의 표현식이며 
@@ -148,22 +147,6 @@ public class AdminController {
         
         return "여기는 admin 페이지입니다";
     }
-}
-
-```
-
-## Form 로그인 사용
-```
-@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
-
-	httpSecurity.authorizeRequests().antMatchers("/admin/*").hasRole("ADMIN");
-	httpSecurity.authorizeRequests().antMatchers("/normalRequest/*").authenticated();
-
-	httpSecurity.formLogin();
-
-
-	return httpSecurity.build();
 }
 
 ```
@@ -225,6 +208,5 @@ read 로 호출해서 접근할때는 정상적으로 보이지만
 
 ![write 접근](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/aedf3b8b-05b7-4fb4-b2e1-3a6ac93f6eba)
 
-write 을 호출해서 접근할때는 보이지 않습니다 
+write 을 호출해서 접근할때는 보이지 않습니다 이렇게 User 의 적절한 권한 또는 Role 을 포함시키면 각 유저가 들어갈 수 있는 페이지와 , 들어갈 수 없는 페이지를 구성할 수 있게 됩니다 
 
-오늘은 이렇게 Role 과 Authority 에 대해서 공부를 해보았습니다
