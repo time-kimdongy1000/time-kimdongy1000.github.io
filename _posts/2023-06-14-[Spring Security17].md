@@ -55,8 +55,7 @@ private boolean parseJwt(String jwt){
 }
 
 ```
-
-여기에 parseClaimsJws 호출을 통해서 jwt 유효성 검사를 하게 됩니다 
+클라이언트에서 넘어오는 JWT 는 parserBuilder 를 통해서 유효성을 검토하게 됩니다 
 
 ## DefaultJwtParse 
 ```
@@ -74,11 +73,10 @@ public Jws<Claims> parseClaimsJws(String claimsJws) {
 }
 
 ```
+DefaultJwtParse 클래스는 jjwt 라이브러리에서 제공하는 JWT 를 파싱할때 사용되는 클래스 입니다
 
-이 함수를 호출함과 동시에 jwt 유효성을 검사하게 됩니다 이에 따른 jwt 는 
 
 ```
-
 @Override
 public <T> T parse(String compact, JwtHandler<T> handler)
     throws ExpiredJwtException, MalformedJwtException, SignatureException {
@@ -106,7 +104,9 @@ public <T> T parse(String compact, JwtHandler<T> handler)
 }
 
 ```
-` Jwt jwt = parse(compact);` 함수를 호출을 하게 되는데 이떄 이 parse 가 정말로 깁니다 
+## JWS 
+JWS 는 Json Web Signature 형식으로 서명된 JWT 를 말합니다 즉 JWS 는 JWT 의 일종으로 헤더와 페이로드로 JWS 를 만들어서 클라이언트에 전달 그리고 전달받은 JWS 를 비교해서 
+유효성을 채크합니다 그래서 첫줄에 있는 `jwt instanceof Jws` 이 부분은 현재 들어오는 이 JWT 객체가 Jws 타입인지 체크하고 있는 것입니다 
 
 ## parse 
 ```
@@ -333,7 +333,7 @@ public Jwt parse(String jwt) throws ExpiredJwtException, MalformedJwtException, 
 }
 
 ```
-좀 길어보입니다만 하나씩 가보겠습니다 
+이 부분이 이제 실질적으로 들어오는 JWT 를 분석해서 유효여부를 판단하게 됩니다 
 
 
 
@@ -346,18 +346,9 @@ if ("..".equals(jwt)) {
 }
 
 ```
-
 먼저 jwt 가 존재하는지 검사하고 jwt 없이 이를 연결하는 .. 만 오게 되는지 찾게 됩니다 그때는 MalformedJwtException 을 던져서 에러를 처리합니다 에러 도 
-`String msg = "JWT string '..' is missing a header.";` JWT 헤더를 찾을 수 없어 이렇게 나오게 되네요
+`String msg = "JWT string '..' is missing a header.";`  이렇게 헤더에서 . 을 찾을 수 없다라고 나옵니다 
 
-```
-String base64UrlEncodedHeader = null;
-String base64UrlEncodedPayload = null;
-String base64UrlEncodedDigest = null;
-
-```
-
-.(점) 을 기준으로 각 header , payload sign 을 구분할 수 있기에 일단 String 으로 구분할 수 있게 각 변수를 선언합니다 
 
 ```
 
@@ -382,18 +373,10 @@ String base64UrlEncodedDigest = null;
 }
 
 ```
+계속해서 말하지만 JWT 는 .(점)으로 헤더 , 페이로드 , 시그니쳐로 분류가 됩니다 이 문구에서는 처음으로 점이 나온 부분을 헤더 부분 두번째로 점이 나온부분을 페이로드 그리고 그외 나머지를 시그니쳐로 분류를 하고 있습니다  
 
-이부분이 이제 JWT 를 각 . 으로 분리하는 모습입니다 는 마찬가지로 . 인데 이게 . 이 나올때 if 문 안의 로직이 움직이이게 됩니다 그리고 
-처음 delimiterCount = 0 인 부분은 header 부분이고 delimiterCount = 1 이면 payload 입니다 그러면 나머지 sign 은 어디에 있을까 ?
-사실 이 append 는 먼저 헤더와 , payload 를 분리하고 그떄마다  sb.setLength(0); 를 초기화 하게 됩니다 그럼 제일 마지막에는 sb 에는 sign 이 담기게 되고 
+그러면 헤더는 base64UrlEncodedHeader 담기고 페이로드는 base64UrlEncodedPayload 담기고 나머지 시그니쳐는 sb 에 담기게 됩니다 
 
-
-```
-if (sb.length() > 0) {
-        base64UrlEncodedDigest = sb.toString();
-}
-
-```
 
 ## 헤더 디코드
 ```
@@ -413,19 +396,14 @@ if (base64UrlEncodedHeader != null) {
 }
 
 ```
-
-그리고 먼저 헤더를 원래의 값으로 만드는 역할을 합니다 BASE64로 인코딩된것은 다시 디코딩하게 되고 이를 
-`Map<String, Object> m = (Map<String, Object>) readValue(origValue);` 를 통해서 Map 타입으로 만들게 됩니다 
-그럼 여기 m 에는 
+BASE64로 인코딩된 헤더를 다시 원래대로 디코딩을 하고 있습니다 이렇ㄱ게 되면 map 형태의 key - value 가 반환이 되게 됩니다 이 안에는 현재 알고리즘 타입이 담겨있는 것을 볼 수 있습니다 
 
 ```
 m = {LinkedHashMap}  size = 1
  "alg" -> "HS512"
 ```
 
-이렇게 암호화 방식이 담기게 되고 
-
-## PayLoad 디코드
+## 페이로드 디코드
 ```
 String payload = ""; 
 
@@ -437,9 +415,16 @@ if (base64UrlEncodedPayload != null) {
     payload = new String(bytes, Strings.UTF_8);
 }
 ```
-
 헤더와 마찬가지로 payload 도 같은 방식으로 decode 하게 됩니다 그럼 이 payload 에는 
-`{"sub":"user","jti":"Time","iat":1694315824,"exp":1694315860}` 가 담기게 됩니다 
+```
+{
+    "sub":"user",
+    "jti":"Time",
+    "iat":1694315824,
+    "exp":1694315860
+}
+``` 
+이렇게 payload 에 담기게 됩니다 
 
 
 ```
@@ -450,16 +435,14 @@ if (!payload.isEmpty() && payload.charAt(0) == '{' && payload.charAt(payload.len
     claims = new DefaultClaims(claimsMap);
 }
 ```
-
-이렇게 Claims 객체에 각 위치에 담기게 됩니다 
+이 문구는 payload 가 비어 있지 않고 payload 의 첫번째 글자가 "{" 이며 끝의 글자가 "}" 일때 이 페이로드를 claims 객체에 담아주게 됩니다 이때는 DefaultClaims 로 표준어로 된 
+클레임셋으로만 구성이 됩니다 
 
 ## 서명 유효성 검사
+그리고 JWT 에서 제일 중요한 검사 서명검사입니다 이 부분을 통해서 해당 JWT 의 위변조를 확인해서 위조되었으면 에러를 return 하게 됩니다 
 
-이부분이 제일 핵심입니다 헤더와 , payload 는 충분히 변조가 될 수 있기에 마지막 서명부분으로 이 jwt 가 여기서 발급이 되었고 유효성 검사를 하게 됩니다 
-제일 중요한 부분인 만큼 제일 깁니다 
-
-`if (base64UrlEncodedDigest != null)` 먼저 base64UrlEncodedDigest null 체크를 하게 됩니다 
-
+`if (base64UrlEncodedDigest != null)` 먼저 base64UrlEncodedDigest null 체크를 하게 됩니다 이 데이터는 위에서 헤더 페이로드 분리될때 마지막으로 서명부분이 
+base64UrlEncodedDigest 변수안으로 들어가게 됩니다 
 
 ```
 SignatureAlgorithm algorithm = null;
@@ -478,7 +461,7 @@ if (algorithm == null || algorithm == SignatureAlgorithm.NONE) {
 }
 ```
 
-그리고 jwsHeader 에서 알고리즘을 뽑아내고 이 알고리즘이 없으면 MalformedJwtException 를 던지게 됩니다 물론 이에 대한 대전제는 base64UrlEncodedDigest != null 이 아닐때 입니다 서멍없이 들어올때는 다른 루트로 jwt 를 뽑아냅니다 
+그리고 jwsHeader 에서 알고리즘을 뽑아내고 이 알고리즘이 없으면 MalformedJwtException 를 던지게 됩니다
 
 
 ```
@@ -489,18 +472,7 @@ if (key != null && keyBytes != null) {
     throw new IllegalStateException("A signing key resolver and " + object + " cannot both be specified. Choose either.");
 }
 ```
-
-마찬가지로 개인 key 도 존재하는지 살펴보게 됩니다 그게 없으면 역시나 에러를 던지게 됩니다 
-
-```
- if (!Objects.isEmpty(keyBytes)) {
-
-    Assert.isTrue(algorithm.isHmac(),
-        "Key bytes can only be specified for HMAC signatures. Please specify a PublicKey or PrivateKey instance.");
-    key = new SecretKeySpec(keyBytes, algorithm.getJcaName());
-}
-```
-그리고 이 key 에 개인key(바이트) 그리고 알고리즘 타입을 key 를 넣게 됩니다 
+마찬가지로 암호화 할떄 사용한 key 가 존재하는지 찾게 됩니다 역시나 key 가 없어도 이는 에러를 뿜게 됩니다 
 
 
 ```
@@ -509,8 +481,7 @@ if (base64UrlEncodedPayload != null) {
     jwtWithoutSignature += base64UrlEncodedPayload;
 }
 ```
-
-그리고 jwt 는 기존의 헤더와 payload 를 합해서 개인키와 암호화 알고리즘으로 합해젔음으로 다시 jwt 를 조립을 하게 됩니다 그 과정을 보여주는 것이고 
+이는 이제 서명을 서로 비교할려고 BASE64 인코딩된것들을 다시 합치고 있습니다 대상은 헤더와 , 페이로드 입니다 
 
 ```
 JwtSignatureValidator validator;
@@ -520,7 +491,7 @@ try {
 }
 ```
 
-JwtSignatureValidator 안에 알고리즘과 key 를 넣고 createSignatureValidator jwt 를 검증할 수있는 validator 를 만들게 됩니다 하단에서 
+JwtSignatureValidator 안에 알고리즘과 key 를 넣고 createSignatureValidator 함수를 호출해서 유효성검사를 할 수 있는 JwtSignatureValidator 객체를 만들게 됩니다 
 
 ```
 
@@ -531,8 +502,9 @@ if (!validator.isValid(jwtWithoutSignature, base64UrlEncodedDigest)) {
 }
 
 ```
+그리고 이 위에서 만들어진 유효성 검사기와 , 헤더와 페이로드 조합으로 만든 것과 클라이언트에서 던져진 서명을 isValid 함수를 호출해서 비교를 하게 됩니다 이때 유효하지 않다면 
+SignatureException 에러를 뿜고 끝이나게 됩니다 
 
-하단에서 jwtWithoutSignature 앞에서 다시 조립한 헤더와 , payload 와 base64UrlEncodedDigest 를 비교해서 이 토큰이 올바르게 발급이 되었고 변조가 되었는지 확인을 하게 됩니다 이 부분을 넘어가게 되면 서명부분 jwt 가 변조되지는 않았다는 것입니다 
 
 ## 만료시간 체크
 ```
@@ -559,16 +531,12 @@ if (exp != null) {
 }
 
 ```
-이 부분에서는 만료시간을 체크하게 됩니다 이제 클레임에서 lat 와 exp 를 분리해서 시간으 비교하게 됩니다 
-이때 if (max.after(exp)) 에서 넘어가게 되면 그 시간의 차이를 분석해서 jwt 만료시간으로 부터 얼만큼 멀어졌는지 보여주게 됩니다 ExpiredJwtException 를 던지게 됩니다 
-이제 만료시간까지 넘어가면 이제 완전한 유효성이 검증이 된것이고 
+JWT 는 단순히 서명의 일치만으로 유효성을 검사하지 않습니다 JWT 안에는 발급시간 표준클레임으로 (iat) 만료시간 표준클레임으로 (exp) 를 포함하고 있습니다 
+역시 이 또한 비교해서 만료시간이 현재 시간보다 과거이면 이를 유효하지 않다고 판단해서 ExpiredJwtException 을 발생시키고 끝이나게 됩니다 
 
-```
-Jwt jwt = parse(compact);
-```
 
-로 돌아와서 jwt 를 받게 됩니다 
 
+그래서 결국 JWT 는 아래와 같은 결과를 얻게 되었습니다 
 ```
 header = {DefaultJwsHeader}  size = 1
  "alg" -> "HS512"
@@ -580,28 +548,4 @@ body = {DefaultClaims}  size = 4
 signature = "-TCHwQJDNVaKa-gGz9-AGErJ0yXoK8xnrgeyMVHr2k0IwoXXOQDiaCWE0AySn1cPsuCRcY0xkAxm-frYwzrrQQ"
 ```
 
-이런 정보를 담게 되고 이 데이터는 
-
-```
-if (jwt instanceof Jws) {
-    Jws jws = (Jws) jwt;
-    Object body = jws.getBody();
-    if (body instanceof Claims) {
-        return handler.onClaimsJws((Jws<Claims>) jws);
-    } else {
-        return handler.onPlaintextJws((Jws<String>) jws);
-    }
-} else {
-    Object body = jwt.getBody();
-    if (body instanceof Claims) {
-        return handler.onClaimsJwt((Jwt<Header, Claims>) jwt);
-    } else {
-        return handler.onPlaintextJwt((Jwt<Header, String>) jwt);
-    }
-}
-
-```
-
-각 클레임으로 분리되어서 반환이 됩니다 
-
-우리는 이렇게 지난시간부터 해서 jwt 발급 및 검증에 대해서 공부를 해보았습니다 
+이번시간에는 JWT 의 검증과정을 하나씩 파해쳐가는 시간을 가져 보았습니다 
