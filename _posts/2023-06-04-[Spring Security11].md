@@ -156,8 +156,6 @@ public class SignUpController {
         }catch (Exception e){
             throw new RuntimeException(e);
         }
-
-
     }
 }
 ```
