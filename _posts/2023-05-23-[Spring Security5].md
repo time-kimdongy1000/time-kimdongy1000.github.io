@@ -7,100 +7,59 @@ tags: [ Spring-Security ]
 math: true
 mermaid: true
 ---
+이번시간에는 실제로 로그인을 하시 어떤 일이 일어나는지에 대해서 알아보도록 하겠습니다 
 
-우리는 지난시간까지 인증이 없는 유저에 대해 시큐리티가 어떻게 인증페이지로 유도하는지 그리고 만들지도 않은 로그인 로그아웃 페이지를 어떻게 만들어내는지에 대해서 살펴보았다 이제 우리는 로그인할때 어떤 일이 일어나는지에 대해서 알아볼려고 합니다 
-
-로그인에 관련한 필터는 UsernamePasswordAuthenticationFilter 이 기본이 되는데 여기서 부터는 조금 filter 의 내용이 길어집니다 그럴 수 밖에 없는게 진짜 로그인을 하고 안에 권한 부여 및 유저를 확인하는 작업을 진행하기 떄문입니다 천천히 가도록 하겠습니다 
+로그인에 관련한 필터는 UsernamePasswordAuthenticationFilter 이 기본이 되는데 여기서 부터는 조금 filter 의 내용이 길어집니다 그럴 수 밖에 없는게 여기서는 실제로 User 가 존재하는지 여부와 사용자 권한 확보 그리고 인증된 객체를 return 을 해야 함으로 Filter 길이가 길어질 수 밖에 없습니다 
 
 ## UsernamePasswordAuthenticationFilter
 ```
-public class UsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter 
-
-
-public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException {
-		if (this.postOnly && !request.getMethod().equals("POST")) {
-			throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
-		}
-		String username = obtainUsername(request);
-		username = (username != null) ? username.trim() : "";
-		String password = obtainPassword(request);
-		password = (password != null) ? password : "";
-		UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
-				password);
-		setDetails(request, authRequest);
-		return this.getAuthenticationManager().authenticate(authRequest);
+public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException 
+{
+	if (this.postOnly && !request.getMethod().equals("POST")) {
+		throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
 	}
-
-
+	String username = obtainUsername(request);
+	username = (username != null) ? username.trim() : "";
+	String password = obtainPassword(request);
+	password = (password != null) ? password : "";
+	UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
+			password);
+	setDetails(request, authRequest);
+	return this.getAuthenticationManager().authenticate(authRequest);
+}
 ```
 
 우리는 시큐리티가 주는 기본 로그인 아이디와 비밀번호로 로그인을 하게 되면 
 
+## 요청 메서드 확인
 ```
 if (this.postOnly && !request.getMethod().equals("POST")) {
-			throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
+	throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
 }
 ```
 
-이 부분을 마딱드리게 되는데 이때 로그인의 요청은 항상 post 로그인이야 한다 그렇지 않으면 에러를 던지며 끝이 나게 된다 
+이 분기문으로 들어오게 되는데 이때 로그인 요청은 항상 POST 여야 합니다 그렇지 않으면 예외처리하고 끝이나게 됩니다 
 
 
+## Form 정보 가져오기 (username , password)
 ```
 String username = obtainUsername(request);
 username = (username != null) ? username.trim() : "";
 String password = obtainPassword(request);
 password = (password != null) ? password : "
 ```
+이 부분에서는 Form 정보에 기입한 username , password 를 요청에서 꺼내오게 됩니다 
 
-지금보면 이제 요청정보에서 username , password 를 꺼내는 모습을 볼 수 있다 
-
+## 미인증 토큰 발급 
 ```
+
 UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,password);
-```
-
-어찌보면 제일 중요한 부분이다 UsernamePasswordAuthenticationToken 이 앞으로 이 인증의 유무가 갈리게 되는것인데 지금은 받은 username 하고 password 를 통해서 
-UsernamePasswordAuthenticationToken 객체만 만들어 놓았지 실제로 unauthenticated 살펴보면 이는 인증이 되지 않았음을 보여줍니다 
-
 
 ```
-public static UsernamePasswordAuthenticationToken unauthenticated(Object principal, Object credentials) {
-		return new UsernamePasswordAuthenticationToken(principal, credentials);
-	}
 
-	public UsernamePasswordAuthenticationToken(Object principal, Object credentials) {
-		super(null);
-		this.principal = principal;
-		this.credentials = credentials;
-		setAuthenticated(false);
-	}
-
-	public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-		Assert.isTrue(!isAuthenticated,
-				"Cannot set this token to trusted - use constructor which takes a GrantedAuthority list instead");
-		super.setAuthenticated(false);
-	}
-```
-
-여기서 authRequest 의 상태를 살펴보면
-
-```
-authRequest = {UsernamePasswordAuthenticationToken} "UsernamePasswordAuthenticationToken [Principal=user, Credentials=[PROTECTED], Authenticated=false, Details=null, Granted Authorities=[]]"
- principal = "user"
- credentials = "08877e55-bd37-43d9-9bc6-1e52495631d0"
- authorities = {Collections$EmptyList}  size = 0
- details = null
- authenticated = false
-
-```
-앞에서 넘겨준 username , credentials 만 존재하고 나머지는 아직 값이 없고 authenticated false 인것을 볼 수 있습니다 
-
-그 다음에는 ProviderManager 에게 return 해주는데 사실상 이 ProviderManager 가 시큐리티 전반에 걸쳐서 인증 / 인가를 담당하는 부분입니다 
-
-```
-return this.getAuthenticationManager().authenticate(authRequest);
-```
-
+제일 중요한 부분이다 UsernamePasswordAuthenticationToken 이 앞으로 이 인증의 유무가 갈리게 되는것인데 지금은 받은 username 하고 password 를 통해서 
+UsernamePasswordAuthenticationToken 객체만 만들어 놓았지 실제로 unauthenticated 살펴보면 이는 인증이 되지 않았음을 보여줍니다 이 인증은 ProviderManager 를 통해서 
+인증 토큰으로 바뀌게 됩니다 
 
 ## ProviderManager
 ```
@@ -132,9 +91,18 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 		}	
 	}
 ```
+ProviderManager 는 인증 프로세서를 관리하는 매니저입니다 이 매니저는 다양한 인증 Provider 을 제공하고 해당 요청을 보고 적절한 AuthenticationProvider 로 인도하게 됩니다 
+그런 과정은 `int size = this.providers.size();` 이 부분에서 몇개의 Provider 이 제공되는지 체크 후 
 
-디버깅을 조금 내려오면`result = provider.authenticate(authentication);` 를 호출하게 되고 이 호출은 아래의 클래스를 호출하게 되는데 
+```
+for (AuthenticationProvider provider : getProviders()) {
+		if (!provider.supports(toTest)) {
+			continue;
+		}
+}
 
+```
+가장 적절한 인증Provider 로 인도를 하게 됩니다 이떄 채택된 provider 로 아래의 메서드 `result = provider.authenticate(authentication);`  를 호출하게 되는데 
 
 ## AbstractUserDetailsAuthenticationProvider
 
@@ -157,17 +125,8 @@ public Authentication authenticate(Authentication authentication) throws Authent
 }
 
 ```
-
-
-```
-String username = determineUsername(authentication);
-boolean cacheWasUsed = true;
-UserDetails user = this.userCache.getUserFromCache(username);
-
-```
-지금보면 넘어오는 인증객체의 username 을 추츨해서 UserDetails 라는 객체를 만들고 있습니다 이 UserDetails 또한 시큐리티에서 중요한 인터페이스 입니다 실제로 모든 유저들은 이 UserDetails 구현체에 담기게 됩니다 그리고 `user = retrieveUser(username, (UsernamePasswordAuthenticationToken) authentication);` 부분에서 
-실제 user 의 정보가 담기게 되는데 
-
+AbstractUserDetailsAuthenticationProvider 는 제공된 미인증 객체를 이용해서 `retrieveUser` 에서 사용자를 가져옴 이때는 인메모리 DB 또는 RDBMS 등 특정 데이터를 가지고 
+User 객체로 변환할 수 있는 어떤것도 가능합니다 기본적으로 인메모리 유저를 사용하기 때문에 인메모리 데이터베이스에서 가져오게 됩니다 
 
 ## DaoAuthenticationProvider
 ```
@@ -187,6 +146,7 @@ protected final UserDetails retrieveUser(String username, UsernamePasswordAuthen
 	}
 	...	
 }
+이 부분이 `retrieveUser` 호출시 인메모리 데이터 베이스에서 사용자를 가져오는 함수입니다 
 
 
 private void prepareTimingAttackProtection() {
@@ -199,7 +159,6 @@ private void prepareTimingAttackProtection() {
 ```
 
 `prepareTimingAttackProtection` 함수 호출시 패스워드에 인코딩이 안걸려 있으면 에러 던지고 끝이 납니다 그리고 비밀번호가 인코딩되어서 들어왔다면 이제 진짜 이 유저가 존재하는지 안하는지 찾게 됩니다 그것이 아래에 있는 loadUserByUsername 이 됩니다 즉 username 을 먼저 가지고 유저가 진짜 존재하는지 안하는지 검색을 먼저 합니다 
-
 `UserDetails loadedUser = this.getUserDetailsService().loadUserByUsername(username);` 
 
 
@@ -222,29 +181,9 @@ public UserDetails loadUserByUsername(String username) throws UsernameNotFoundEx
 여기 HashMap 에 담겨 있는 user 를 검색해서 가져오게 됩니다 만약 없으면 UsernameNotFoundException 던지고 끝이나고 그게 아니라면 이제 이 진짜 user 의 데이터를 심어주게 됩니다 
 
 그러면 다시 AbstractUserDetailsAuthenticationProvider 되돌아 옵니다 이제 유저도 찾았으니 모두 return 을 받은것이지요 
-`user = retrieveUser(username, (UsernamePasswordAuthenticationToken) authentication);`
+`user = retrieveUser(username, (UsernamePasswordAuthenticationToken) authentication);` 그러면 이 user 에는 일단 찾은 User 의 객체가 있지만 이것으로 끝은 아닙니다 
+다음은 비밀번호 검증을 진행을 해야 합니다 
 
-```
-user = {User} "org.springframework.security.core.userdetails.User [Username=user, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, credentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[]]"
- password = "{bcrypt}$2a$10$TGqvEOp2TW98azOTgkejbOhbEkepWtD8p8ushIcXeDnjBxO1KCcWS"
- username = "user"
- authorities = {Collections$UnmodifiableSet}  size = 0
- accountNonExpired = true
- accountNonLocked = true
- credentialsNonExpired = true
- enabled = true
-
-```
-이런 데이터가 들어오게 됩니다 그럼 끝이냐 아닙니다 아직 비밀번호 검증을 안했기 때문에 이제 그 검증을 해야 합니다 
-
-```
-try {
-	this.preAuthenticationChecks.check(user);
-	additionalAuthenticationChecks(user, (UsernamePasswordAuthenticationToken) authentication);
-}
-
-```
-추가적인 검증으로 additionalAuthenticationChecks 로 넘기게 됩니다 
 
 ## DaoAuthenticationProvider
 ```
@@ -256,25 +195,21 @@ protected void additionalAuthenticationChecks(UserDetails userDetails,
 		UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
 	if (authentication.getCredentials() == null) {
 		this.logger.debug("Failed to authenticate since no credentials provided");
-		throw new BadCredentialsException(this.messages
-				.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+		throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
 	}
 	String presentedPassword = authentication.getCredentials().toString();
 	if (!this.passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
 		this.logger.debug("Failed to authenticate since password does not match stored value");
-		throw new BadCredentialsException(this.messages
-				.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+		throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
 	}
 }
 
 ```
-이제 비밀번호 검증을 위해서 이쪽으로 넘어오게 됩니다 
 
 ```
 if (authentication.getCredentials() == null) {
 	this.logger.debug("Failed to authenticate since no credentials provided");
-	throw new BadCredentialsException(this.messages
-			.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+	throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
 }
 
 ```
@@ -284,11 +219,10 @@ if (authentication.getCredentials() == null) {
 ```
 
 String presentedPassword = authentication.getCredentials().toString();
-		if (!this.passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
-			this.logger.debug("Failed to authenticate since password does not match stored value");
-			throw new BadCredentialsException(this.messages
-					.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
-		}
+if (!this.passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
+	this.logger.debug("Failed to authenticate since password does not match stored value");
+	throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+}
 
 ```
 하지만 비밀번호가 있다면 그것을 꺼내고 presentedPassword form 에서 넘오는 비밀번호 
@@ -296,7 +230,7 @@ String presentedPassword = authentication.getCredentials().toString();
 this.passwordEncoder.matches(presentedPassword, userDetails.getPassword()) 그리고 loadByUsername 을 했을때 넘어오는 저장된 비밀번호와 passwordEncoder 로 
 매핑을 시켜서 일치하는지 여부를 판단합니다 올바르면 이제 추가 인증까지 완료가 된것입니다 그것이 아니고 비밀번호가 틀렸다면 역시나 BadCredentialsException 을 던지고 끝이나게 됩니다 
 
-그러면 인증은 끝났습니다 다만 시큐리티에서 인증은 SecurityContext 에 객체를 심어야 완벽하게 끝이나게 되는것입니다 
+이제 인증은 끝이났고 이를 SecurityContext 에 setAuthentication 을 하게 되면 인증은 끝이나게 됩니다 
 
 
 ## AbstractAuthenticationProcessingFilter
@@ -341,9 +275,10 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 	}
 
 ```
+이 부분에서 앞에서 인증을 점겨준 정보를 가지고 마지막으로 SecurityContext 에 인증정보를 심는 Filter 입니다 
+
 
 ```
-
 SecurityContext context = SecurityContextHolder.createEmptyContext();
 context.setAuthentication(authResult);
 SecurityContextHolder.setContext(context);
@@ -358,7 +293,7 @@ this.securityContextRepository.saveContext(context, request, response);
 
 ## 정리 및 요약 
 
-1. 사용자가 로그인할려고 아이디 비밀번호를 입력하면 걸리는 처음 걸리는 Filter 는 UsernamePasswordAuthenticationFilter 입니다 이 Filter 는 사용자가의 request 에서 
+1. 사용자가 로그인할려고 아이디 비밀번호를 입력하면 걸리는 처음 걸리는 Filter 는 UsernamePasswordAuthenticationFilter 입니다 이 Filter 는 사용자의 request 에서 
 username , password 를 뽑아내어서 아직 인증이 되지 않은  UsernamePasswordAuthenticationToken 객체를 생성하고 인증은 
 return this.getAuthenticationManager().authenticate(authRequest); 함수를 통해 ProviderManager 에게 넘겨줍니다 
 
@@ -374,3 +309,5 @@ DaoAuthenticationProvider 에서 진행을 하게 됩니다
 
 6. 5번 작업으로 인해서 인증이 완벽하게 되었으면 이제 시큐리티는 이 정보를 가지고 SecurityContext 에 인증정보를 심게 됩니다 이로서 인증은 마무리 되고
 인증이 완료된 직후 행동을 onAuthenticationSuccess 를 호출하게 됩니다
+
+이것이 시큐리티에서 제공하는 가장 기본적인 로그인 및 인증 방식입니다 

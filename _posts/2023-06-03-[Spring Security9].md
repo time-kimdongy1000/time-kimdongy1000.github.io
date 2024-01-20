@@ -8,51 +8,10 @@ math: true
 mermaid: true
 ---
 
-## 유저 설정과 필터설정
-
-```
-@Configuration
-public class SecurityConfig {
-
-    @Bean
-    public PasswordEncoder bcryptPasswordEncoder(){
-        PasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(10);
-        return bCryptPasswordEncoder;
-    }
-    
-    @Bean
-    public SecurityFilterChain  securityFilterChain(HttpSecurity httpSecurity) throws Exception{
-        
-        httpSecurity.authorizeRequests().anyRequest().authenticated();
-
-        httpSecurity.formLogin();
-        
-        
-        return httpSecurity.build();
-    }
+## 인증된 유저 사용
+그럼 인증된 유저는 어떤 방식으로 참조를 걸 수 있을까 이떄 사용가능한게 바로 @AuthenticationPrincipal 입니다
 
 
-
-    @Bean
-    public UserDetailsService createUser(){
-
-        UserDetails user = User.builder()
-                                .username("user")
-                                .password(bcryptPasswordEncoder().encode("1234567890"))
-                                .authorities("Read")
-                                .roles("USER").build();
-
-        UserDetails admin_user = User.builder()
-                                    .username("admin")
-                                    .password(bcryptPasswordEncoder().encode("1234567890"))
-                                    .authorities("Read" , "Write" , "Update" , "Delete" )
-                                    .roles("ADMIN").build();
-
-        return new InMemoryUserDetailsManager(user , admin_user);
-
-    }
-}
-```
 
 ## @AuthenticationPrincipal
 ```
@@ -66,8 +25,7 @@ public class DemoController {
     }
 }
 ```
-
-간단한 DemoController 안에 핸들러를 작성을 해주는데 이때 @AuthenticationPrincipal 이다 이 애노테이션은 함축적인 애노테이션으로 인증된 유저의 시큐리티 Context 에 접근해서 UserDetails  에 접근해서 유저 정보를 가져오게 됩니다 그럼 웹에서는 이렇게 표현이 되는데 
+@AuthenticationPrincipal 는 스프링 시큐리티에서 제공하는 애노테이션중 하나로 현재 사용자의 Principal 객체를 주입받을 때 사용할 수 있습니다 이를 지금처럼 Controller 메서드에서 참조해서 사용하면 인증된 객체를 컨트롤러 단위에서 사용할 수 있습니다 
 
 `org.springframework.security.core.userdetails.User [Username=user, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, credentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]]`
 

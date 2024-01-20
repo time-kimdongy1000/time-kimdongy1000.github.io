@@ -97,8 +97,7 @@ request.setAttribute(CsrfToken.class.getName(), csrfToken);
 request.setAttribute(csrfToken.getParameterName(), csrfToken);
 ```
 
-그런다음 요청정보에 csrf 토큰을 심어두고 요청은 끝이나게 됩니다 이때 앞에도 말했다 싶히 서버의 상태를 변경하지 않는 메소드 
-POST , DELETE , PATCH , PUT 메서드 호출할때만 동작이 되고 그 외에는 넘기게 됩니다 
+그런다음 요청정보에 csrf 토큰을 심어두고 요청은 끝이나게 됩니다 이때 앞에도 말했다 싶히 서버의 상태를 변경하는 메소드 POST , DELETE , PATCH , PUT 메서드 호출할때만 동작이 되고 그 외에는 넘기게 됩니다 (GET 요청에서는 Filter 를 넘어가게 됩니다 )
 
 ```
 if (!this.requireCsrfProtectionMatcher.matches(request)) {
@@ -141,5 +140,4 @@ if (!equalsConstantTime(csrfToken.getToken(), actualToken))
 토큰 리포지토리에 저장된 토큰과 요청헤더에 담겨있는 토큰을 비교해서 동일한 토큰인지 확인을 하게 됩니다 이때 토큰은 발급된 위치 시간 같은 문자인지를 확인합니다 
 실제 발급이 되었다고 할지라도 시간이 넘어가면 그 토큰은 유효하지 않게 됩니다 
 
-토큰이 옳으면 다음페이지 그렇지 않으면 로그인 페이지로 로그아웃 시켜서 인증을 확인하게 합니다 
-오늘은 이 csrf 토큰과 filter 에 대해서 공부를 해보았습니다 다음시간에 계속해서 회원가입 및 로그인 로직을 만들어보겠습니다
+토큰이 유효하면 다음 Filter 그렇지 않으면 로그아웃 redirect 시켜서 인증을 확인하게 합니다 
