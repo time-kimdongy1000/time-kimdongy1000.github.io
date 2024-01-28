@@ -128,8 +128,8 @@ public SecurityFilterChain  securityFilterChain(HttpSecurity httpSecurity) throw
 
 loginPage 는 어떤 로그인 페이지를 쓸것인지에 대한 핸들러 규정입니다 
 loginProcessingUrl 로그인이 시작되는 url 주소입니다 그럼 loginPage 랑 햇갈릴 수 있는데 loginPage GET 방식으로 loginProcessingUrl post 방식으로 움직입니다 
-usernameParameter UsernamePasswordAuthenticationFilter 에서 username 파라미터를 어떤 쿼리 스트링으로 들어오는지 지정합니다 저는 email 로 보낼것입니다 
-passwordParameter UsernamePasswordAuthenticationFilter 에서 password 파라미터를 어떤 쿼리 스트링으로 들어오는지 지정하고 저는 password 입니다 
+usernameParameter UsernamePasswordAuthenticationFilter 에서 username 파라미터를 어떤 쿼리 스트링으로 들어오는지 지정합니다 저는 key 값을 email 로 보낼것입니다 
+passwordParameter UsernamePasswordAuthenticationFilter 에서 password 파라미터를 어떤 쿼리 스트링으로 들어오는지 지정하고 저는 key 값을 password 보낼것입니다
 
 그리고 이때 로그인 form 페이지는 permitAll 로 지정을 합니다 
 `httpSecurity.authorizeRequests().antMatchers("/" , "/signUp/*" , "/bootStrap/css/**" , "/bootStrap/js/**" , "/resources/css/**","/resources/js/**")` 
@@ -301,7 +301,7 @@ providers = {ArrayList@13116}  size = 2
 ```
 이 안에 두개를 살펴보면 아직 아무런 내용이 없는 CustomAuthenticationManger와 AnonymousAuthenticationProvider 이 존재하게 됩니다 
 AnonymousAuthenticationProvider 같은 경우는 익명사용자 즉 인증이 되지 않은 익명사용자를 인증해서 사용합니다 이에 대해서는 다음에 다룰 기회가 있을예정입니다 
-우리가 CustomProvider 이 아니라면 CustomAuthenticationManger 아니라 DaoAuthenticationProvider 이쪽으로 호춯이 들어오게 됩니다 이 부분을 우리가 정의한 
+우리가 CustomProvider 이 아니라면 CustomAuthenticationManger 아니라 DaoAuthenticationProvider 이쪽으로 호출이 들어오게 됩니다 이 부분을 우리가 정의한 
 AuthenticationManger 를 호출하게 되는것입니다 
 
 
