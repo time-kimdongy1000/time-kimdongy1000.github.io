@@ -151,9 +151,9 @@ public class HelloSpringBatch {
 
     @Bean
     @JobScope
-    public Step HelloStep(){
+    public Step helloStep(){
 
-        return stepBuilderFactory.get("HelloStep")
+        return stepBuilderFactory.get("helloStep")
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
