@@ -1,5 +1,5 @@
 ---
-title: Spring Batch3
+title: Spring Batch3 - Target SpringBatch
 author: kimdongy1000
 date: 2023-04-22 13:00
 categories: [Back-end, Spring - Batch]

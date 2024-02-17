@@ -1,5 +1,5 @@
 ---
-title: Spring Batch4
+title: Spring Batch4 - Batch Listener
 author: kimdongy1000
 date: 2023-04-22 14:00
 categories: [Back-end, Spring - Batch]

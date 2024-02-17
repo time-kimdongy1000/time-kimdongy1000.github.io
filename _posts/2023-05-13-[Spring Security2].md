@@ -1,5 +1,5 @@
 ---
-title: Spring Secuirty 2 
+title: Spring Secuirty SecurityFilter
 author: kimdongy1000
 date: 2023-05-13 10:49
 categories: [Back-end, Spring - Security]
