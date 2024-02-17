@@ -1,5 +1,5 @@
 ---
-title: Spring Batch2
+title: Spring Batch2 - Hello SpringBatch2
 author: kimdongy1000
 date: 2023-04-22 12:00
 categories: [Back-end, Spring - Batch]
