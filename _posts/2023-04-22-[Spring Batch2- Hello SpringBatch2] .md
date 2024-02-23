@@ -1,5 +1,5 @@
 ---
-title: Spring Batch2
+title: Spring Batch2 - Hello SpringBatch2
 author: kimdongy1000
 date: 2023-04-22 12:00
 categories: [Back-end, Spring - Batch]
@@ -53,9 +53,9 @@ public Job helloSpringBatchJob(Step helloStep){
 
 @Bean
 @JobScope
-public Step HelloStep(){
+public Step helloStep(){
 
-    return stepBuilderFactory.get("HelloStep")
+    return stepBuilderFactory.get("helloStep")
         .tasklet(new Tasklet() {
             @Override
             public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -102,18 +102,4 @@ Step 정의
 6. SELECT * FROM BATCH_STEP_EXECUTION_CONTEXT : Step 실행중에 필요한 임시데이터나 상태 정보를 저장하여 나중에 작업의 재실행이나 추적등에 사용이 됩니다 
 
 이 포스트에서는 이전 포스트에서 다루었던 Batch 에 대한 간단한 설명과 스키마의 설명에 대해서 이어나갔습니다 앞으로 나오는 Batch 와 관련된 정보는 그때그때마다 설명을 하고 
-다음 포스트에는 여러가지 Job 들 중에서 하나를 실행시킬때 필요하는 커맨드라인 배치 실행에 대해서 알아보겠습니다 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+다음 포스트에는 여러가지 Job 들 중에서 하나를 실행시킬때 필요하는 커맨드라인 배치 실행에 대해서 알아보겠습니다
