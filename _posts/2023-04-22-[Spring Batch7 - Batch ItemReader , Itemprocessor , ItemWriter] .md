@@ -12,7 +12,9 @@ mermaid: true
 오늘부터는 ItemReader , ItemProcessor , ItemWriter 에 대해서 공부를 할 것입니다 앞전까지는 우리는 Tasklet 을 step 에 등록을 해서 job 을 진행을 시켰다면 이제부터는 데이터를 읽고 , 가공하고 , 다시 쓰는 방식인 ItemReader , ItemProcessor , ItemWriter 을 공부할것입니다 그 전에 우리는 사전작업을 할것인데 간단한 쇼핑몰 ERD 구축후 진행을 하겠습니다 
 
 ## ERD
-![1](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/2f08fac5-8231-41bd-92c8-a4a1b0c59871)
+
+![ERD](/assets/img/post_img/batch_2023-04-22_19_00_1.png)
+
 
 ERD 간단하게 만들어줄것입니다 
 
@@ -239,6 +241,6 @@ public class ShoppingBatchJob {
 shoppingStep1 을 잘보시면 for 문을 통해서 무작위 경우 1만번을 실행시켜서 최종 1만번의 쇼핑을 시킵니다 그리고 그 결과를 list 에 담아두고 그 리스트를 save 하면됩니다 그러면 
 DB 데이터를 보게 되면 
 
-![2](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/bbdbc956-1596-41ae-8c1b-4fd23aac94d1)
+![ERD](/assets/img/post_img/batch_2023-04-22_19_00_2.png)
 
 이렇게 무작위 데이터 1만개가 들어와 있는모습을 알 수 있습니다 여기 까지가 사전작업 이제 본 작업 실행하겠습니다 본작업은 다음장에서 진행을 하겠습니다
