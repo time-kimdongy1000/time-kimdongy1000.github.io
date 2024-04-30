@@ -20,12 +20,12 @@ mermaid: true
 ## 현재 설정의 문제점 
 기본적인 설정만 하게되면 모든 브랜치의 push 건에 대해서 트리거가 발생하게 됩니다 예를 들어서 지금 하나 브렌치를 만들고 소스를 변경하고 push 를 해보자 
 
-![스크린샷 2023-08-06 105416](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/6e563e2b-470c-49f3-ac04-f30a523ca78a) 
+![스크린샷 2023-08-06 105416](/assets/img/post_img/258622567-6e563e2b-470c-49f3-ac04-f30a523ca78a.webp) 
 지금보면 메인에 push 하지도 않고도 빌드가 되는것을 확인할 수 있다 그리고 배포되는것을 확인해도 무단으로 배포된것을 확인할 수 있다 
 
 이런 무분별한 브랜치에 대한 배포를 막기 위해서 우리는 webHook 의 특별한 설정을 해주어야 한다 
 
-![스크린샷 2023-08-06 105416](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/330bd64e-0077-473c-8891-9afdaa39db84)
+![스크린샷 2023-08-06 105416](/assets/img/post_img/258622659-330bd64e-0077-473c-8891-9afdaa39db84.webp) 
 이곳을 보면 특정 브랜치만 트리거를 동작시킬 수 있는 설정이 있다 예를 들어서 main 브랜치에 변화가 있을때만 설정하고 싶으면 
 
 Target Branch Regex 에 main 이라고 입력을 하면된다 그렇게 되면 main 에 대한 소스 변화가 없으면 이 job 은 트리거가 되지 않게 되는데 저장후 다시 소스를 수정을 하고 자신의 원격 브랜치에 push 를 해도 트리거가 동작이 되지 않는다 
@@ -35,7 +35,7 @@ Target Branch Regex 에 main 이라고 입력을 하면된다 그렇게 되면 m
 ## main , dev 원격 브랜치 생성 및 트리거 활성화 
 우리는 앞으로 main , dev 원격브랜치에 대한 트리거를 활성화 시킬것입니다 
 
-![스크린샷 2023-08-06 105416](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/361b1b9b-b9e3-4c3b-b039-f72b2c14a392)
+![스크린샷 2023-08-06 105416](/assets/img/post_img/258622922-361b1b9b-b9e3-4c3b-b039-f72b2c14a392.webp) 
 
 그리고 Target Branch Regex (main|dev) 설정을 해두게 되면 앞으로 main , dev 브랜치를 제외하고는 이 트리거를 활성하 할 수 없습니다 다른 여타 비슷한 이름 main2 , dev2 로 push 해도 이 트리거는 동작하지 않게됩니다 
 
