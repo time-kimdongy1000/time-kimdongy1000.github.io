@@ -8,6 +8,13 @@ math: true
 mermaid: true
 ---
 
+## 소스 전체
+<https://gitlab.com/kimdongy1000/public_project_amadeus/-/tree/main?ref_type=heads>
+
+해당 소스는 민감한 정보를 제외한 순수 코드입니다 사용하실려면 application.yml 에 자신이 필요한 정보를 기입하시면 사용 가능합니다 
+해당 글을 적는부분과 소스의 올라간 부분은 상당히 많이 다릅니다 
+
+
 지난시간에는 구글 로그인 버튼을 클릭시 구글에서 제공하는 Oauth2 로그인을 시도하게 됩니다 이때 우리가 로그인을 완료하면 구글 서버는 제가 등록한 redirect 주소로 code 값을 던저주게 됩니다 우리는 이 code 로 access_token 을 요청해서 받는 진행을 하겠습니다
 
 ## LoginController
