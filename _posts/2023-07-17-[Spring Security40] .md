@@ -8,6 +8,12 @@ math: true
 mermaid: true
 ---
 
+## 소스 전체
+<https://gitlab.com/kimdongy1000/public_project_amadeus/-/tree/main?ref_type=heads>
+
+해당 소스는 민감한 정보를 제외한 순수 코드입니다 사용하실려면 application.yml 에 자신이 필요한 정보를 기입하시면 사용 가능합니다 
+해당 글을 적는부분과 소스의 올라간 부분은 상당히 많이 다릅니다 
+
 
 우리는 지난시간까지 우리가 등록한 User 로 Authentication 기반으로 JWT 토큰을 RSA 기반으로 만들어서 클라이언트에 던지고 다시 클라이언트에서 이 JWT 를 공개키로 복호화 해서 UserDetails 를 만들어서 인증을 하는 것까지 배웠습니다 오늘은 Google 의 Oauth2 인증으로 사용자 정보를 가져와서 저의 어플리케이션에 인증을 하는 방법에 대해서 알아보도록 하겠습니다 
 

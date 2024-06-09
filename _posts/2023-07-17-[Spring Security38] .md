@@ -9,7 +9,11 @@ mermaid: true
 ---
 
 
-어빈시간에는 DB 에 저장된 데이터를 가져오는 것까지 마쳤고 그를 활용해서 Authentication 객체를 만드는것까지 완료했습니다 이번시간에는 이를 활용해서 RSA 기반 JWT 객체를 만들도록 하겠습니다
+## 소스 전체
+<https://gitlab.com/kimdongy1000/public_project_amadeus/-/tree/main?ref_type=heads>
+
+해당 소스는 민감한 정보를 제외한 순수 코드입니다 사용하실려면 application.yml 에 자신이 필요한 정보를 기입하시면 사용 가능합니다 
+해당 글을 적는부분과 소스의 올라간 부분은 상당히 많이 다릅니다 
 
 
 ## LoginService
