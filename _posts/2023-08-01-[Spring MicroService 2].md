@@ -1,6 +1,5 @@
 ---
-title: Spring MicroService 2
-author: kimdongy1000
+title: Spring MicroService 2 Spring MicroService 와 Docker - Dockerfile
 date: 2023-08-01 10:00
 categories: [Back-end, Spring - MicroService]
 tags: [Spring - MicroService , Docker ]

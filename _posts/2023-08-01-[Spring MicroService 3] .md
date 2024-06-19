@@ -1,5 +1,5 @@
 ---
-title: Spring MicroService 3
+title: Spring MicroService 3 Spring MicroService 와 Docker - Dockerfile
 author: kimdongy1000
 date: 2023-08-01 10:30
 categories: [Back-end, Spring - MicroService]
@@ -142,7 +142,7 @@ docker run -p 5000:8080 proejct-spring-boot-docker:0.0.3V
 ```
 
 이렇게 하면 현재 진행중인 버전을 stop 하고 가장 최근의 tag 의 이름을 찾아서 run 을 하게 됩니다 이 이후에 도커 컴포즈가 있긴 하지만 그에 대해서는 
-이번장에서는 정리하지 않고 다른 Docker 을 본격적으로 공부를 하고 진행을 하겠습니다 
+
 
 
 
