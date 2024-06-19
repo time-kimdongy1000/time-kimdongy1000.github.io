@@ -7,7 +7,11 @@ math: true
 mermaid: true
 ---
 
-요즘 미니 프로젝트를 하나 하고 있는 중이다 React - Spring 을 이용해서 나만의 서비스를 하나 구축중에 로그인에 관련된 글을 한번 써볼려고 합니다 다만 실베포를 목적으로 하기에 이번에 하는 프로젝트는 전체 소스제공이 어렵다는 점 
+## 소스 전체
+<https://gitlab.com/kimdongy1000/public_project_amadeus/-/tree/main?ref_type=heads>
+
+해당 소스는 민감한 정보를 제외한 순수 코드입니다 사용하실려면 application.yml 에 자신이 필요한 정보를 기입하시면 사용 가능합니다 
+해당 글을 적는부분과 소스의 올라간 부분은 상당히 많이 다릅니다 
 
 ## 프로젝트 구성 
 JDK - 11

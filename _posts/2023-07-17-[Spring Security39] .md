@@ -9,7 +9,11 @@ mermaid: true
 ---
 
 
-지난시간에는 토큰을 만들어서 Front-end 로 쿠키 형태로 내보냈다면 이번시간에는 이 토큰을 바탕으로 해석을 해서 인증을 하는 과정을 그려보도록 하겠습니다 
+## 소스 전체
+<https://gitlab.com/kimdongy1000/public_project_amadeus/-/tree/main?ref_type=heads>
+
+해당 소스는 민감한 정보를 제외한 순수 코드입니다 사용하실려면 application.yml 에 자신이 필요한 정보를 기입하시면 사용 가능합니다 
+해당 글을 적는부분과 소스의 올라간 부분은 상당히 많이 다릅니다 
 
 
 
