@@ -350,10 +350,7 @@ Connect Timeout Exception on Url - http://localhost:8087/. Will be trying the ne
 import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8087/}"
 
 ```
-이렇게 수정을 하고 다시 실행을 하겠습니다 이렇게 하면 이제 컨테이너 상에서 문제 없어 집니다 그런데 이 안에는 또 문제가 있습니다 문제를 수정했는데 문제가 있다니 
-바로 import 를 하드코딩한 문제입니다 즉 로컬로 실행을 할때는 configserver 가 알 수 없으므로 이에 대한 대비책이 필요합니다 
-
-그래서 동적으로 이 값을 할당할 수 있게 각각 세팅을 두겠습니다 
+이렇게 수정을 하면 이제 Docker 에서 파라미터를 CONFIG_SERVER_URL 을 주게 되고 그것이 없으면 기본적인 서버주소 http://localhost:8087 를 사용하게 됩니다 
 
 ## docker-compose 수정
 
