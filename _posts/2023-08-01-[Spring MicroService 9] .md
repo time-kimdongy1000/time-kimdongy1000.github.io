@@ -16,7 +16,7 @@ mermaid: true
 ![1](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/ea713cb3-0cd4-4397-b31f-bdaf1bdb9d55)
 
 먼저 public 한 GithubRepository 를 먼저 만들겠습니다 이곳에서는 우리가 앞에서 파일Path 로 이용한 컨피그들을 이곳에서 저장을 하고 사용할 예정입니다
-전체코드는 지난시간 @RefreshScope 하고 동일하기 떄문에 바뀌는 부분에 대해서만 정리를 하겠습니다
+전체코드는 지난시간 @RefreshScope 하고 동일하기 때문에 바뀌는 부분에 대해서만 정리를 하겠습니다
 
 ## config-server application.yml
 
@@ -82,7 +82,7 @@ github 웹 에디터 상으로 수정을 하고 push 를 하게 됩니다
 
 ## config-client /actuator/refresh 요청
 
-이 요청을 넣게 되면 config 클라이언트는 서버에 요청을 넣어서 설정파일이 변경되었는지 확인을 하게 됩니다
+이 요청을 넣게 되면 config-client 는 서버에 요청을 넣어서 설정파일이 변경되었는지 확인을 하게 됩니다
 
 ![4](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/d5ca610f-9a8f-4f2b-bab9-8bf686076864)
 
@@ -109,7 +109,7 @@ github 웹 에디터 상으로 수정을 하고 push 를 하게 됩니다
 
 ```
 
-그러면 서버측에서 미친듯한 에러가 발생합니다 이유는 즉슨 Authentication ㅇ벗다는 것입니다 그러면 우리는 이 Authentication 을 주는 방법 2가지를 만들어보겠습니다
+그러면 서버측에서 미친듯한 에러가 발생합니다 이유는 즉슨 Authentication 없다는 것입니다 그러면 우리는 이 Authentication 을 주는 방법 2가지를 만들어보겠습니다
 
 ## 아이디 비밀번호 방식
 이 방식은 해당 private repository 에 접근이 가능한 계정의 아이디와 비밀번호를 서버 계정에 입력을 해두는 것입니다
@@ -147,7 +147,7 @@ server:
 컨피그 서버에 이와 같이 username 과 passwrod 를 넣어서 연동을 해주시면됩니다 그리고 마찬가지도 기동을 하게되면 이제 인증 이슈는 없어지게 됩니다 
 
 ## id_rsa 방식
-이 방식은 아마 알고 있을 방식중에 한가지입니다 다른 서드파티 어플리케이션에서 git을 연동한적이 있다면 다들 아시는 방법입니다 이는 윈도우에서 id_rsa 를 만들게 되면
+이 방식은 아마 알고 있을 방식중에 한 가지입니다 다른 서드파티 어플리케이션에서 git을 연동한적이 있다면 다들 아시는 방법입니다 이는 윈도우에서 id_rsa 를 만들게 되면
 2개의 key 가 만들어집니다 하나는 공개키 , 하나는 개인키입니다 이 공개키를 git 서버에 등록을 해주고 개인키는 스프링에 연동을 해주시면됩니다
 
 ## key 생성 - window 

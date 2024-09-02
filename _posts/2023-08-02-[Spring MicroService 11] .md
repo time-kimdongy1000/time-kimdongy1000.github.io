@@ -37,7 +37,7 @@ mermaid: true
 그럼 한번 구축을 해보자 나의 아키텍쳐는 계속해서 config 서버를 계속해서 사용해서 유레카서버를 포함한 모든 인스턴스를 통제할것이다 
 
 ## 전체소스
-`https://gitlab.com/kimdongy1000/spring-cloud-project/-/tree/main/enureka-init?ref_type=heads`
+https://gitlab.com/kimdongy1000/spring-cloud-project/-/tree/main/enureka-init?ref_type=heads
 
 소스는 이곳에 담아두었습니다 도커 컴포즈를 포함한 Docker 파일도 각각에 들어 있으니 참고바라겠습니다 
 
