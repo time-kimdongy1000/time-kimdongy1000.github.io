@@ -396,12 +396,11 @@ Connect Timeout Exception on Url - http://localhost:8888. Will be trying the nex
 Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/config-server/dev": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
 
 로그를 보면 좀 특이한점이 있습니다 먼저 기본설정인 8888 포트로 요청을 날리게 됩니다 이쪽으로 연결이 안될때는 우리가 설정한 곳으로 연결을 하게 됩니다
-연결이 안되네 다음 한번더 연결해보고 Exception 을 만들고 넘어갑니다
 
 The following 1 profile is active: "dev"
 Fetching config from server at : http://localhost:8087/
 Located environment: name=config-server, profiles=[dev], label=null, version=null, state=null
 
-그 다음 현재 active 버전을 확인 후 이제 우리가 설정한 서버인 http://localhost:8087/ 호 config 호출을 하게 됩니다
+그 다음 현재 active 버전을 확인 후 이제 우리가 설정한 서버인 http://localhost:8087/ 로 config 호출을 하게 됩니다
 
 이렇게 하면 client 프로그램을 주로 만질 개발자들은 중앙서버의 설정을 굳이 알 필요 없이 바로 DB 같은 설정정보를 불러와서 사용할 수 있습니다

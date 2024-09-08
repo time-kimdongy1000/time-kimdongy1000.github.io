@@ -18,7 +18,7 @@ https://gitlab.com/kimdongy1000/spring-cloud-project/-/tree/main-restTemplate?re
 
 ![1](https://github.com/user-attachments/assets/391dfd09-70c1-4734-bbdf-bc46ed0301c5)
 
-기동을 하게 되면 유레카서버에 이렇게 CLient2 인스턴스가 2개 잡히게 되지만 이 둘은 엄연히 다른 독립적인 인스턴스입니다 
+기동을 하게 되면 유레카서버에 이렇게 Client2 인스턴스가 2개 잡히게 되지만 이 둘은 엄연히 다른 독립적인 인스턴스입니다 
 
 ## Clinet3 - read_workTime 
 
