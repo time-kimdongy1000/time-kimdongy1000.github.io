@@ -3,7 +3,7 @@ title: Spring MicroService 12 Spring MicroService EUREKA - Service discovery
 author: kimdongy1000
 date: 2023-08-02 11:00
 categories: [Back-end, Spring - MicroService]
-tags: [Spring - MicroService ,  Cloud-Config]
+tags: [Spring - MicroService ,  EUREKA]
 math: true
 mermaid: true
 ---

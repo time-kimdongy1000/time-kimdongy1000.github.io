@@ -3,7 +3,7 @@ title: Spring MicroService 13 Spring MicroService EUREKA - RestTemplate , Feign
 author: kimdongy1000
 date: 2023-08-02 12:00
 categories: [Back-end, Spring - MicroService]
-tags: [Spring - MicroService ,  Cloud-Config]
+tags: [Spring - MicroService ,  EUREKA]
 math: true
 mermaid: true
 ---
