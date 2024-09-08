@@ -3,7 +3,7 @@ title: Spring MicroService 11 Spring MicroService EUREKA
 author: kimdongy1000
 date: 2023-08-02 10:00
 categories: [Back-end, Spring - MicroService]
-tags: [Spring - MicroService ,  Cloud-Config]
+tags: [Spring - MicroService ,  EUREKA]
 math: true
 mermaid: true
 ---
