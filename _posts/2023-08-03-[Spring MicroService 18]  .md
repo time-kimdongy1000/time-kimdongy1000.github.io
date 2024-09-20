@@ -1,7 +1,7 @@
 ---
-title: Spring MicroService 17 Spring MicroService Spring-Cloud-GateWay
+title: Spring MicroService 18 Spring MicroService Spring-Cloud-GateWay
 author: kimdongy1000
-date: 2023-08-03 12:00
+date: 2023-08-03 13:00
 categories: [Back-end, Spring - MicroService]
 tags: [Spring - MicroService ,  GateWay]
 math: true
