@@ -1,7 +1,7 @@
 ---
 title: Spring MVC ThreadLocal
 author: kimdongy1000
-date: 2023-04-21 10:10
+date: 2023-08-05 10:10
 categories: [Back-end, Spring - MVC]
 tags: [ MVC , ThreadLocal ]
 math: true
