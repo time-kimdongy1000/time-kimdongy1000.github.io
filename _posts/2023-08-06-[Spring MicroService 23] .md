@@ -1,5 +1,5 @@
 ---
-title: Spring MicroService 22 Spring MicroService 보안2
+title: Spring MicroService 23 Spring MicroService 보안2
 author: kimdongy1000
 date: 2023-08-07 10:00
 categories: [Back-end, Spring - MicroService]
