@@ -44,8 +44,7 @@ public class LaserPrinter  implements Printer {
 
 
 ```
-
-예를 들어서 상단에 Printer 인터페이스가 존재하고 그 아래 각각 InkjetPrinter LaserPrinter 가 각각을 구현할때 둘다 @Bean 으로 만들려고 한다면 다음과 같은 문제에 직면하게 됩니다 
+예를 들어서 상단에 Printer 인터페이스가 존재하고 그 아래 각각 InkjetPrinter LaserPrinter 가 각각을 구현할 때 둘 다 @Bean으로 만들려고 한다면 다음과 같은 문제에 직면하게 됩니다
 
 ```
 
@@ -56,7 +55,7 @@ Field printer in com.example.demo.SpringCoreApplication required a single bean, 
 	- laserPrinter: defined in file [C:\Users\kimdo\Documents\workspace-spring-tool-suite-4-4.17.0.RELEASE\Spring-Core\target\classes\com\example\demo\LaserPrinter.class]
 
 ```
-지금 printer 타입의 bean 이 2가지가 있어서 bean 을 만들 수 없다는 뜻입니다 그렇기 이때 필요한것이 @Primary 입니다 
+지금 printer 타입의 bean 이 2가지가 있어서 bean 을 만들 수 없다는 뜻입니다 그렇기 이때 필요한 것이 @Primary입니다
 
 ```
 @Component
@@ -70,8 +69,8 @@ public class LaserPrinter  implements Printer {
 }
 
 ```
-그래서 LaserPrinter @Primary 달게 되면 bean 을 선정하고 주입할때 우선순위를 차지하게 됩니다 그렇기 때문에 항상 LaserPrinter 가 bean 으로 만들어져서 주입을 받게 됩니다 
-그래서 그래서 우선순위로 bean 을 주입받고 싶을때에는 @Primary 를 사용합니다 
+그래서 LaserPrinter @Primary 달게 되면 bean 을 선정하고 주입할 때 우선순위를 차지하게 됩니다 그렇기 때문에 항상 LaserPrinter 가 bean으로 만들어져서 주입을 받게 됩니다
+그래서 그래서 우선순위로 bean 을 주입받고 싶을 때에는 @Primary를 사용합니다
 
 ## @Qualifier
 ```
@@ -120,7 +119,7 @@ public class ZebraPrint implements Printer {
 
 ```
 
-이번엔 Printer 를 상속받는 ZebraPrint 를 선언하고 이떄 bean 이름을 지정할 수 있는데 이때는 zebraPrint 이름을 짓게 됩니다 
+이번엔 Printer를 상속받는 ZebraPrint를 선언하고 이때 bean 이름을 지정할 수 있는데 이때는 zebraPrint 이름을 짓게 됩니다
 
 ```
 @SpringBootApplication
@@ -150,13 +149,13 @@ public class SpringCoreApplication implements ApplicationRunner {
 
 
 ```
-그리고 bean 을 @Autowired 할때 @Qualifier("zebraPrint") 에서 bean 이름을 찾을 수 있게 지정을 할 수 있으면 그러면 이제 printer2 는 같은 타입의 print 가 있다 할지라도 
-bean 이름이 zebraPrint 인 bean 만 찾아서 주입을 하게 됩니다
+그리고 bean 을 @Autowired 할 때 @Qualifier("zebraPrint")에서 bean 이름을 찾을 수 있게 지정을 할 수 있으면 그러면 이제 printer2는 같은 타입의 print 가 있다 할지라도
+bean 이름이 zebraPrint인 bean만 찾아서 주입을 하게 됩니다
 
-그럼 실전에서는 어떻게 쓰이느냐 보통 다중 DB 를 생성할 때 사용하게 됩니다 
+그럼 실전에서는 어떻게 쓰이느냐 보통 다중 DB를 생성할 때 사용하게 됩니다 
 
 ## 다중DB 선언해서 사용하기 
-실전에서는 주로 다중DB 에서 많이 사용됩니다 예를 들어서 오라클 하고 mysql 을 동시에 연결할것이다 이때 주연결 테이블은 오라클이 될것이다 보조 연결 DB 는 mysql 이 될것입니다 
+실전에서는 주로 다중DB 에서 많이 사용됩니다 예를 들어서 오라클 하고 mysql 을 동시에 연결할것이다 이때 주로 사용할 테이블은 오라클이 될것이다 보조 연결 DB 는 mysql 이 될것입니다 
 
 spring - boot  2.7.1
 jdk11
@@ -213,7 +212,7 @@ mysql.datasource.password=************
 
 ```
 
-먼저 application.properties 에 접속정보를 입력합니다 히카리CP 는 여러가지 설정을 커스텀 할 수 있지만 반드시 필요한 url , username , password 만 적어서 진행을 하겠습니다 
+먼저 application.properties에 접속 정보를 입력합니다 히카리 CP는 여러 가지 설정을 커스텀 할 수 있지만 반드시 필요한 url , user name, password만 적어서 진행을 하겠습니다
 
 ## OracleConfig
 
@@ -271,7 +270,7 @@ public class OracleConfig {
     }
 }
 ```
-내용은 별것이 없습니다 다만 Bean 들은 전부 @Primary 붙었습니다 주 테이블이 오라클DB 로 생각을 하기 때문에 런타임시에는 전부 오라클 DB 를 우선으로 bean 생성하고 주입합니다 
+내용은 별것이 없습니다 다만 Bean 들은 전부 @Primary 붙었습니다 주 테이블이 오라클 DB로 생각을 하기 때문에 런타임 시에는 전부 오라클 DB를 우선으로 bean 생성하고 주입합니다
 
 ## MysqlConfig
 ```
@@ -324,7 +323,7 @@ public class MysqlConfig {
 
 }
 ```
-같은 내용이긴 한데 Bean 전부 이름이 들어가 있는것을 볼 수 있고 주입할 대상들도 전부 @Qualifier 로 해서 이때 value 를 지정을 하면 해당 bean 을 찾게 됩니다 즉 
+같은 내용이긴 한데 Bean 전부 이름이 들어가 있는 것을 볼 수 있고 주입할 대상들도 전부 @Qualifier로 해서 이때 value를 지정을 하면 해당 bean 을 찾게 됩니다 즉
 
 ```
 
@@ -347,13 +346,13 @@ public DataSource mysqlDataSource(@Qualifier(value = "mysqlHikariConfig") Hikari
 }
 
 ```
-이 두 줄만 살펴보면 제일먼저 HikariConfig bean 을 만들때 이름으로 mysqlHikariConfig 되면 런타임시 이 bean 이 이름으로 만들게 됩니다 즉 타입상관 없이 이름이 중복되지 않으면
-같은타입을 생성할 수 있습니다 
+이 두 줄만 살펴보면 제일 먼저 HikariConfig bean 을 만들 때 이름으로 mysqlHikariConfig 되면 런타임 시 이 bean 이 이름으로 만들게 됩니다 즉 타입 상관없이 이름이 중복되지 않으면
+같은 타입을 생성할 수 있습니다
 
-그리고 주입할 대상에는 반드시 @Qualifier(value = "mysqlHikariConfig") 이렇게 value 에 해당 이름을 찾아서 주입을 하게 됩니다 그러면 다른 이름의 bean 이 주입이 되는것이 아니라 
-반드시 같은 이름으로 생성된 bean 을 찾아서 주입을 하게 됩니다 
+그리고 주입할 대상에는 반드시 @Qualifier(value = "mysqlHikariConfig") 이렇게 value에 해당 이름을 찾아서 주입을 하게 됩니다 그러면 다른 이름의 bean 이 주입이 되는 것이 아니라
+반드시 같은 이름으로 생성된 bean 을 찾아서 주입을 하게 됩니다
 
-그렇기 때문에 OracleConfig 와 MysqlConfig 는 타입은 같지만 결국 bean 이름이 다르기 때문에 어플리케이션 런타임시 충돌나지 않습니다 
+그렇기 때문에 OracleConfig 와 MysqlConfig는 타입은 같지만 결국 bean 이름이 다르기 때문에 애플리케이션 런타임 시 충돌 나지 않습니다
 
 ## OracleRepository 
 
@@ -371,7 +370,7 @@ public class OracleRepository {
 }
 
 ```
-그리고 쿼리를 불러올떄는 SqlSessionTemplate 을 불러와서 호출하게 되는데 이때 @Autowired 아무것도 적지 않으면 기본적으로 @Primary 타입으로 된 bean 을 찾아서 주입을 하게 됩니다 
+그리고 쿼리를 불러올 때는 SqlSessionTemplate 을 불러와서 표출하게 되는데 이때 @Autowired 아무것도 적지 않으면 기본적으로 @Primary 타입으로 된 bean 을 찾아서 주입을 하게 됩니다
 
 ## MysqlRepository 
 
@@ -389,7 +388,7 @@ public class MysqlRepository {
     }
 }
 ```
-반대로 mysql 쿼리를 불러올때는 주입 bean 의 이름을 정확히 찾아서 주입을 해야 함으로 @Autowired(required = false) 이 설정은 이 bean 이 있을 수도 있고 없을 수도 있으니 bean 이 없어도 의존 에러를 발생시키지 않습니다 @Qualifier(value = "mysqlSessionTemplate") 이름으로 bean 을 찾아서 주입하기 위한 장치입니다 
+반대로 mysql 쿼리를 불러올 때는 주입 bean의 이름을 정확히 찾아서 주입을 해야 하므로 @Autowired(required = false) 이 설정은 이 bean 이 있을 수도 있고 없을 수도 있으니 bean 이 없어도 의존 에러를 발생시키지 않습니다 @Qualifier(value = "mysqlSessionTemplate") 이름으로 bean 을 찾아서 주입하기 위한 장치입니다
 
 ## oracle.xml 
 ```
@@ -405,7 +404,7 @@ public class MysqlRepository {
 
 
 ```
-테이블 유무보다는 이렇게 dual 테이블로 연결을 해서 연산결과를 return 받을것이고 
+테이블 유무보다는 이렇게 dual 테이블로 연결을 해서 연산 결과를 return 받을 것이고
 
 ## mysql.xml 
 ```
@@ -420,7 +419,7 @@ public class MysqlRepository {
 
 </mapper>
 ```
-8.0 이상 버전 부터는 mysql 도 daul 테이블을 도입할 수 있는데 oracle 하고 차이점을 보기 위해서 일부로 쓰지 않았습니다 
+8.0 이상 버전부터는 mysql 도 daul 테이블을 도입할 수 있는데 oracle 하고 차이점을 보기 위해서 일부로 쓰지 않았습니다
 
 ## 쿼리 호출
 ```
@@ -450,7 +449,7 @@ public class SpringBootWebSecurityApplication implements ApplicationRunner {
 }
 
 ```
-쿼리는 이렇게 각각 repository 를 호출하는것으로 적었고 결과는 
+쿼리는 이렇게 각각 repository를 호출하는 것으로 적었고 결과는
 
 ```
 Connect_oracle :15
@@ -458,4 +457,4 @@ Connect_mysql :55
 
 ```
 
-이렇게 나와서 다중DB 연결할떄  @Primary 역활과 @Qualifier 역활에 대해서 알아보았습니다
+이렇게 나와서 다중 DB 연결할 때  @Primary 역할과 @Qualifier 역할에 대해서 알아보았습니다
