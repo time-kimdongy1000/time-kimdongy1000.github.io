@@ -3,7 +3,7 @@ title: Spring MicroService 24 Spring MicroService 비동기 메세지 처리
 author: kimdongy1000
 date: 2023-08-09 10:00
 categories: [Back-end, Spring - MicroService]
-tags: [Spring - MicroService ,  Security]
+tags: [Spring - MicroService ,  MessageQ]
 math: true
 mermaid: true
 ---
