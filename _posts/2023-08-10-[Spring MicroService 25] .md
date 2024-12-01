@@ -3,7 +3,7 @@ title: Spring MicroService 25 Spring MicroService 분산 캐싱
 author: kimdongy1000
 date: 2023-08-10 10:00
 categories: [Back-end, Spring - MicroService]
-tags: [Spring - MicroService ,  Security]
+tags: [Spring - MicroService ,  MessageQ]
 math: true
 mermaid: true
 ---
