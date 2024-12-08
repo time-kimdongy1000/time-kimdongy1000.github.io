@@ -1,9 +1,9 @@
 ---
-title: Spring MicroService 26 Spring MicroService 분산 추적 2
+title: Spring MicroService 27 Spring MicroService 분산 추적 2
 author: kimdongy1000
 date: 2023-08-12 10:00
 categories: [Back-end, Spring - MicroService]
-tags: [Spring - MicroService ,  sleuth]
+tags: [Spring - MicroService ,  kibana]
 math: true
 mermaid: true
 ---
