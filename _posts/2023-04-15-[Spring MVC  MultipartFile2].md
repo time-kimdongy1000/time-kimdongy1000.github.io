@@ -9,13 +9,12 @@ mermaid: true
 ---
 
 ## MultipartFile
-우리는 앞에서 form 요청으로 파일 업로드 다운로드를 전부 만들었습니다 이번시간에는 back-end 없이 비동기 fetch 로 파일 업로드 다운로드를 한번 구축해보겠습니다 
-Front - end 만 수정 
-
+우리는 앞에서 form 요청으로 파일 업로드 다운로드를 전부 만들었습니다 이번 시간에는 back-end 없이 비동기 fetch로 파일 업로드 다운로드를 한번 구축해 보겠습니다
+Front - end만 수정
 
 
 ## file.js 
-결국 기존의 로직 그대로 변경이 되는것이고 요청하는 방법만 달라지게 되는것이다 그럼 upload 부터 알아보자 
+결국 기존의 로직 그대로 변경이 되는 것이고 요청하는 방법만 달라지게 되는 것이다 그럼 upload부터 알아보자
 
 ```
 
@@ -52,8 +51,8 @@ file_form_button.addEventListener('click' , (e) => {
 
 ```
 
-기존 file_form.submit(); 에서 이 부분이 주석이 잡혀 있고 fetch 가 들어왔다 이때 중요한것은 fetch 는 이 화면에서 응답값을 는 clinet 요청입니다 
-그렇게 되면 이 핸들러들은 실제로 ResponseBody 를 주저야 함으로 이에 대한 설정을 변경하겠습니다 
+기존 file_form.submit();에서 이 부분이 주석이 잡혀 있고 fetch 가 들어왔다 이때 중요한 것은 fetch는 이 화면에서 응답 값은 clinet 요청입니다
+그렇게 되면 이 핸들러들은 실제로 ResponseBody를 주저야 함으로 이에 대한 설정을 변경하겠습니다
 
 ```
 
@@ -73,11 +72,11 @@ public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile multipar
 
 
 ```
-기존의 uploadFile 핸들러레서 String 으로 redirect 하는것을 제외하고 그냥 단순 void 로 바꾸어서 성공하면 catch 로 빠지지만 않게 하겠습니다 
-이때는 ResponseEntity 를 써도 되고 @ReposeBody 를 사용해도 된다 
+기존의 uploadFile 핸들러레서 String으로 redirect 하는 것을 제외하고 그냥 단순 void로 바꾸어서 성공하면 catch로 빠지지만 않게 하겠습니다
+이때는 ResponseEntity를 써도 되고 @ReposeBody를 사용해도 된다
 
-자 그럼 파일 다운로드는 조금 복잡하다 애초에 ajax 나 fetch 는 기본적으로는 파일 다운로드를 지원하지 않는다 
-그래서 blob 로 return 으로 넘어오는것은 아래 처럼 임시 a태그를 만들어서 임시 path 에 요청을 하는것이다 다음처럼 말이다 
+자 그럼 파일 다운로드는 조금 복잡하다 애초에 ajax 나 fetch는 기본적으로는 파일 다운로드를 지원하지 않는다
+그래서 blob로 return으로 넘어오는 것은 아래처럼 임시 a 태그를 만들어서 임시 path에 요청을 하는 것이다 다음처럼 말이다
 
 ```
 
@@ -115,5 +114,5 @@ file_down_button.addEventListener('click' , (e) => {
 
 ```
 
-이렇게 말이다 없는 a 태그를 만들어서 클릭을 하게끔 하고 다시 임시 a태그를 지우는 것으로 파일 다운로드가 일어나게 된다 
-이때 blob 안에 이미 파일 다운로드와 관련된 데이터는 모두 들어 있기 때문에 임시 주소를 만들어서 재요청하는 것이다 
+이렇게 말이다 없는 a 태그를 만들어서 클릭을 하게끔 하고 다시 임시 a 태그를 지우는 것으로 파일 다운로드가 일어나게 된다
+이때 blob 안에 이미 파일 다운로드와 관련된 데이터는 모두 들어 있기 때문에 임시 주소를 만들어서 재요청하는 것이다

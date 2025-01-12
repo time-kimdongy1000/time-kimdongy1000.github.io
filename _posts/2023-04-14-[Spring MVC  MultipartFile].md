@@ -9,13 +9,9 @@ mermaid: true
 ---
 
 ## MultipartFile
-MultipartFile 는 스프링에서 파일을 업로드 할때 사용하는 클래스 이름입니다 이 클래스는 인터페이스로 클라이언트에서 넘어오는 파일들을 관리할 수 있습니다 
-
-
+MultipartFile는 스프링에서 파일을 업로드할 때 사용하는 클래스 이름입니다 이 클래스는 인터페이스로 클라이언트에서 넘어오는 파일들을 관리할 수 있습니다
 
 ## 사전작업
-
-
 maven
 ```
 
@@ -63,10 +59,10 @@ maven
 </dependency>
 
 ```
-참고로 lombok 는 getter , setter 자동으로 만들어줘서 코드의 길이를 줄여주는것으로 앞으로 계속 채용하겠습니다
+참고로 lombok는 getter , setter 자동으로 만들어줘서 코드의 길이를 줄여주는 것으로 앞으로 계속 채용하겠습니다
 
-이번시간에는 web 에서 화면을 만들어서 사용을 진행을 하겠습니다 업로드 전반적인 내용 , 다운로드 전반적인 내용 전부를 다룰 예정입니다 
-코드가 엄청 많을 예정이다 업로드 부터 다운로드 까지 이 한 페이지로 만들 예정 설명은 최대한 업로드 , 다운로드 관점인 MuiltPartFile 에 대해서만 다룰 예정입니다 
+이번 시간에는 web에서 화면을 만들어서 사용을 진행을 하겠습니다 업로드 전반적인 내용, 다운로드 전반적인 내용 전부를 다룰 예정입니다
+코드가 엄청 많을 예정이다 업로드부터 다운로드까지 이 한 페이지로 만들 예정 설명은 최대한 업로드, 다운로드 관점인 MuiltPartFile에 대해서만 다룰 예정입니다
 
 ## 업로드 
 
@@ -187,30 +183,16 @@ public String uploadFile(@RequestParam("file") MultipartFile multipartFile){
 
 
 ```
-UploadFileController 핸들러는 2가지가 존재하는데 GetMapping 는 페이지 요청 핸들러이고 PostMapping 은 파일 업로드 핸들러 입니다 
-이때 파일 업로드 핸들러를 보면 `@RequestParam("file") MultipartFile multipartFile` 가 있습니다 이것이 앞의 form 에서 
-`File: <input id = "file-form-input" type="file" multiple="multiple" name="file">` 에서 이름 name 의 key 값으로 가져오는 파라미터 입니다 
+
+UploadFileController 핸들러는 2가지가 존재하는데 GetMapping는 페이지 요청 핸들러이고 PostMapping 은 파일 업로드 핸들러입니다
+이때 파일 업로드 핸들러를 보면 `@RequestParam("file") MultipartFile multipartFile` 가 있습니다 이것이 앞의 form에서
+`File: <input id = "file-form-input" type="file" multiple="multiple" name="file">`에서 이름 name의 key 값으로 가져오는 파라미터입니다
 
 
 UploadFileService.java
 ```
 
 package com.cybb.main.service;
-
-import com.cybb.main.entity.FileEntity;
-import com.cybb.main.repository.FileRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.RequestScope;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequestScope
@@ -222,8 +204,6 @@ public class UploadFileService {
 
     @Autowired
     private FileRepository fileRepository;
-
-
 
 
     public void uploadFile(MultipartFile multipartFile) throws Exception{
@@ -294,11 +274,11 @@ public class UploadFileService {
 
 
 ```
-Service 는 RequsestScope 를 사용했습니다 혹시나 서비스 bean 을 동시 호출할때 동시성 문제를 없앨것입니다 
-Service 전체로직은 업로드 파일을 검증하고 로컬 장치에 저장을 한 뒤 그 정보 (원래 이름 , path 등 ) 엔티티로 저장 전체 로직입니다 
+Service는 RequsestScope를 사용했습니다 혹시나 서비스 bean 을 동시 호출할 때 동시성 문제를 없앨 것입니다
+Service 전체로직은 업로드 파일을 검증하고 로컬 장치에 저장을 한 뒤 그 정보 (원래 이름, path 등 ) 엔티티로 저장 전체 로직입니다
 
-클라이언트에서 파일을 보낼떄에는 -> MultipartFile 사용하지만 결국 파일을 로컬 특정 위치에 생성하는것은 FileOutputStream 이다 이 OutputStream 에 대해서는 
-한번 전체적으로 정리 할 수 있을테니 지금은 파일을 출력 할때 사용하는 api 라고 생각하면된다 
+클라이언트에서 파일을 보낼 때에는 -> MultipartFile 사용하지만 결국 파일을 로컬 특정 위치에 생성하는 것은 FileOutputStream이다 이 OutputStream에 대해서는
+한번 전체적으로 정리할 수 있을 테니 지금은 파일을 출력할 때 사용하는 api라고 생각하면 된다
 
 ## 업로드 핵심
 ```
@@ -319,32 +299,17 @@ fos.write(upFileByte); // 바이트 파일을 write
 fos.close();    // FileOutputStream 자원 회수 
 
 ```
-결국 파일 업로드 의 핵심은 이 부분이다 결국 보면 파일이라는 것은 프로그래밍 언어로 쓰일때 getBytes 배열 형태오 만든다음 지정위치에 getBytes 배열을 쓰는것이 핵심이다 
+결국 파일 업로드의 핵심은 이 부분이다 결국 보면 파일이라는 것은 프로그래밍 언어로 쓰일 때 getBytes 배열 형태와 만든 다음 지정 위치에 getBytes 배열을 쓰는 것이 핵심이다
 
 
-## 파일 다운로드 
-그럼 파일 다운로드는 어떻게 만들어지는지 보자 파일 다운로드 핵심은 먼저 파일의 위치 DB 로 읽어서 보여주는것이 우선이다 그럼 그 작업을 먼저 진행을 해보면
-물론 다운로드에서는 MuiltpartFile 이 사용되지는 않는다 
+## 파일 다운로드
+그럼 파일 다운로드는 어떻게 만들어지는지 보자 파일 다운로드 핵심은 먼저 파일의 위치 DB로 읽어서 보여주는 것이 우선이다 그럼 그 작업을 먼저 진행을 해보면
+물론 다운로드에서는 MuiltpartFile 이 사용되지는 않는다
 
 
 DownloadFileController.java
 ```
 package com.cybb.main.controller;
-
-import com.cybb.main.dao.FileDao;
-import com.cybb.main.service.DownloadFileService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import java.io.File;
-import java.util.List;
 
 @Controller
 public class DownloadFileController {
@@ -396,25 +361,14 @@ public class DownloadFileController {
 
 ```
 
-마찬가지로 2개의 핸들러가 필요하다 하나는 다운로드 페이지로 이동하는 핸들러 다른 하나는 파일 다운로드 핸들러이다 파일 다운도르는 거의 대부분 FileOutputStream
-을 많이 사용하지만 이번시간에는 Resource 를 이용해서 보내는 방법을 채택할것이다 
+마찬가지로 2개의 핸들러가 필요하다 하나는 다운로드 페이지로 이동하는 핸들러 다른 하나는 파일 다운로드 핸들러이다 파일 다운로드는 거의 대부분 FileOutputStream
+을 많이 사용하지만 이번 시간에는 Resource를 이용해서 보내는 방법을 채택할 것이다
 
 
 DownloadFileService
 ```
 
 package com.cybb.main.service;
-
-import com.cybb.main.dao.FileDao;
-import com.cybb.main.entity.FileEntity;
-import com.cybb.main.repository.FileRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.io.File;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class DownloadFileService {
@@ -459,8 +413,8 @@ public class DownloadFileService {
 
 
 ```
-파일 다운로드 페이지로 이동할때 table 에 표기할 파일 리스트 가져오는 service 그리고 Long 타입으로 넘어오는 id 를 기반으로 파일을 return 하는 서비스 두개가 있다 
-이 둘을 이용해서 File 을 return 하면 이제 back-end 쪽에서 파일 다운로는 끝이 난다 
+파일 다운로드 페이지로 이동할 때 table에 표기할 파일 리스트 가져오는 service 그리고 Long 타입으로 넘어오는 id를 기반으로 파일을 return 하는 서비스 두 개가 있다
+이 둘을 이용해서 File 을 return 하면 이제 back-end 쪽에서 파일 다운로드 끝이 난다
 
 그리고 html 을 살펴보면
 
@@ -500,8 +454,7 @@ public class DownloadFileService {
 
 ```
 
-여기서는 타임리프 문법을 사용할것이다 th:each 를 이용해서 넘겨받은 파일리스트를 돌면서 테이블을 생성할것이다 그리고 제일 끝에는 file_id 를 가지고 있는 버튼을 생성할것이다 
-저기 버튼을 누르게 되면 js 문법에서 herf 요청을 할것인데 
+여기서는 타임리프 문법을 사용할 것이다 th:each를 이용해서 넘겨받은 파일 리스트를 돌면서 테이블을 생성할 것이다 그리고 제일 끝에는 file_id를 가지고 있는 버튼을 생성할 것이다 저기 버튼을 누르게 되면 js 문법에서 herf 요청을 할 것인데
 
 ```
 
@@ -520,7 +473,7 @@ file_down_button.addEventListener('click' , (e) => {
 
 ```
 
-이런식으로 이루어져 있다 그러면 우리는 파일 업로드 다운로드 둘다 구축을 해보았다 다음 장에는 fetch 로만 구성해서 파일 업로드 다운로드를 구현해볼 예정이다 
+이런 식으로 이루어져 있다 그러면 우리는 파일 업로드 다운로드 둘 다 구축을 해보았다 다음 장에는 fetch로만 구성해서 파일 업로드 다운로드를 구현해 볼 예정이다
 
 
 
