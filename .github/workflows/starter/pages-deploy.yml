@@ -61,6 +61,11 @@ jobs:
         with:
           path: "_site${{ steps.pages.outputs.base_path }}"
 
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: "_site${{ steps.pages.outputs.base_path }}"          
+
   deploy:
     environment:
       name: github-pages
