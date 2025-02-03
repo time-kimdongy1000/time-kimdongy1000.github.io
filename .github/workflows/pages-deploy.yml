@@ -69,22 +69,20 @@ jobs:
     - name: Create a File
       run: echo "hello from ${{ matrix.runs-on }}" > file-${{ matrix.runs-on }}.txt
     - name: Upload Artifact
-+     uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4
       with:
-+       name: my-artifact-${{ matrix.runs-on }}
+        name: my-artifact-${{ matrix.runs-on }}
         path: file-${{ matrix.runs-on }}.txt
-        
   download:
     needs: upload
     runs-on: ubuntu-latest
     steps:
     - name: Download All Artifacts
-+     uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v4
       with:
--       name: my-artifact
         path: my-artifact
-+       pattern: my-artifact-*
-+       merge-multiple: true
+        pattern: my-artifact-*
+        merge-multiple: true
     - run: ls -R my-artifact
 
 
