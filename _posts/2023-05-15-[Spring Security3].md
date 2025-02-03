@@ -8,7 +8,8 @@ math: true
 mermaid: true
 ---
 
-우리는 지난시간에 권한이 없는 유저가 권한이 필요한 api 를 호출할때 어떤 식으로 로그인 페이지로 인도하는지 보았다 다만 여기서 의문점은 우리는 로그인 페이지를 만들지 않았는데 시큐리티는 알아서 로그인 핸들러와 , 로그인 페이지를 인도하는 모습을 보여주었다 어떻게 이런일이 가능할까?
+우리는 지난시간에 권한이 없는 유저가 권한이 필요한 api 를 호출할때 어떤 식으로 로그인 페이지로 인도하는지 보았다 다만 여기서 의문점은 우리는 로그인 페이지를 만들지 않았는데 시큐리티는 알아서 로그인 핸들러와 , 로그인 페이지를 인도하는 모습을 보여주었다 어떻게 이런일이 가능할까? 물론 시큐리티 내부적으로 이러한 기본적인 로그인 페이지를 가지고 있다가 
+필요할때 렌더링을 진행해서 사용자에게 보여주게 됩니다 
 
 ![스크린샷 2023-08-06 105416](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/39942fb0-5695-4970-ab8e-50a4607773fb)
 
@@ -32,9 +33,8 @@ private void doFilter(HttpServletRequest request, HttpServletResponse response, 
 	}
 ```
 
-이 클래스에는 이와 같은 핸들러가 있습니다 
-
-여기 안에 있는 소스중 String loginPageHtml = generateLoginPageHtml(request, loginError, logoutSuccess); 이런 형식이 있는데 이는 generateLoginPageHtml 매소드 명에서 알 수 있다 싶히 로그인 페이지를 생성한다는 뜻으로 해석이 되는데 
+DefaultLoginPageGeneratingFilter 는 사용자가 커스텀 로그인 페이지를 만들지 않는다면 자동으로 기본적인 로그인 페이지를 제공하게끔 만들어진 Filter 입니다 
+이때 로그인 페이지를 만드는 부분은 `String loginPageHtml = generateLoginPageHtml(request, loginError, logoutSuccess);` 이 부분에 해당이 됩니다 
 
 ```
 private String generateLoginPageHtml(HttpServletRequest request, boolean loginError, boolean logoutSuccess) {

@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 28 OIDC 란 무엇인가?
 author: kimdongy1000
 date: 2023-07-05 14:00
@@ -7,13 +6,9 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security , OAuth2 ]
 math: true
 mermaid: true
-
 ---
 
 먼저 OIDC 가 설명하기 전에 OAuth2 의 계층에 대해서 한번 알아볼려고 합니다 
-
-
-
 
 
 ## 인가서버 프로토콜 
@@ -49,65 +44,4 @@ OAuth2 는 주로 리소스 서버에 대한 권한을 나타내는데 중점으
 ## OIDC 의 토큰 
 사용자의 ID와 사용자 정보를 포함하며 사용자의 신원을 확인하는데 사용됩니다
 
-그럼 우리는 앞에서 User 정보를 들고온건 무엇인가요 할 수 있습니다 이는 access_token 으로 사용자 정보를 요청을 해서 사용자 정보를 가져오는 경우지 
-실세로 access_token 에는 사용자 정보가 담겨 있지 않습니다 
-
-
-## OAuaht2 의 토큰 
-
-```
-
-{
-  "alg": "RS256",
-  "typ": "JWT",
-  "kid": "dp7lpFYPY-do8i9U6Vp3sqb4atyutsw1DUQtZZiwI_s"
-}
-
-
-{
-  "exp": 1697256009,
-  "iat": 1697255709,
-  "auth_time": 1697254345,
-  "jti": "a66154cb-cca2-417e-9e47-1a87e3fd9bd8",
-  "iss": "http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project",
-  "aud": "account",
-  "sub": "30283228-fa36-4d88-82c3-c9494dc44bfd",
-  "typ": "Bearer",
-  "azp": "Spring-Oauth2-Authorizaion-client",
-  "session_state": "0e56893d-0d86-46af-8d72-f185e7ecf483",
-  "acr": "0",
-  "realm_access": {
-    "roles": [
-      "offline_access",
-      "uma_authorization",
-      "default-roles-srping-oauth2-authorizaion-project"
-    ]
-  },
-  "resource_access": {
-    "account": {
-      "roles": [
-        "manage-account",
-        "manage-account-links",
-        "view-profile"
-      ]
-    }
-  },
-  "scope": "email profile",
-  "sid": "0e56893d-0d86-46af-8d72-f185e7ecf483",
-  "email_verified": false,
-  "name": "time user",
-  "preferred_username": "user1",
-  "given_name": "time",
-  "family_name": "user",
-  "email": "user1@gmail.com"
-}
-
-```
-
-access_token 을 jwt.io 에서 변환을 하면 이렇게 보이게 된다 여기 토큰에는 사용자 정보가 포함이 되지 않는것을 볼 수 있지만 
-다음시간부터 할 OIDC 에는 토큰의 승인코드를 보낼시 바로 사용자 정보가 포함된 토큰을 반환하게 됩니다 
-
-
-다음시간부터 OIDC 에 관련한 이야기를 진행을 하도록 하겠습니다 
-
-
+이 정도 차이점을 알고 있으며 다음에 OIDC 에 대해서 알아보겠습니다 

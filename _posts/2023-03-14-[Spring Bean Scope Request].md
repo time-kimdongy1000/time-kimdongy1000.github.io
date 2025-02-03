@@ -8,221 +8,94 @@ math: true
 mermaid: true
 ---
 
-## Request 
-앞에서 사용한 Singleton , ProtoType 는 기본 스프링 Ioc 단계에서 제공하는 스프링 Bean 정책이다 이번에 배울 Request 는 Web 과 관련이 있는 Bean 의 스코프이다 
-Request 스코프는 HTTP 로직과 같이 움직이는것으로 request , response 가 끝이나면 자동으로 소멸된다 요청수에 따라서 Bean 이 생성되기는 하지만 
-이 Bean 들은 Prototype 하고는 다르게 공유되지 않고 자신의 http 요청에 대해서만 Bean 을 공유한다 그런 예시를 한번 만들어보자 참고로 web 에서 동작하기에 
-클라이언트는 post - man 을 활용할것이다 
+## Bean 의 생성전략 
+Request 생성 전략은 HTTP 요청 한 건당 새로운 빈 인스턴스를 생성하는 스코프입니다 즉 각각의 HTTP 요청이 들어올 때마다 새로운 bean 이 생성이 되면 해당 요청이 완료되면
+이 Bean 은 소멸이 됩니다 이때 Bean의 유지시간은 HTTP 요청이 끝날 때까지 값이 유지가 됩니다 이때는 IoC 와 서블릿 컨테이너의 동기화가 이루어져서
+서블릿 컨테이너에서 요청이 완료가 되어서 응답이 나갔으면 IoC 컨테이너에 요청을 해서 해당 bean 을 삭제하게 됩니다
 
-## 소스코드
+## MySingletonBean
 ```
-
-package com.example.demo.contorller;
-
-import com.example.demo.config.RequestBeanSystem;
-import com.example.demo.model.SystemModel;
-import com.example.demo.service.SystemService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class InterRestController {
-
-    @Autowired
-    private RequestBeanSystem requestBeanSystem;
-
-    @Autowired
-    private SystemService systemService;
-
-    @GetMapping("/")
-    public SystemModel index(@ModelAttribute SystemModel systemModel)
-    {
-
-        try{
-
-            requestBeanSystem.setSystemName(systemModel.getSystemName());
-            requestBeanSystem.setSystemValue(systemModel.getSystemValue());
-            System.out.println(requestBeanSystem);
-
-            Thread.sleep(10000);
-
-            systemService.systemOutInfo();
-
-            return null;
-
-        }catch(Exception e){
-            throw new RuntimeException(e);
-        }
-    }
-}
-
-
-```
-SystemModel.java
-```
-
-
-package com.example.demo.model;
-
-
-public class SystemModel {
-
-    private String systemName;
-    private int systemValue;
-
-    public String getSystemName() {
-        return systemName;
-    }
-
-    public void setSystemName(String systemName) {
-        this.systemName = systemName;
-    }
-
-    public int getSystemValue() {
-        return systemValue;
-    }
-
-    public void setSystemValue(int systemValue) {
-        this.systemValue = systemValue;
-    }
-}
-
-
-```
-SystemService.service
-```
-
-package com.example.demo.service;
-
-import com.example.demo.config.RequestBeanSystem;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-
 @Component
-public class SystemService {
+@RequestScope
+public class MySingletonBean {
+	
+	private String message;
+	
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	
+	public String getMessage() {
+		return message;		
+	}
+}
 
-    @Autowired
-    private RequestBeanSystem requestBeanSystem;
 
-    public void systemOutInfo(){
+```
+참고로 scope는 request 가 먹지 않아서 RequestScope로 대체를 하겠습니다 그럼 이 빈은 HTTP 요청이 올 때마다 새로운 bean 을 생성하게 됩니다
 
-        System.out.println(requestBeanSystem);
-        System.out.println(requestBeanSystem.getSystemName());
-        System.out.println(requestBeanSystem.getSystemValue());
-    }
+```
+@RestController
+public class MessageController {
+	
+	@Autowired
+	private MySingletonBean mySingletonBean;
+	
+	
+	@GetMapping("/message1")
+	public String message1() {
+		
+		mySingletonBean.setMessage("message1 mySingletonBean 생성");
+		
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return mySingletonBean.getMessage();
+	}
+	
+	@GetMapping("/message2")
+	public String message2() {
+		
+		mySingletonBean.setMessage("message2 mySingletonBean 생성");
+		
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return mySingletonBean.getMessage();
+	}
+
 }
 
 ```
-RequestBeanSystem.java
-```
+그리고 HTTP 요청이 필요함으로 핸들러 2개를 만들고 각 핸들러에 서로 다른 값을 집어넣고 요청 순서를 /message2 -> /messag1 순서대로 요청을 하게 됩니다 그러면 일반적인 싱글톤의 결과는
+후에 요청한 message1 요청의 `mySingletonBean.setMessage("message1 mySingletonBean 생성");` 값을 가져오게 됩니다만 Request 스코프를 쓰게 되면 HTTP 요청 간의 독립적인 빈 이 생성됨으로 이때는 후에 요청한 messag1 값을 가지고 오는 것이 아니아 원래 요청한 값을 가져오게 됩니다
 
-package com.example.demo.config;
+## 리퀘스트의 생성 전략의 장점, 단점
 
-public class RequestBeanSystem {
+장점
+1. 요청마다 독립적인 상태
+    프로토타입처럼 새로운 HTTP 요청이 들어올 때마다 새로운 Bean 인스턴스가 생성되기 때문에 각 요청은 독립적인 상태를 가질 수 있습니다
 
-    private String systemName;
-    private int systemValue;
+2. HTTP 요청 간 동일한 데이터 유지
+동일한 HTTP 요청에 한해서는 독립적인 값을 계속해서 공유할 수 있습니다
 
-    public String getSystemName() {
-        return systemName;
-    }
+단점
+1. 메모리 누수
+    HTTP 요청이 끝나면 자동으로 소멸되긴 하지만 그래도 상태변화가 필요 없는 bean까지 Request로 생성할 경우 메모리 누수 및 성능 저하의 원인이 될 수 있습니다
 
-    public void setSystemName(String systemName) {
-        this.systemName = systemName;
-    }
+2. 요청 범위 밖의 상태 공유 불가능
+    동일한 HTTP 요청일 때만 값이 공유되지만 그 요청 바깥에 있는 상태에는 관여 또는 공유할 수 없습니다
 
-    public int getSystemValue() {
-        return systemValue;
-    }
+3. 상태 관리의 어려움
+    웹 애플리케이션은 수많은 요청에 의해서 움직이게 됩니다 이때 이 값이 동일한 HTTP 요청에 한해서 값이 독립적으로 공유가 되어야 하는지 아니면 전역적으로 공유가 되어야 하는지
+    판단을 하고 설계를 진행을 해야 합니다 그래서 복잡한 애플리케이션 일때 더욱더 세밀한 bean 생성 전략을 사용해야 합니다
 
-    public void setSystemValue(int systemValue) {
-        this.systemValue = systemValue;
-    }
-}
-```
-
-
-```
-package com.example.demo.config;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.context.annotation.RequestScope;
-
-@Configuration
-public class WebConfig {
-
-    @Bean
-    @RequestScope
-    public RequestBeanSystem requestBeanSystem(){
-
-        return new RequestBeanSystem();
-    }
-}
-
-```
-
-일단 지금 파트는 mvc 파트가 아니기 때문에 간단하게 설명을 할려고 한다 일단 우리는 postman 에서 8080 으로 요청을 넣을것이다 그럼 이 요칭이 SystemModel 타고 올것인데 
-이때 요청은 파라미터를 보낼것이다 SystemModel 에 있는 두개의 필드 값으 보내고 
-이때 requestBeanSystem 주입하는데 WebConfig 파일을 보면 Bean 의 생성정책이 request 정책이다 즉 http 요청이 들어올때마다 생성이 되고 http 요청이 끝나면 
-자동으로 Ioc 컨테이너에서 제거 된다 그런데 중간에 값을 setter 하고 10초를 주는 이유는 우리는 요청을 두번 연속줄것인데 요청 2번 연속을 줄 수 없으니 10초 대기를 하고 
-있다가 진행을 할것이다 이때 우리는 요청을 두번 넣을 것이다 그럼 소스 설명은 대략적으로 간것이고 결과를 보자
-
-
-```
-com.example.demo.config.RequestBeanSystem@71c34c0e
-com.example.demo.config.RequestBeanSystem@50ef480
-com.example.demo.config.RequestBeanSystem@71c34c0e
-삼성전자
-1000
-com.example.demo.config.RequestBeanSystem@50ef480
-LG전자
-2000
-
-```
-
-일단 요청이 2번 들어 갔는데 Bean 이 두개 생긴것을 확인했다 그리고 그 각각의 Bean 이 우리는 Service 로 값을 넘겨주지도 않았지만 계속 가지고 있다가 자신의 요청에서 가지고 있었던 값들을 넘겨주었다 이것이 requestScope 의 특징이다 
-
-그렇다면 이런 Bean 생성 정책을 다시 Singleton 으로 변경을 해보다 아래처럼 결과가 나올것이다 
-## 다시 Singleton
-```
-com.example.demo.config.RequestBeanSystem@6ace8861
-com.example.demo.config.RequestBeanSystem@6ace8861
-com.example.demo.config.RequestBeanSystem@6ace8861
-LG전자
-2000
-com.example.demo.config.RequestBeanSystem@6ace8861
-LG전자
-2000
-
-```
-
-RequestScope 는 자신이 http 요청때 가지고 있는 값을 계속해서 가지고 있었지만 Sigleton 은 그 10 초 기다리는 사이에 다른 값이 들어와서 값을 덮어 써버린 결과가 나온것이다 그래서 항상 제일 마지막에 요청이 들어오는 값이 남게 되는것이다 그럼 이제 prototype 를 살펴보자 
-
-
-그럼 prototype 하고의 차이점을 살펴보자
-
-```
-
-com.example.demo.config.RequestBeanSystem@3e645809
-com.example.demo.config.RequestBeanSystem@3e645809
-com.example.demo.config.RequestBeanSystem@4376b7c4
-null
-0
-com.example.demo.config.RequestBeanSystem@4376b7c4
-null
-0
-
-```
-프로토 타입은 이렇게 나온다 왜냐하면 처음 주입할때 즉 RestController 에서 주입받을때 새로운 Bean 을 주입받는데 이때 하나의 메모리를 가지는 Bean 생겨나게 되고 
-다음은 service 에서 주입받을때 새로운 주소값을 가지고 있는 Bean 이 생겨나기 때문에 이는 값전달이 제대로 되고 있지 않은 모습을 보여주고 있는것이다 
-
-
-## 그럼 웹개발할때는 RequestScope 를 써야 하는가?
-아니다 내가 웹개발 5년차인데 이 스코프를 쓰는 사람을 한번도 못보았다 기본적으로 RequestScope 는 http 전달에서 사용하는것이 맞고 실제로 
-RequestScopee 는 thread safe 하기 때문에 웹개발할때는 이것을 써도 된다 다만 요청을 할때마다 새로운 인스턴스가 생기는 문제점때문에 
-만약 요청이 많이 몰리는 시스템이고 굳이 굳이 값을 전달할때는 Bean 으로 전달하기 보다는 Map 으로 전달하는것이 보는 사람의 입장에서도 좋기 때문에 
-그렇게 개발하지는 않아보인다 하지만 아까도 보았듯이 멀티 쓰레드 환경에서는 싱글톤 또한 독이 될 수 있음으로 이럴때에는 RequestScope 가 낫다는 뜻이다 
+오늘 시간까지 spring bean 이 생성될 전략에 대해서 공부를 해보았습니다 대표적 3가지만 알아본 것이고 이 외에도 session , websocket 다양한 방식이 있습니다 이에 대해서는 다음에 한번 다루어 보는 것으로 하겠습니다

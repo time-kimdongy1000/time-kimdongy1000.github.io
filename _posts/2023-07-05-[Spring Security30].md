@@ -1,5 +1,4 @@
 ---
-
 title: Spring Secuirty 30 OIDC 로그아웃
 author: kimdongy1000
 date: 2023-07-05 18:00
@@ -7,7 +6,6 @@ categories: [Back-end, Spring - Security]
 tags: [ Spring-Security , OAuth2 ]
 math: true
 mermaid: true
-
 ---
 
 지난시간에 OIDC 인증에 관련한 Flow 를 살펴보았습니다 잠깐 복습을 해보자면 OIDC 는 인증에 관련한 프레임워크로 OAuth2.0 위의 계층에 존재하는 프레임워크입니다 
@@ -15,23 +13,19 @@ access_token , refres_token 은 인가쪽인 부분임으로 이 부분은 로�
 이 부분을 다루도록 하겠습니다 
 
 ## Security 로그아웃 
-사실 시큐리티 로그아웃은 간다합니다 Security 컨텍스트에 저장되어 있는 정보를 삭제 (세선무효화 쿠키 삭제) 등을 하고 리딕렉션을 처음 로그인 페이지로 보내게 되면 
-사실상 클라이언트 상에서는 OIDC 로그아웃이나 , OAuth2 로그아웃이냐 동일하게 보일 예정입니다 시큐리티 로그아웃은 OAuth2 , OIDC 나 상관없이 
+사실 시큐리티 로그아웃은 간단합니다 Security 컨텍스트에 저장되어 있는 정보를 삭제 (세선무효화 쿠키 삭제) 등을 하고 리딕렉션을 처음 로그인 페이지로 보내게 되면 
+사실상 클라이언트 상에서는 OIDC 로그아웃이나 , OAuth2 로그아웃이나 동일하게 보일 예정입니다 시큐리티 로그아웃은 OAuth2 , OIDC 나 상관없이 
 모두 LogoutFilter 를 타고 이 필터의 결과가 
 
-
 ```
-
 SecurityContext context = SecurityContextHolder.getContext();
 SecurityContextHolder.clearContext();
 if (this.clearAuthentication) {
 	context.setAuthentication(null);
 }
-
 ```
 
-이렇게 컨텍스를 지우는것으로 끝이나기 때문입니다 그럼 굳이 OIDC 로그아웃을 하는 이유는 이는 클라이언트 로그아웃 뿐만 아니라 KeyClock 에 있는 세션정보까지도 없애기 위한 로그아웃입니다 우리 다른 어플리케이션 보면 모든기기에서 로그아웃 하기 이런 기능을 본적이 있습니다 이 버튼을 누르면 내가 인증인가를 했던 모든기기에서 로그아웃이 진행이 되기 때문에 이 코드를 동작시키면 우리는 다시 로그인을 해야하는 상황이 오기 때문입니다 
-
+이렇게 컨텍스를 지우는것으로 끝이나기 때문입니다 그럼 굳이 OIDC 로그아웃을 하는 이유는 이는 클라이언트 로그아웃 뿐만 아니라 KeyClock 에 있는 세션정보까지도 없애기 위한 로그아웃입니다 우리 다른 어플리케이션 보면 모든기기에서 로그아웃 하기 이런 기능을 본적이 있습니다 이 버튼을 누르면 내가 인증 인가를 했던 모든기기에서 로그아웃이 진행이 되기 때문에 이 코드를 동작시키면 우리는 다시 로그인을 해야하는 상황이 오기 때문입니다 
 
 로그인을 한 상태에서 `http://localhost:8081/logout` 이렇게 로그아웃 요청을 주게 되면 
 
@@ -41,7 +35,6 @@ if (this.clearAuthentication) {
 
 
 ## LogoutFilter 
-
 ```
 public class LogoutFilter extends GenericFilterBean {
 
@@ -64,35 +57,36 @@ public class LogoutFilter extends GenericFilterBean {
 		}
 		chain.doFilter(request, response);
 	}
-
-
 }
 
+private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+		throws IOException, ServletException {
+	if (requiresLogout(request, response)) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug(LogMessage.format("Logging out [%s]", auth));
+		}
+		this.handler.logout(request, response, auth);
+		this.logoutSuccessHandler.onLogoutSuccess(request, response, auth);
+		return;
+	}
+	chain.doFilter(request, response);
+}
 ```
 
 이렇게 LogoutFilter 가 동작을 하게 됩니다 
-
 `Authentication auth = SecurityContextHolder.getContext().getAuthentication();` 현재 시큐리티 컨텍스트 에 저장된 인증객체를 가져오고 
 `this.handler.logout(request, response, auth);` 호출을 통해서 로그아웃을 시도하게 됩니다 
 
 
-##
-
+## CompositeLogoutHandler
 ```
-
-public final class CompositeLogoutHandler implements LogoutHandler {
-
-	@Override
-	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-		for (LogoutHandler handler : this.logoutHandlers) {
-			handler.logout(request, response, authentication);
-		}
+@Override
+public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+	for (LogoutHandler handler : this.logoutHandlers) {
+		handler.logout(request, response, authentication);
 	}
-
-
-
 }
-
 ```
 
 이쪽으로 호출이 되는데 이때 handler 3개의 핸들러가 저장이 되어 있고 이를 3번 호출하면서 각 핸들러마다 로그아웃을 진행하게 됩니다 
@@ -100,17 +94,14 @@ public final class CompositeLogoutHandler implements LogoutHandler {
 3개의 핸들러는 
 
 ```
-
-logoutHandlers = {Arrays$ArrayList@8211}  size = 3
- 0 = {CsrfLogoutHandler@8214} 
-  csrfTokenRepository = {LazyCsrfTokenRepository@8216} 
- 1 = {SecurityContextLogoutHandler@8222} 
-  logger = {LogAdapter$Slf4jLocationAwareLog@8224} 
+logoutHandlers = {Arrays$ArrayList}  size = 3
+ 0 = {CsrfLogoutHandler} 
+  csrfTokenRepository = {LazyCsrfTokenRepository} 
+ 1 = {SecurityContextLogoutHandler} 
+  logger = {LogAdapter$Slf4jLocationAwareLog} 
   invalidateHttpSession = true
   clearAuthentication = true
- 2 = {LogoutSuccessEventPublishingLogoutHandler@8409} 
-  eventPublisher = {AnnotationConfigServletWebServerApplicationContext@8411} "org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@ca30bc1, started on Sat Oct 14 20:57:48 KST 2023"
-
+ 2 = {LogoutSuccessEventPublishingLogoutHandler} 
 ```
 
 CsrfLogoutHandler 
@@ -120,21 +111,17 @@ LogoutSuccessEventPublishingLogoutHandler
 이렇게 총 3개의 핸들러에서 로그아웃을 호출하게 되는데 하나씩 들어가보면 
 
 ## CsrfLogoutHandler
-
 ```
-
 public final class CsrfLogoutHandler implements LogoutHandler {
 
 	@Override
 	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 		this.csrfTokenRepository.saveToken(null, request, response);
 	}
-
 }
-
 ```
-
 이쪽으로 들어와서 saveToken 토큰 함수를 호출하게 되는데 함수명만 보면 무엇인가 저장하는거 처럼 보이지만 다음 메서드 호출로 가보자 
+
 
 ## LazyCsrfTokenRepository
 ```
@@ -156,7 +143,6 @@ this.delegate.saveToken(token, request, response);
 
 ## HttpSessionCsrfTokenRepository
 ```
-
 public final class HttpSessionCsrfTokenRepository implements CsrfTokenRepository {
 
 	@Override
@@ -180,7 +166,6 @@ public final class HttpSessionCsrfTokenRepository implements CsrfTokenRepository
 보이는 값처럼 CSRF_TOKEN 을 제거하게 됩니다 그럼 첫번째 로그아웃 완료 
 
 ## SecurityContextLogoutHandler 
-
 ```
 public class SecurityContextLogoutHandler implements LogoutHandler {
 
@@ -202,11 +187,7 @@ public class SecurityContextLogoutHandler implements LogoutHandler {
 			context.setAuthentication(null);
 		}
 	}
-
-
 }
-
-
 ```
 
 이 부분이 사실상 핵심인 부분이다 session != null 이 아니므로 들어와서 session.invalidate(); 호출해서 세션을 무효화 시키고 
@@ -226,10 +207,8 @@ if (this.clearAuthentication) {
 실제 인증정보는 `context.setAuthentication(null);` 이곳을 호출함으로서 지워지게 됩니다 
 
 ```
-
 context = {SecurityContextImpl@8431} "SecurityContextImpl [Null authentication]"
 authentication = null
-
 ```
 
 호출이 되고 나면 이 컨텍스트에는 아무런 값이 남지 않게 됩니다 
@@ -253,11 +232,9 @@ public final class LogoutSuccessEventPublishingLogoutHandler implements LogoutHa
 }
 
 ```
-
 얘는 좀 생소할 수 있는데 로그아웃이 성공적으로 되었을때 발생되는 이벤트를 이곳에서 진행이 됩니다 크게 볼것은 없으니 넘어가도록 하겠습니다 
 
 ## AbstractAuthenticationTargetUrlRequestHandler
-
 ```
 
 public abstract class AbstractAuthenticationTargetUrlRequestHandler {
@@ -271,8 +248,6 @@ public abstract class AbstractAuthenticationTargetUrlRequestHandler {
 		}
 		this.redirectStrategy.sendRedirect(request, response, targetUrl);
 	}
-
-
 }
 
 ```
@@ -315,9 +290,6 @@ public class SecurityConfig {
         oidcClientInitiatedLogoutSuccessHandler.setPostLogoutRedirectUri("http://localhost:8081/login");
 
         return oidcClientInitiatedLogoutSuccessHandler;
-
-
-
     }
 }
 
@@ -344,7 +316,6 @@ this.logoutSuccessHandler.onLogoutSuccess(request, response, auth);
 
 ## OidcClientInitiatedLogoutSuccessHandler
 ```
-
 public final class OidcClientInitiatedLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
 	@Override
@@ -364,9 +335,6 @@ public final class OidcClientInitiatedLogoutSuccessHandler extends SimpleUrlLogo
 		}
 		return (targetUrl != null) ? targetUrl : super.determineTargetUrl(request, response);
 	}
-
-
-
 }
 
 
@@ -379,16 +347,13 @@ public final class OidcClientInitiatedLogoutSuccessHandler extends SimpleUrlLogo
 
 
 ```
-
 String registrationId = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId();
 ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(registrationId);
-
 ```
-
 현재 사용중인 ClientRegistration 가져오게 되고 
 
-```
 
+```
 URI endSessionEndpoint = this.endSessionEndpoint(clientRegistration);
 			if (endSessionEndpoint != null) {
 				String idToken = idToken(authentication);
@@ -396,40 +361,29 @@ URI endSessionEndpoint = this.endSessionEndpoint(clientRegistration);
 				targetUrl = endpointUri(endSessionEndpoint, idToken, postLogoutRedirectUri);
 			}
 return (targetUrl != null) ? targetUrl : super.determineTargetUrl(request, response);
-
 ```
 endSessionEndpoint 이 url 로 호출을 하게 되면 인가서버에서도 세션을 삭제하게 됩니다 
 
-```
 
+```
 http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/logout
 
 ```
-
 이 값이 openid 로그아웃을 위한 주소가 되는것이고 
 
-```
 
+```
 String idToken = idToken(authentication);
 String postLogoutRedirectUri = postLogoutRedirectUri(request, clientRegistration);
 targetUrl = endpointUri(endSessionEndpoint, idToken, postLogoutRedirectUri);
-
 ```
 
 인증객체에서 idtoken 을 뽑아오고 세션제거가 끝났을시 되돌아올 redirect url 을 적어주고 요청을 만들게 되면 
-
-```
-
-http://localhost:8080/realms/Srping-Oauth2-Authorizaion-Project/protocol/openid-connect/logout?id_token_hint=eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkcDdscEZZUFktZG84aTlVNlZwM3NxYjRhdHl1dHN3MURVUXRaWml3SV9zIn0.eyJleHAiOjE2OTcyODk3NDcsImlhdCI6MTY5NzI4OTQ0NywiYXV0aF90aW1lIjoxNjk3Mjg5NDQ1LCJqdGkiOiIwODc4MTY0Ni1mNzE0LTRlZWMtOTNjOS1kZTFkZGFkNDIwMGEiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL1NycGluZy1PYXV0aDItQXV0aG9yaXphaW9uLVByb2plY3QiLCJhdWQiOiJTcHJpbmctT2F1dGgyLUF1dGhvcml6YWlvbi1jbGllbnQiLCJzdWIiOiIzMDI4MzIyOC1mYTM2LTRkODgtODJjMy1jOTQ5NGRjNDRiZmQiLCJ0eXAiOiJJRCIsImF6cCI6IlNwcmluZy1PYXV0aDItQXV0aG9yaXphaW9uLWNsaWVudCIsIm5vbmNlIjoiWVMtbEVVUjNUMG1fUGpacWpGYXZaWWFTMXI2UW94QlZUc3VwWmR3WXVvWSIsInNlc3Npb25fc3RhdGUiOiJhODc2NzU2NS0xZWE1LTQ0NGMtYjk2My1jM2Q5NDNlMWE4MGMiLCJhdF9oYXNoIjoiWGxYWXZOV1BtM1ZZQmsyS1JPak5hQSIsImFjciI6IjEiLCJzaWQiOiJhODc2NzU2NS0xZWE1LTQ0NGMtYjk2My1jM2Q5NDNlMWE4MGMiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJ0aW1lIHVzZXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ1c2VyMSIsImdpdmVuX25hbWUiOiJ0aW1lIiwiZmFtaWx5X25hbWUiOiJ1c2VyIiwiZW1haWwiOiJ1c2VyMUBnbWFpbC5jb20ifQ.X7-VfDumXsdpkE_cRklOQPMpSWHliObnM1TnaHfFXg3ogFRbUYxY4nHzKU1GpF_VyQMpfiZjtV9iHi02QBeP6MTZh4a18bUPkFjL3l-Z_zXSgy6aE7jR7wkP2wHrRvOXgKyAIKEB2HMEEBzpBm9imCKgAWrAxSbOk6BNZZ8MRTPOZ0autJnMDNBZGWEPAx1Vws0Hu1SkK9HPf81VshKmI8avDJXPJnFI50him__lwGUbqITmgyQndzXNU2mr_DCDn9fBIo80x5udambs948HaJxJdAk6bRXWduSESTKXIwPwCzGVbVpiMzRO96ufkeKjornt1mZ5k9KyaByuUDzJcg&post_logout_redirect_uri=http://localhost:8081/login
-
-```
 이 targeturl 는 이렇게 만들어지게 됩니다 get 요청으로 만들고 id_token 과 redirect 주소를 같이 포함시켜서 보내게 되는데 
 
 
 ## AbstractAuthenticationTargetUrlRequestHandler
-
 ```
-
 protected void handle(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
 			throws IOException, ServletException {
 	String targetUrl = determineTargetUrl(request, response, authentication);
@@ -439,7 +393,6 @@ protected void handle(HttpServletRequest request, HttpServletResponse response, 
 	}
 	this.redirectStrategy.sendRedirect(request, response, targetUrl);
 }
-
 ```
 
 이곳으로 들어와 요청정보를 전송하게 됩니다 그리고 돌아오게 되면 
@@ -457,6 +410,4 @@ protected void handle(HttpServletRequest request, HttpServletResponse response, 
 그리고 다시 로그인을 할려고 클릭을 하게 되면 원래라면 인가서버에 세션정보가 남아있어서 따로 로그인 절차가 필요없어졌지만 이제는 세션정보가 아예 없어졌기 때문에 
 (모든 기기에서 로그아웃) 다시 처음부터 인증을 해야 하는 상태로 돌아오게 됩니다 
 
-여기 까지 OIDC 로그아웃에 대해서 알아보았습니다 
-
-
+여기 까지 OIDC 로그아웃에 대해서 알아보았습니다

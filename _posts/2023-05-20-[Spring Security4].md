@@ -12,16 +12,13 @@ mermaid: true
 
 ![로그아웃](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/090c7be4-d31a-453b-a2ff-479d614a3edf)
 
-기본적인 로그아웃 Handler 는 localhost:8080/logout 로 지정하며 이때 위와 같은 페이지가 뜨며 로그아웃을 진행하게 됩니다 
+기본적인 로그아웃 요청은 주소에 `localhost:8080/logout` 로 지정하며 이때 위와 같은 페이지가 뜨며 로그아웃을 진행하게 됩니다 
 
 ![로그아웃2](https://github.com/time-kimdongy1000/ImageStore/assets/58513678/9789219a-f488-4dbc-b288-8130747c2b01)
 
-이렇게 변하게 되는데 오늘은 이페이지가 어떻게 만들어지고 또 로그아웃 Filter 는 어떻게 동작하는지에 대해서 알아보겠습니다 
+그리고 로그아웃이 성공하면 이렇게 성공메세지가 뜨며 다시 로그인 페이지가 렌더링 되게 됩니다 
 
 ## DefaultLogoutPageGeneratingFilter
-
-기본적으로 로그아웃 페이지는 DefaultLogoutPageGeneratingFilter 에서 생겨나게 된다 
-
 ```
 public class DefaultLogoutPageGeneratingFilter extends OncePerRequestFilter 
 
@@ -40,7 +37,8 @@ protected void doFilterInternal(HttpServletRequest request, HttpServletResponse 
 	}
 
 ```
-이때 doFilterInternal 로 renderLogout 을 호출하게 되는데 
+이 Filter는 앞에서 `DefaultLoginPageGeneratingFilter` 과 마찬가지로 사용자가 커스텀 로그아웃페이지를 생성하지 않으면 시큐리티가 자동으로 로그아웃 페이지를 만들어서 렌더링하게끔 만들어진 Filter 입니다 
+
 
 ```
 private void renderLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -118,6 +116,16 @@ public class LogoutFilter extends GenericFilterBean
 	}
 
 ```
+이떄 시큐리티에서 정의한 LogoutFilter 로 요청이 들어가게 되는데 이 필터의 역활은 
+
+1. 로그아웃 요청처리 
+
+2. 리다이렉션 및 세션 무효화 
+	로그아웃을 했으면 로그인 페이지로 리다이렉션과 동시에 기존에 SecurityContext 에 정의된 세션을 무효화 하는 작업을 진행을 합니다 
+
+3. 로그아웃 성공 후 작업 
+	이는 커스텀으로 사용시 로그아웃 성공시 다음 작업을 진행하게 로직을 만들 수 있습니다 	
+
 
 
 ```
@@ -133,6 +141,7 @@ Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 세션제거 , 쿠키제거, CSRF 제거 등 다양한 과정을 거치는데 그중에서 저는 세션제거만 보도록 하겠습니다 
 
 
+## 로그아웃 및 세션 무효화 
 ```
 public class SecurityContextLogoutHandler implements LogoutHandler 
 

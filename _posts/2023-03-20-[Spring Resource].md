@@ -9,294 +9,225 @@ mermaid: true
 ---
 
 ## Resource
-Spring 으로 넘어오면서 리소스 처리 방식에 대해서 변화가 생겼습니다 
-org.springframework.core.io. 하위에 있는 Resource 는 하위 수준 리소스에 대한 액세스를 더욱 쉽게 만들기 위해서 만들어진 인터페이스 입니다 
-아래에 있는 메서드 또는 필드를 보면 유추하기 쉬운 것들로 이루어져 있고 
+Spring으로 넘어오면서 리소스 처리 방식에 대해서 변화가 생겼습니다 org.springframework.core.io. 하위에 있는 Resource는 하위 수준 리소스에 대한 액세스를 더욱 쉽게 만들기 위해서 만들어진 인터페이스입니다 아래에 있는 메서드 또는 필드를 보면 유추하기 쉬운 것들로 이루어져 있고
 
-기본적으로 java 의 파일 클래스를 다우러 보았다면 더욱 쉽게 보일것입니다 
+이번 시간에는 UrlResource , FileSystemResource , ClassPathResource
 
-
-
-## Resource
-```
-
-package org.springframework.core.io;
-
-public interface Resource extends InputStreamSource {
-
-    boolean exists();
-
-    boolean isReadable();
-
-    boolean isOpen();
-
-    boolean isFile();
-
-    URL getURL() throws IOException;
-
-    URI getURI() throws IOException;
-
-    File getFile() throws IOException;
-
-    ReadableByteChannel readableChannel() throws IOException;
-
-    long contentLength() throws IOException;
-
-    long lastModified() throws IOException;
-
-    Resource createRelative(String relativePath) throws IOException;
-
-    String getFilename();
-
-    String getDescription();
-}
-
+## UrlResource
+이는 spring 프레임워크에서 java.net.URL 기반으로 하는 리소스를 나타내는 클래스입니다 이 클래스는 HTTP , HTTPS , FTP 도 쓰이긴 하지만 가장 많이 쓰이는 URL 을 통해 접속이 가능한
+리소스를 처리하는 데 사용됩니다
 
 ```
-
-## UrlResource file
-
-일반적으로 URL 로 엑세스할 수 있는 모든 개체에 액세스 할때 사용할 수 있습니다  파일 시스템 , https , ftp classpath 등 다양한 곳에 접근할때 사용할 수 있습니다 
-다만 new 를 사용해서 만들때에는 모두 한가지 객체로만 만들어서 Resource 의 유연성은 다소 떨어지는것을 볼 수 있습니다
-
-
-
-```
-
-package com.cybb.main;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-
-import java.io.File;
-import java.io.FileReader;
-
 @SpringBootApplication
-public class SpringRestartApplication implements ApplicationRunner {
+public class SpringBootWebSecurityApplication implements ApplicationRunner {
+
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringRestartApplication.class, args);
+		SpringApplication.run(SpringBootWebSecurityApplication.class, args);
 	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 
-		Resource resource = new UrlResource("file:C:\\Users\\kimdongy1000\\Desktop\\spring_test\\test.txt");
-		if(resource.exists()){
-			System.out.println("파일이 존재합니다.");
-			String filename = resource.getFilename();
-			System.out.println("filename : " + filename);
+		URL url = new URL("https://mblogthumb-phinf.pstatic.net/MjAyMTAyMjJfMTM3/MDAxNjEzOTk1Nzg4MzE1.XUHyWN0J0DfNb1PN3LwqjnrzYYdC31UUIOLlXd9esgog.7ZSWKBEc4zXdqF_zsA9iRVZEQZLnCPfbuT1uUznpWLUg.JPEG.dangoon123/Divergence_Meter_0.409031.jpg?type=w420");
+		Resource urlResource = new UrlResource(url);
 
-			File file = resource.getFile();
-			FileReader reader = new FileReader(file);
+		if(urlResource.exists()){
+			System.out.println("URL Resource File exists!");
+		}
+	}
+}
 
-			int ch;
-			while ((ch = reader.read()) != -1) {
-				System.out.print((char) ch);
+```
+
+지금 보면 https 주소로 URL 객체를 만들고 그 객체를 Resource 타입의 객체로 만들어서 그 파일이 존재하냐 안 하느냐로 지금 if 문을 통과하고 있습니다 단 Resource 특성상
+파일을 읽어올 수는 있는데 다운로드할 수 있는 그런 인터페이스는 아니다 보니 지금처럼 사진을 받는 그런 리소스 같은 경우는 부적절합니다 그리고 매 사용마다 새로운 Resoucre 객체를 생성하는 것을 볼 수 있습니다 그래서 Spring 은 하나의 bean으로 모든 리소스를 처리할 수 있는 인터페이스를 하나 더 만들었는데 그것이 바로 ResourceLoader입니다
+그렇다고 사진 다운로드를 못하는 게 아닙니다 적절한 다른 FileStream 을 사용하면 되는데 그 주제는
+
+## ResourceLoader
+ResourceLoader 특징은 계속 언급은 하겠지만 자신이 읽어올 파일에 맞는 Resoucre를 구현해서 사용해야 합니다 지금같이 HTTP 통신에서 Resoucre를 가져올 때는 URL 리소스를
+반드시 써요 하는데 ResourceLoader 특징은 앞에 적어주는 prefix를 분석해서 적절한 Resoucre 객체의 타입을 만들어내게 됩니다
+
+```
+@SpringBootApplication
+public class SpringBootWebSecurityApplication implements ApplicationRunner {
+	
+	@Autowired
+	private ResourceLoader resourceLoader;
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootWebSecurityApplication.class, args);
+	}
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+
+		Resource urlResource = resourceLoader.getResource("https://mblogthumb-phinf.pstatic.net/MjAyMTAyMjJfMTM3/MDAxNjEzOTk1Nzg4MzE1.XUHyWN0J0DfNb1PN3LwqjnrzYYdC31UUIOLlXd9esgog.7ZSWKBEc4zXdqF_zsA9iRVZEQZLnCPfbuT1uUznpWLUg.JPEG.dangoon123/Divergence_Meter_0.409031.jpg?type=w420");
+
+		if(urlResource.exists()){
+			System.out.println("URL Resource File exists!");
+		}
+	}
+}
+```
+
+지금 보면 ResourceLoader 주입을 받고 그 빈을 통해서 getResource를 호출하게 되면 우리는 아까처럼 new UrlResource를 만들지 않고도 자동으로 spring 이 해당 url 을 분석해서
+적절한 bean 타입을 맞춰주게 됩니다 이렇게 될 수 있는 원리가 무엇이냐면 앞에 적었지만 prefix를 적어주게 되는데 http , https 통신은 앞에 프로토콜을 적어주므로 이게
+http 통신이니 UrlResource 객체를 만들어줘 하고 스프링에게 전가를 시키는 것입니다 그럼 스프링은 알아서 그 타입에 맞게 Resoucre를 만들어주게 됩니다
+
+
+## UrlResouceLoader 로 사진 파일 다운로드 
+```
+@SpringBootApplication
+public class SpringBootWebSecurityApplication implements ApplicationRunner {
+
+	@Autowired
+	private ResourceLoader resourceLoader;
+
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootWebSecurityApplication.class, args);
+	}
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+
+		Resource urlResource = resourceLoader.getResource("https://mblogthumb-phinf.pstatic.net/MjAyMTAyMjJfMTM3/MDAxNjEzOTk1Nzg4MzE1.XUHyWN0J0DfNb1PN3LwqjnrzYYdC31UUIOLlXd9esgog.7ZSWKBEc4zXdqF_zsA9iRVZEQZLnCPfbuT1uUznpWLUg.JPEG.dangoon123/Divergence_Meter_0.409031.jpg?type=w420");
+
+		if(urlResource.exists()){
+			System.out.println("URL Resource File exists!");
+
+			InputStream inputStream = urlResource.getInputStream();
+			FileOutputStream outputStream = new FileOutputStream("C:\\Users\\kimdo\\OneDrive\\바탕 화면\\spring_test\\time_macine.png");
+
+			byte[] buffer = new byte[10024];
+			int bytesRead;
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				outputStream.write(buffer, 0, bytesRead);
+			}
+
+			outputStream.close();
+			inputStream.close();
+
+		}
+	}
+}
+```
+추가적인 내용으로 우리는 우리 로컬에 웹상에 있는 사진을 다운로드할 수 있습니다
+
+
+## ClassPathResource
+이는 현재 애플리케이션 classPath 상에 있는 리소스를 읽는 역할을 하는 클래스입니다 애플리케이션 안에 파일을 하나 만들겠습니다
+
+-project 
+	-src
+		-main
+			-java
+				-com
+					-cybb
+						-main
+							-SpringBootWebSecurityApplication.java 
+						-resource
+							-application.properties
+							-dbList.txt
+
+지금 같은 위치에 dbList.txt 파일을 하나 만들겠습니다
+
+## dbList.txt
+```
+User
+Dept
+Item
+```
+
+## ClassPathResource 로 classPath상의 파일 읽기 시작 
+```
+@SpringBootApplication
+public class SpringBootWebSecurityApplication implements ApplicationRunner {
+
+	@Autowired
+	private ResourceLoader resourceLoader;
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootWebSecurityApplication.class, args);
+	}
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+
+		Resource classpathResource = resourceLoader.getResource("classpath:/dbList.txt");
+
+		if(classpathResource.exists()){
+
+			File file = classpathResource.getFile();
+			InputStream fileInputStream = new FileInputStream(file);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
+
+			String line;
+			while( (line =  reader.readLine()) != null ){
+				System.out.println(line);
 			}
 		}
 	}
 }
 
-```
-
-우리는 앞에서 특별한 prefix 를 넣을 수 있다고 했다 준비물은 바탕화면에 간단한 메모장 준비하고 돌리자 결과는 이렇게 나올것이다 
-이게 기본적으로 파일시스템에 접근해서 로컬 파일을 읽을때 (사실 prefix 를 줘도 되고 안주어도 알아서 읽어냅니다)
-이때 말하는 prefix 는 file 이라는 prefix 입니다 
-
 
 ```
-파일이 존재합니다.
-filename : test.txt
-테스트입니다
+마찬가지로 이때는 prefix 가 앞에서는 https였기 때문에 자동으로 UrlResourceLoader 이 동작했다면 지금은 prefix 가 classPath로 변경이 되었기 때문에 스프링은 자동으로 이
+Resource 객체를 ClasspathResource로 변경을 하게 됩니다 그리고 파일을 읽는 거까지 읽어서 한 줄 한 줄 표현까지 진행을 했습니다
+
+## FileSystemResource
 ```
+@SpringBootApplication
+public class SpringBootWebSecurityApplication implements ApplicationRunner {
 
-다만 이 절대경로에 있는것은 문제가 생긴다 지금 프로젝트가 jar 로 변환되어서 다른곳에 옮겨저서 배포 되면 현재 이 path 는 쓸 수 없는 로직이기 때문에 절대경로는 잘 사용하지 않습니다당장 이 jar , war 패키징되어 리눅스 시스템에 던져지면 동작하지 않을것이기 때문이다 
+	@Autowired
+	private ResourceLoader resourceLoader;
 
 
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootWebSecurityApplication.class, args);
+	}
 
-## UrlResource https
-```
-@Override
-public void run(ApplicationArguments args) throws Exception {
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
 
-	Resource resource = new UrlResource("https://ichef.bbci.co.uk/news/800/cpsprodpb/E172/production/_126241775_getty_cats.png");
-	if(resource.exists()){
-		System.out.println("리소스 존재합니다.");
-		
-		InputStream inputStream = resource.getInputStream();
-		FileOutputStream outputStream = new FileOutputStream("C:\\Users\\kimdongy1000\\Desktop\\spring_test\\sample_cat.png");
+		Resource filepathResource1 = resourceLoader.getResource("file:/home/kimdongy1000/springProject/config/mysql_db.properties");
+		Resource filepathResource2 = resourceLoader.getResource("file:/home/kimdongy1000/springProject/config/oracle_db.properties");
 
-		byte[] buffer = new byte[10024];
-		int bytesRead;
-		while ((bytesRead = inputStream.read(buffer)) != -1) {
-			outputStream.write(buffer, 0, bytesRead);
+		if(filepathResource1.exists()) {
+
+			File file = filepathResource1.getFile();
+			InputStream fileInputStream = new FileInputStream(file);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
+
+			String line;
+			while ((line = reader.readLine()) != null) {
+				System.out.println(line);
+			}
+		}else{
+			System.out.println("file1 존재하지 않습니다");
 		}
 
-		outputStream.close();
-		inputStream.close();
+		if(filepathResource2.exists()) {
 
-	}else{
-		System.out.println("리소스 존재하지 않습니다.");
+			File file = filepathResource2.getFile();
+			InputStream fileInputStream = new FileInputStream(file);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
+
+			String line;
+			while ((line = reader.readLine()) != null) {
+				System.out.println(line);
+			}
+		}else{
+			System.out.println("file2 존재하지 않습니다");
+		}
 	}
 }
 
 ```
-이번엔 특정 웹주소에 있는 사진을 한번 로컬로 다운로드를 해보자 지금 이 소스를 이용하면 해당 url 에 표현되는 사진을 나의 로컬 컴퓨터로 다운로드 받을 수 있습니다 
+FileSystemResource 말 그대로 파일시스템의 위치에서 접근하는 것이다 ClassPathResource classPath 안에서만 움직이기 때문에 외부 파일에 접근하는 게 약간의 한계가 있지만
+FileSystemResource 리소스 같은 경우는 외부 파일을 엑스만 할 수 있다면 ClassPathResource 보다 강력하게 사용할 수 있습니다 이때 prefix는 file이라는 prefix를 사용해서
+파일 위치를 명시를 해주고 있습니다
 
-1. 웹에서 읽어온 파일을 먼저 InputStream 넣습니다 
-2. FileOutputStream 를 이용해서 어디에 저장을 할것인지 위치를 명시합니다 
-3. 위치 명시가 시작되면 거대한 byte 배열을 만들고 inputStream 으로 읽어내기 시작합니다 그것을 outputStream 써 내려갑니다
-4. 그러다 더 읽을 소스가 byte 가 없으면 그대로 종료됩니다 
-
-
-## UrlResource classPath
-```
-@Override
-public void run(ApplicationArguments args) throws Exception {
-
-	Resource resource = new UrlResource(new URL("classpath:/schema/User.sql").openConnection().getURL());
-	System.out.println(new URL("classpath:/schema/User.sql").openConnection().getURL().toString());
-	if(resource.exists()){
-		System.out.println("리소스 존재합니다.");
-
-		File file = resource.getFile();
-		FileReader reader = new FileReader(file);
-
-		int ch;
-		while ((ch = reader.read()) != -1) {
-			System.out.print((char) ch);
-		}
-	}else{
-		System.out.println("리소스 존재하지 않습니다.");
-	}
-}
-
-```
-
-
-## classpth:/schema/User.sql
-```
-Create Table User(
-    name varchar(100) ,
-    age varchar(100)
-)
-
-```
-
-UrlResource 의 가장 큰 단점은 모든 것을 절대경로 즉 file 시스템으로 위치를 확인할려는 문제점이 있다 지금도 저기 결과를 찍어보면
-
-```
-
-file:/C:/Users/kimdongy1000/Documents/workspace-spring-tool-suite-4-4.11.0.RELEASE/Spring_Restart/target/classes/schema/User.sql
-리소스 존재합니다.
-Create Table User(
-    name varchar(100) ,
-    age varchar(100)
-)
-
-
-```
-
-내가 classPath 주소로 명시는 해두었지만 결국 열어볼때는 file 이라는 접두사를 써서 파일 시스템으로 읽고 있는 모습니다 
-그런 단점을 없애기 위해서 Srping ResourceLoader 를 활용해서 path 를 읽고 적절한 Resource 하위 클래스 객체를 생성하게 됩니다
-
-
-## ResourceLoader
-```
-
-public interface ResourceLoader {
-
-    Resource getResource(String location);
-
-    ClassLoader getClassLoader();
-}
-
-```
-
-모든 어플리케이션 컨텍스트는 ResourceLoader 를 활용해서 Resource 의 인스턴스를 얻을 수 있는데 아까 했던 모든 작업을 ResourceLoader 에 집어넣고 진행을 해보자
-그리고 코드 하나를 더 추가해보자 `System.out.println(resource.getClass());`이것을 추가하면 이제 resource 객체가 어떤 객체로 만들어지는지 나올것이다 
-
-
-```
-@Override
-public void run(ApplicationArguments args) throws Exception {
-
-	Resource resource = resourceLoader.getResource("classpath:/schema/User.sql");
-	System.out.println(resource.getClass());
-	
-	if(resource.exists()){
-		System.out.println("리소스 존재합니다.");
-
-		File file = resource.getFile();
-		FileReader reader = new FileReader(file);
-
-		int ch;
-		while ((ch = reader.read()) != -1) {
-			System.out.print((char) ch);
-		}
-	}else{
-		System.out.println("리소스 존재하지 않습니다.");
-	}
-}
-
-```
-
-```
-
-class org.springframework.core.io.ClassPathResource
-파일이 존재합니다.
-filename : User.sql
-Create Table User(
-    name varchar(100) ,
-    age varchar(100)
-)
-
-```
-첫번째 Resource 객체는 ClassPathResource 가 나왔다 
-
-
-## resourceLoader http 파일 요청
-```
-Resource resource = resourceLoader.getResource("https://ichef.bbci.co.uk/news/800/cpsprodpb/E172/production/_126241775_getty_cats.png");
-
-```
-
-```
-class org.springframework.core.io.UrlResource
-리소스 존재합니다.
-```
-http 요청일때는 UrlResource 변경되었다 
-
-
-## resourceLoader 로컬 파일 시스템 접근 
-
-```
-Resource resource = resourceLoader.getResource("file:C:\\Users\\kimdongy1000\\Desktop\\spring_test\\test.txt");
-
-```
-
-```
-class org.springframework.core.io.FileUrlResource
-리소스 존재합니다.
-테스트입니다
-
-```
-
-지금 보면 ResourceLoader 이 접두사를 보고 적절히 Resource 객체를 만들어내는것을 보았다 앞에서 사용한  new UrlResource 는 전부 한가지 객체만 만들어낼 수 밖에 없다 
-
-
-```
-class org.springframework.core.io.UrlResource
-
-```
-
-이제 spring 에서 외부 자원을 읽어올때는 ResourceLoader 를 사용해서 관리하는것이 좋습니다.
+오늘은 이렇게 해서 spring 다양한 리소스 관리에 대해서 공부를 해보았습니다
