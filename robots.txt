@@ -1,4 +1,2 @@
 User-agent: *
-Allow: /
-
 Sitemap: https://time-kimdongy1000.github.io/sitemap.xml
