@@ -9,9 +9,9 @@ mermaid: true
 ---
 
 ## HATEOAS 
-HATEOAS 해당 리소스와 관련된 링크를 표시하는것을 말합니다 이 원칙에 따르면 API 는 각 서비스 응답과 함께 가능한 다음단계 정보도 제공하며 클라이언트를 다음 단계로 가이드 할 수 있어야 한다 
+HATEOAS 해당 리소스와 관련된 링크를 표시하는 것을 말합니다 이 원칙에 따르면 API는 각 서비스 응답과 함께 가능한 다음 단계 정보도 제공하며 클라이언트를 다음 단계로 가이드 할 수 있어야 한다
 
-그럼 지난시간에 했던 Student 로 간단하게 HATEOAS 를 만들어보겠습니다 
+그럼 지난 시간에 했던 Student로 간단하게 HATEOAS를 만들어보겠습니다
 
 ## 의존성 추가
 ```
@@ -22,7 +22,7 @@ HATEOAS 해당 리소스와 관련된 링크를 표시하는것을 말합니다 
 
 
 ```
-이 의존성이 HATEOAS 와 관련된 의존성입니다 
+이 의존성이 HATEOAS와 관련된 의존성입니다
 
 ## Student 모델 수정
 ```
@@ -41,7 +41,7 @@ public class Student extends RepresentationModel<Student> {
 
 
 ```
-우리가 원래 사용하던 model 에서 RepresentationModel 를 상속받아 줍니다 
+우리가 원래 사용하던 model에서 RepresentationModel를 상속받아 줍니다
 
 ## GET 요청시 HATEOAS 생성해서 body 에 전달 
 
@@ -112,14 +112,14 @@ public class StudentController {
 ```
 /**
 
-    이 링크는 자기 자신을 부를때 사용하는 링크라서 마지막에 withSelfRel 을 두는것이고 
+이 링크는 자기 자신을 부를 때 사용하는 링크라서 마지막에 withSelfRel 을 두는 것이고
 
 */
 Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(StudentController.class).getStudent(schoolId , studentId)).withSelfRel();
 
 /**
 
-    이 링크는 자기자신 을 부르는것이 아니기 때문에 withRel 을 사용해서 메서드 명을 지정해줍니다
+이 링크는 자기 자신을 부르는 것이 아니기 때문에 withRel 을 사용해서 메서드 명을 지정해 줍니다
 
 */
 Link createLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(StudentController.class).createStudent(schoolId , student , null)).withRel("createStudent");
@@ -127,10 +127,9 @@ Link createLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(StudentCon
 
 
 ```
-전체적으로 보면 StudentController 안에 핸들러에 각 메서드를 체이닝 걸고 그때 필요한 파라미터를 각각 넣어주면 됩니다 그리고 자기 자신의 핸들러에서는 withSelfRel 로 link 를 만들고 
-그렇지 않은 링크들은 withRel 과 메서드 명을 적어서 끝을 냅니다 이렇게 하고 기동을 하고 post 맨으로 get 요청을 시도하면
+전체적으로 보면 StudentController 안에 핸들러에 각 메서드를 체이닝 걸고 그때 필요한 파라미터를 각각 넣어주면 됩니다 그리고 자기 자신의 핸들러에서는 withSelfRel로 link를 만들고 그렇지 않은 링크들은 withRel 과 메서드 명을 적어서 끝을 냅니다 이렇게 하고 기동을 하고 post-man 으로 get 요청을 시도하면
 
-## postMan 결과 
+## post-Man 결과 
 ```
 {
     "id": 4768,
@@ -156,7 +155,7 @@ Link createLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(StudentCon
 }
 
 ```
-이렇게 이렇게 클라이언트에게 다음의 액션을 취할 수 있게 링크를 제공합니다 
+이렇게 이렇게 클라이언트에게 다음의 액션을 취할 수 있게 링크를 제공합니다
 
-정리하자면 클라이언트가 해당 웹사이트에서 사용할 수 있는 링크들을 탐색하고 싶을때 서버측에서 제공하는 서비스 기능중 하나입니다 클라이언트는 서버가 제공해주는 것을 보고 
-다음 스텝을 진행을 합니다 
+정리하자면 클라이언트가 해당 웹사이트에서 사용할 수 있는 링크들을 탐색하고 싶을 때 서버 측에서 제공하는 서비스 기능 중 하나입니다 클라이언트는 서버가 제공해 주는 것을 보고
+다음 스텝을 진행을 합니다
